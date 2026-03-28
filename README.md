@@ -1,8 +1,8 @@
-# 🌟 Aurora UI React
+# 🌟 Single-UI React
 
 > Biblioteca moderna de componentes React construída com Vite + TypeScript
 
-[![NPM Version](https://img.shields.io/npm/v/@aurora-ui/react.svg)](https://www.npmjs.com/package/@aurora-ui/react)
+[![NPM Version](https://img.shields.io/npm/v/@single-ui/react.svg)](https://www.npmjs.com/package/@single-ui/react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Características
@@ -19,19 +19,19 @@
 ## 📦 Instalação
 
 ```bash
-npm install @aurora-ui/react
+npm install @single-ui/react
 ```
 
 ou
 
 ```bash
-yarn add @aurora-ui/react
+yarn add @single-ui/react
 ```
 
 ou
 
 ```bash
-pnpm add @aurora-ui/react
+pnpm add @single-ui/react
 ```
 
 ## 🚀 Uso Rápido
@@ -39,13 +39,13 @@ pnpm add @aurora-ui/react
 ### 1. Importe os estilos
 
 ```tsx
-import '@aurora-ui/react/styles';
+import '@single-ui/react/styles';
 ```
 
 ### 2. Use os componentes
 
 ```tsx
-import { Button, Input, Card } from '@aurora-ui/react';
+import { Button, Input, Card } from '@single-ui/react';
 
 function App() {
   return (
@@ -74,7 +74,7 @@ function App() {
 ### Button
 
 ```tsx
-import { Button } from '@aurora-ui/react';
+import { Button } from '@single-ui/react';
 
 // Variantes
 <Button variant="primary">Primary</Button>
@@ -120,7 +120,7 @@ import { Button } from '@aurora-ui/react';
 ### Input
 
 ```tsx
-import { Input } from '@aurora-ui/react';
+import { Input } from '@single-ui/react';
 
 // Básico
 <Input
@@ -189,7 +189,7 @@ import { Input } from '@aurora-ui/react';
 ### Card
 
 ```tsx
-import { Card } from '@aurora-ui/react';
+import { Card } from '@single-ui/react';
 
 // Básico
 <Card>
@@ -248,12 +248,12 @@ Você pode customizar as cores globalmente:
 
 ```css
 :root {
-  --aurora-primary: #3b82f6;
-  --aurora-secondary: #8b5cf6;
-  --aurora-success: #10b981;
-  --aurora-warning: #f59e0b;
-  --aurora-error: #ef4444;
-  --aurora-info: #06b6d4;
+  --single-primary: #3b82f6;
+  --single-secondary: #8b5cf6;
+  --single-success: #10b981;
+  --single-warning: #f59e0b;
+  --single-error: #ef4444;
+  --single-info: #06b6d4;
 }
 ```
 
@@ -261,8 +261,8 @@ Você pode customizar as cores globalmente:
 
 ```css
 [data-theme="dark"] {
-  --aurora-primary: #60a5fa;
-  --aurora-background: #0f172a;
+  --single-primary: #60a5fa;
+  --single-background: #0f172a;
   /* ... outras variáveis */
 }
 ```
@@ -284,7 +284,7 @@ useEffect(() => {
 
 ```tsx
 import { useState } from 'react';
-import { Button, Input, Card } from '@aurora-ui/react';
+import { Button, Input, Card } from '@single-ui/react';
 
 function RegisterForm() {
   const [name, setName] = useState('');
@@ -353,8 +353,8 @@ function RegisterForm() {
 ### Clonar o repositório
 
 ```bash
-git clone https://github.com/your-username/aurora-ui-react
-cd aurora-ui-react
+git clone https://github.com/your-username/single-ui-react
+cd single-ui-react
 ```
 
 ### Instalar dependências
@@ -398,7 +398,7 @@ Contribuições são bem-vindas! Por favor, abra uma issue ou PR.
 ## 📞 Suporte
 
 - 📧 Email: eduardo@entechnology.com.br
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/aurora-ui-react/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/your-username/single-ui-react/issues)
 
 ---
 
