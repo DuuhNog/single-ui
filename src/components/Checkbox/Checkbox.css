@@ -1,0 +1,97 @@
+.single-checkbox-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--single-spacing-xs);
+}
+
+.single-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--single-spacing-sm);
+  cursor: pointer;
+}
+
+.single-checkbox-label--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.single-checkbox-text {
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-base);
+  color: var(--single-text-primary);
+  user-select: none;
+}
+
+/* ─── Box ────────────────────────────────────────────────────────────────── */
+.single-checkbox {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.single-checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.single-checkbox__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--single-border-hover);
+  border-radius: var(--single-radius-sm);
+  background: var(--single-background);
+  color: white;
+  transition: all var(--single-transition);
+}
+
+/* Checked / Indeterminate */
+.single-checkbox--checked .single-checkbox__box,
+.single-checkbox--indeterminate .single-checkbox__box {
+  background: var(--single-primary);
+  border-color: var(--single-primary);
+}
+
+/* Hover */
+.single-checkbox-label:hover:not(.single-checkbox-label--disabled) .single-checkbox__box {
+  border-color: var(--single-primary);
+}
+
+/* Focus ring */
+.single-checkbox__input:focus-visible + .single-checkbox__box {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--single-primary-light);
+}
+
+/* Disabled */
+.single-checkbox__input:disabled + .single-checkbox__box {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Check icon ─────────────────────────────────────────────────────────── */
+.single-checkbox__check-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ─── Error & Helper ─────────────────────────────────────────────────────── */
+.single-checkbox-error {
+  font-size: var(--single-font-size-sm);
+  color: var(--single-error);
+}
+
+.single-checkbox-helper {
+  font-size: var(--single-font-size-sm);
+  color: var(--single-text-secondary);
+}

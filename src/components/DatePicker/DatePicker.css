@@ -164,8 +164,8 @@
 }
 
 .single-dp-cell--selected .single-dp-cell-inner {
-  background: var(--single-text-primary);
-  color: var(--single-background);
+  background: var(--single-primary);
+  color: var(--single-text-on-primary);
   font-weight: var(--single-font-weight-semibold);
 }
 
@@ -194,7 +194,7 @@
 
 .single-dp-cell--selected.single-dp-cell--month,
 .single-dp-cell--selected.single-dp-cell--year {
-  background: var(--single-text-primary);
-  color: var(--single-background);
+  background: var(--single-primary);
+  color: var(--single-text-on-primary);
   font-weight: var(--single-font-weight-semibold);
 }

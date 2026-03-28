@@ -30,6 +30,21 @@ export type { DatePickerProps } from './components/DatePicker/DatePicker';
 export { DateRangePicker } from './components/DateRangePicker/DateRangePicker';
 export type { DateRangePickerProps, DateRange } from './components/DateRangePicker/DateRangePicker';
 
+export { DatePickerInput } from './components/DatePickerInput/DatePickerInput';
+export type { DatePickerInputProps } from './components/DatePickerInput/DatePickerInput';
+
+export { DateRangePickerInput } from './components/DateRangePickerInput/DateRangePickerInput';
+export type { DateRangePickerInputProps } from './components/DateRangePickerInput/DateRangePickerInput';
+
+export { Switch } from './components/Switch/Switch';
+export type { SwitchProps, SwitchSize } from './components/Switch/Switch';
+
+export { Checkbox } from './components/Checkbox/Checkbox';
+export type { CheckboxProps } from './components/Checkbox/Checkbox';
+
+export { Chip } from './components/Chip/Chip';
+export type { ChipProps, ChipVariant, ChipSize } from './components/Chip/Chip';
+
 // Hooks
 export { useMask } from './hooks/useMask';
 export type { MaskType } from './hooks/useMask';

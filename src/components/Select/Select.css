@@ -20,6 +20,7 @@
   position: relative;
 }
 
+/* ─── Trigger ─────────────────────────────────────────────────────────────── */
 .single-select__trigger {
   display: flex;
   align-items: center;
@@ -68,6 +69,10 @@
   white-space: nowrap;
 }
 
+.single-select__value--placeholder {
+  color: var(--single-text-disabled);
+}
+
 .single-select__icons {
   display: flex;
   align-items: center;
@@ -75,14 +80,27 @@
   margin-left: var(--single-spacing-sm);
 }
 
+/* ─── Chevron ─────────────────────────────────────────────────────────────── */
+.single-select__chevron {
+  color: var(--single-text-secondary);
+  transition: transform var(--single-transition);
+  flex-shrink: 0;
+}
+
+.single-select__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ─── Clear button ────────────────────────────────────────────────────────── */
 .single-select__clear {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   padding: 0;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
+  line-height: 1;
   color: var(--single-text-secondary);
   background: transparent;
   border: none;
@@ -96,18 +114,7 @@
   color: var(--single-text-primary);
 }
 
-.single-select__arrow {
-  display: inline-flex;
-  font-size: 0.75rem;
-  color: var(--single-text-secondary);
-  transition: transform var(--single-transition);
-}
-
-.single-select__trigger--open .single-select__arrow {
-  transform: rotate(180deg);
-}
-
-/* Dropdown */
+/* ─── Dropdown ────────────────────────────────────────────────────────────── */
 .single-select__dropdown {
   position: absolute;
   top: calc(100% + 4px);
@@ -119,47 +126,53 @@
   border-radius: var(--single-radius-md);
   box-shadow: var(--single-shadow-lg);
   overflow: hidden;
-  animation: single-select-dropdown 150ms ease-out;
+  animation: single-select-in 140ms ease-out;
 }
 
-@keyframes single-select-dropdown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes single-select-in {
+  from { opacity: 0; transform: translateY(-6px) scaleY(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scaleY(1); }
 }
 
+/* ─── Search ──────────────────────────────────────────────────────────────── */
 .single-select__search {
-  padding: var(--single-spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--single-spacing-sm);
+  padding: var(--single-spacing-sm) var(--single-spacing-md);
   border-bottom: 1px solid var(--single-border);
 }
 
+.single-select__search-icon {
+  flex-shrink: 0;
+  color: var(--single-text-disabled);
+}
+
 .single-select__search-input {
-  width: 100%;
-  padding: var(--single-spacing-sm);
+  flex: 1;
   font-family: var(--single-font-family);
   font-size: var(--single-font-size-sm);
   color: var(--single-text-primary);
-  background-color: var(--single-background);
-  border: 1px solid var(--single-border);
-  border-radius: var(--single-radius-sm);
+  background: transparent;
+  border: none;
   outline: none;
+  padding: 0;
 }
 
-.single-select__search-input:focus {
-  border-color: var(--single-primary);
+.single-select__search-input::placeholder {
+  color: var(--single-text-disabled);
 }
 
+/* ─── Options ─────────────────────────────────────────────────────────────── */
 .single-select__options {
   max-height: 240px;
   overflow-y: auto;
 }
 
 .single-select__option {
+  display: flex;
+  align-items: center;
+  gap: var(--single-spacing-sm);
   padding: var(--single-spacing-sm) var(--single-spacing-md);
   font-size: var(--single-font-size-base);
   color: var(--single-text-primary);
@@ -173,6 +186,7 @@
 
 .single-select__option--selected {
   background-color: var(--single-primary-light);
+  color: var(--single-primary);
   font-weight: var(--single-font-weight-medium);
 }
 
@@ -197,7 +211,51 @@
   background-color: transparent;
 }
 
-/* Error & Helper */
+/* Check mark on right (single mode) */
+.single-select__option-check {
+  margin-left: auto;
+  color: var(--single-primary);
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Multiple checkbox ───────────────────────────────────────────────────── */
+.single-select__checkbox {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--single-border-hover);
+  border-radius: var(--single-radius-sm);
+  background: var(--single-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--single-transition);
+}
+
+.single-select__checkbox--checked {
+  background: var(--single-primary);
+  border-color: var(--single-primary);
+  color: var(--single-text-on-primary);
+}
+
+/* ─── Chips scroll (multiple mode) ───────────────────────────────────────── */
+.single-select__chips-scroll {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
+  scrollbar-width: none; /* Firefox */
+}
+
+.single-select__chips-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* ─── Error & Helper ──────────────────────────────────────────────────────── */
 .single-select-error {
   font-size: var(--single-font-size-sm);
   color: var(--single-error);

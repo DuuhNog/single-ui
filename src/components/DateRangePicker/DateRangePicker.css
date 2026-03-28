@@ -107,8 +107,8 @@
 }
 
 .single-drp-picker-cell--selected {
-  background: var(--single-text-primary);
-  color: var(--single-background);
+  background: var(--single-primary);
+  color: var(--single-text-on-primary);
   font-weight: var(--single-font-weight-semibold);
 }
 
@@ -231,9 +231,9 @@
 
 /* ─── Range highlighting ──────────────────────────────────────────────────── */
 
-/* Days strictly between start and end: full-width gray band */
+/* Days strictly between start and end: full-width primary-light band */
 .single-drp-day--in-range {
-  background: var(--single-surface);
+  background: var(--single-primary-light);
 }
 
 .single-drp-day--in-range .single-drp-day-inner {
@@ -241,28 +241,28 @@
 }
 
 .single-drp-day--in-range:hover:not(:disabled) .single-drp-day-inner {
-  background: var(--single-surface-hover);
+  background: color-mix(in srgb, var(--single-primary) 15%, transparent);
 }
 
-/* Start: dark circle + range band on right half */
+/* Start: primary circle + range band on right half */
 .single-drp-day--range-start {
-  background: linear-gradient(to right, transparent 50%, var(--single-surface) 50%);
+  background: linear-gradient(to right, transparent 50%, var(--single-primary-light) 50%);
 }
 
 .single-drp-day--range-start .single-drp-day-inner {
-  background: var(--single-text-primary);
-  color: var(--single-background);
+  background: var(--single-primary);
+  color: var(--single-text-on-primary);
   font-weight: var(--single-font-weight-semibold);
 }
 
-/* End: dark circle + range band on left half */
+/* End: primary circle + range band on left half */
 .single-drp-day--range-end {
-  background: linear-gradient(to left, transparent 50%, var(--single-surface) 50%);
+  background: linear-gradient(to left, transparent 50%, var(--single-primary-light) 50%);
 }
 
 .single-drp-day--range-end .single-drp-day-inner {
-  background: var(--single-text-primary);
-  color: var(--single-background);
+  background: var(--single-primary);
+  color: var(--single-text-on-primary);
   font-weight: var(--single-font-weight-semibold);
 }
 

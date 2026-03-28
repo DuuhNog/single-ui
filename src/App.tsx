@@ -1,24 +1,30 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { clsx } from 'clsx'
-import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker } from './index'
+import { useForm, Controller } from 'react-hook-form'
+import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox } from './index'
 import type { TableColumn, DateRange } from './index'
 import './styles/tokens.css'
 
 type Page = 'home' | 'components'
-type Section = 'install' | 'button' | 'input' | 'card' | 'modal' | 'table' | 'select' | 'themes' | 'datepicker' | 'daterangepicker'
+type Section = 'install' | 'button' | 'input' | 'card' | 'modal' | 'table' | 'select' | 'themes' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'switch' | 'checkbox' | 'form'
 type Accent = 'orange' | 'blue' | 'red'
 
 const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'install', label: 'Como Instalar' },
   { id: 'themes', label: 'Temas' },
+  { id: 'form', label: 'Formulário (react-hook-form)' },
   { id: 'button', label: 'Button' },
   { id: 'input', label: 'Input' },
   { id: 'card', label: 'Card' },
   { id: 'modal', label: 'Modal' },
   { id: 'table', label: 'Table' },
   { id: 'select', label: 'Select' },
+  { id: 'switch', label: 'Switch' },
+  { id: 'checkbox', label: 'Checkbox' },
   { id: 'datepicker', label: 'DatePicker' },
   { id: 'daterangepicker', label: 'DateRangePicker' },
+  { id: 'datepickerinput', label: 'DatePickerInput' },
+  { id: 'daterangepickerinput', label: 'DateRangePickerInput' },
 ]
 
 const ACCENTS: { id: Accent; label: string; color: string; darkColor: string }[] = [
@@ -205,7 +211,7 @@ const FEATURES = [
 
 function HomePage({ onStart }: { onStart: () => void }) {
   const [modalOpen, setModalOpen] = useState(false)
-  const [selectValue, setSelectValue] = useState<string | number>('')
+  const [selectValue, setSelectValue] = useState<string | number | null>(null)
 
   interface ComponentRow { id: number; component: string; descricao: string; status: string }
 
@@ -327,7 +333,7 @@ function HomePage({ onStart }: { onStart: () => void }) {
                   searchable
                   clearable
                   value={selectValue}
-                  onChange={setSelectValue}
+                  onChange={v => setSelectValue(v as string | number | null)}
                   options={[
                     { value: 'react', label: 'React' },
                     { value: 'vue', label: 'Vue' },
@@ -406,8 +412,13 @@ function SectionHeader({ title, description }: { title: string; description: str
   )
 }
 
+function slugify(s: string) {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
 function StepTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-[0.9375rem] font-semibold text-stone-900 dark:text-stone-50 mt-8 mb-3">{children}</h3>
+  const id = typeof children === 'string' ? slugify(children) : undefined
+  return <h3 id={id} className="text-[0.9375rem] font-semibold text-stone-900 dark:text-stone-50 mt-8 mb-3 scroll-mt-6">{children}</h3>
 }
 
 function StepDesc({ children }: { children: React.ReactNode }) {
@@ -857,7 +868,7 @@ const columns: TableColumn<User>[] = [
 
 // ─── Select Section ───────────────────────────────────────────────────────────
 function SelectSection() {
-  const [val, setVal] = useState<string | number>('')
+  const [val, setVal] = useState<string | number | null>(null)
   return (
     <section id="select" className="py-[52px] [scroll-margin-top:76px]">
       <SectionHeader title="Select" description="Seleção customizada com busca, limpeza, opções desabilitadas e controle de valor." />
@@ -869,7 +880,7 @@ function SelectSection() {
             { value: 'sp', label: 'São Paulo' }, { value: 'rj', label: 'Rio de Janeiro' },
             { value: 'mg', label: 'Minas Gerais' }, { value: 'rs', label: 'Rio Grande do Sul' },
           ]} />
-          <Select label="Com busca e limpar" placeholder="Pesquise..." searchable clearable value={val} onChange={setVal}
+          <Select label="Com busca e limpar" placeholder="Pesquise..." searchable clearable value={val} onChange={v => setVal(v as string | number | null)}
             options={[
               { value: 'sp', label: 'São Paulo' }, { value: 'rj', label: 'Rio de Janeiro' },
               { value: 'mg', label: 'Minas Gerais' }, { value: 'rs', label: 'Rio Grande do Sul' },
@@ -1046,6 +1057,489 @@ const [range, setRange] = useState<DateRange>({ startDate: null, endDate: null }
   )
 }
 
+// ─── Switch Section ───────────────────────────────────────────────────────────
+function SwitchSection() {
+  const [on, setOn] = useState(false)
+  const [sm, setSm] = useState(true)
+  const [lg, setLg] = useState(false)
+  return (
+    <section id="switch" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="Switch"
+        description="Toggle switch acessível com três tamanhos, suporte a label, helper text e estado de erro."
+      />
+
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-4">
+        <Switch label="Modo escuro" checked={on} onChange={e => setOn(e.target.checked)} />
+        <Switch label="Desabilitado (on)" checked disabled />
+        <Switch label="Desabilitado (off)" disabled />
+        <Switch label="Com helper text" helperText="Ativa notificações por e-mail." checked={on} onChange={e => setOn(e.target.checked)} />
+        <Switch label="Label à esquerda" labelPosition="left" checked={on} onChange={e => setOn(e.target.checked)} />
+      </DemoBox>
+
+      <StepTitle>Tamanhos</StepTitle>
+      <DemoBox className="flex flex-col gap-4">
+        <Switch label="Small (sm)" size="sm" checked={sm} onChange={e => setSm(e.target.checked)} />
+        <Switch label="Medium (md) — padrão" size="md" checked={on} onChange={e => setOn(e.target.checked)} />
+        <Switch label="Large (lg)" size="lg" checked={lg} onChange={e => setLg(e.target.checked)} />
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Switch } from '@single-ui/react'
+
+const [enabled, setEnabled] = useState(false)
+
+<Switch
+  label="Ativar notificações"
+  checked={enabled}
+  onChange={e => setEnabled(e.target.checked)}
+/>
+
+// Com react-hook-form
+<Switch label="Aceito os termos" {...register('terms')} />`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'label', type: 'string', description: 'Texto do label' },
+        { name: 'labelPosition', type: "'left' | 'right'", default: "'right'", description: 'Posição do label em relação ao switch' },
+        { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Tamanho do switch' },
+        { name: 'checked', type: 'boolean', description: 'Estado controlado' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita o switch' },
+        { name: 'error', type: 'string', description: 'Mensagem de erro' },
+        { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
+        { name: 'onChange', type: 'ChangeEventHandler<HTMLInputElement>', description: 'Callback de mudança' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Checkbox Section ─────────────────────────────────────────────────────────
+function CheckboxSection() {
+  const [a, setA] = useState(false)
+  const [b, setB] = useState(true)
+  const [checked, setChecked] = useState<boolean[]>([true, false, false])
+
+  const allChecked = checked.every(Boolean)
+  const someChecked = checked.some(Boolean) && !allChecked
+
+  const toggleAll = () => {
+    const next = !allChecked
+    setChecked([next, next, next])
+  }
+
+  return (
+    <section id="checkbox" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="Checkbox"
+        description="Checkbox acessível com suporte a estado indeterminado, helper text e integração com react-hook-form."
+      />
+
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-3">
+        <Checkbox label="Aceito os termos de uso" checked={a} onChange={e => setA(e.target.checked)} />
+        <Checkbox label="Receber newsletter" checked={b} onChange={e => setB(e.target.checked)} />
+        <Checkbox label="Desabilitado" disabled />
+        <Checkbox label="Desabilitado e marcado" checked disabled />
+        <Checkbox label="Com helper text" helperText="Opcional, você pode desmarcar a qualquer momento." checked={a} onChange={e => setA(e.target.checked)} />
+      </DemoBox>
+
+      <StepTitle>Estado indeterminado</StepTitle>
+      <StepDesc>
+        O estado indeterminado (<IC>indeterminate</IC>) é útil para "selecionar todos" quando apenas alguns itens estão marcados.
+      </StepDesc>
+      <DemoBox className="flex flex-col gap-2">
+        <Checkbox
+          label="Selecionar todos"
+          checked={allChecked}
+          indeterminate={someChecked}
+          onChange={toggleAll}
+        />
+        <div className="ml-6 flex flex-col gap-2 mt-1">
+          {['Item A', 'Item B', 'Item C'].map((label, i) => (
+            <Checkbox
+              key={label}
+              label={label}
+              checked={checked[i]}
+              onChange={e => {
+                const next = [...checked]
+                next[i] = e.target.checked
+                setChecked(next)
+              }}
+            />
+          ))}
+        </div>
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Checkbox } from '@single-ui/react'
+
+const [agreed, setAgreed] = useState(false)
+
+<Checkbox
+  label="Aceito os termos"
+  checked={agreed}
+  onChange={e => setAgreed(e.target.checked)}
+/>
+
+// Indeterminado
+<Checkbox
+  label="Selecionar todos"
+  checked={allChecked}
+  indeterminate={someChecked}
+  onChange={toggleAll}
+/>`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'label', type: 'string', description: 'Texto do label' },
+        { name: 'checked', type: 'boolean', description: 'Estado controlado' },
+        { name: 'indeterminate', type: 'boolean', default: 'false', description: 'Exibe o estado indeterminado (traço) — útil para "selecionar todos"' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita o checkbox' },
+        { name: 'error', type: 'string', description: 'Mensagem de erro' },
+        { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
+        { name: 'onChange', type: 'ChangeEventHandler<HTMLInputElement>', description: 'Callback de mudança' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── DatePickerInput Section ──────────────────────────────────────────────────
+function DatePickerInputSection() {
+  const [date, setDate] = useState<Date | null>(null)
+  return (
+    <section id="datepickerinput" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="DatePickerInput"
+        description="Campo de input que abre um calendário ao ser clicado. Ao selecionar uma data o calendário fecha e o campo exibe a data formatada."
+      />
+
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-5 items-start">
+        <DatePickerInput
+          label="Data de nascimento"
+          value={date}
+          onChange={setDate}
+          clearable
+          helperText="Clique para abrir o calendário."
+        />
+        <DatePickerInput
+          label="Com erro"
+          value={date}
+          onChange={setDate}
+          error="Data inválida"
+        />
+        <DatePickerInput
+          label="Desabilitado"
+          value={new Date()}
+          disabled
+        />
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { DatePickerInput } from '@single-ui/react'
+
+const [date, setDate] = useState<Date | null>(null)
+
+<DatePickerInput
+  label="Data"
+  value={date}
+  onChange={setDate}
+  clearable
+/>`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'value', type: 'Date | null', description: 'Data selecionada (controlado)' },
+        { name: 'onChange', type: '(date: Date | null) => void', description: 'Callback ao selecionar ou limpar a data' },
+        { name: 'placeholder', type: 'string', default: "'Select date...'", description: 'Placeholder quando nenhuma data está selecionada' },
+        { name: 'label', type: 'string', description: 'Label do campo' },
+        { name: 'error', type: 'string', description: 'Mensagem de erro' },
+        { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita o campo' },
+        { name: 'clearable', type: 'boolean', description: 'Exibe botão para limpar a data' },
+        { name: 'fullWidth', type: 'boolean', description: 'Ocupa toda a largura disponível' },
+        { name: 'minDate', type: 'Date', description: 'Menor data permitida no calendário' },
+        { name: 'maxDate', type: 'Date', description: 'Maior data permitida no calendário' },
+        { name: 'dateFormat', type: '(date: Date) => string', description: 'Função de formatação customizada da data exibida no campo' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── DateRangePickerInput Section ─────────────────────────────────────────────
+function DateRangePickerInputSection() {
+  const [range, setRange] = useState<DateRange>({ startDate: null, endDate: null })
+  return (
+    <section id="daterangepickerinput" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="DateRangePickerInput"
+        description="Campo de input que abre o DateRangePicker (dois meses) ao ser clicado. O calendário fecha automaticamente quando início e fim são selecionados."
+      />
+
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-5 items-start">
+        <DateRangePickerInput
+          label="Período"
+          startDate={range.startDate}
+          endDate={range.endDate}
+          onChange={setRange}
+          clearable
+          helperText="Selecione data de início e fim."
+        />
+        <DateRangePickerInput
+          label="Desabilitado"
+          startDate={new Date()}
+          endDate={new Date(Date.now() + 7 * 86400000)}
+          disabled
+        />
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { DateRangePickerInput } from '@single-ui/react'
+import type { DateRange } from '@single-ui/react'
+
+const [range, setRange] = useState<DateRange>({ startDate: null, endDate: null })
+
+<DateRangePickerInput
+  label="Período"
+  startDate={range.startDate}
+  endDate={range.endDate}
+  onChange={setRange}
+  clearable
+/>`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'startDate', type: 'Date | null', description: 'Data de início (controlado)' },
+        { name: 'endDate', type: 'Date | null', description: 'Data de fim (controlado)' },
+        { name: 'onChange', type: '(range: DateRange) => void', description: 'Callback ao alterar o intervalo' },
+        { name: 'placeholder', type: 'string', default: "'Select date range...'", description: 'Placeholder quando nenhuma data está selecionada' },
+        { name: 'label', type: 'string', description: 'Label do campo' },
+        { name: 'error', type: 'string', description: 'Mensagem de erro' },
+        { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita o campo' },
+        { name: 'clearable', type: 'boolean', description: 'Exibe botão para limpar as datas' },
+        { name: 'fullWidth', type: 'boolean', description: 'Ocupa toda a largura disponível' },
+        { name: 'minDate', type: 'Date', description: 'Menor data permitida' },
+        { name: 'maxDate', type: 'Date', description: 'Maior data permitida' },
+        { name: 'dateFormat', type: '(date: Date) => string', description: 'Função de formatação customizada das datas exibidas no campo' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Form Section ─────────────────────────────────────────────────────────────
+interface FormValues {
+  name: string
+  email: string
+  framework: string | number | null
+  tags: (string | number)[]
+  birthdate: Date | null
+  newsletter: boolean
+  terms: boolean
+}
+
+function FormSection() {
+  const { control, register, handleSubmit, setValue, watch, formState: { errors, isSubmitSuccessful, isSubmitting } } = useForm<FormValues>({
+    defaultValues: { name: '', email: '', framework: null, tags: [], birthdate: null, newsletter: false, terms: false },
+  })
+
+  // Register controlled fields so react-hook-form can validate them
+  register('framework', { validate: v => v !== null || 'Selecione um framework' })
+  register('tags', { validate: v => (v as (string | number)[]).length > 0 || 'Selecione pelo menos uma tecnologia' })
+  register('birthdate', { validate: v => v !== null || 'Data de nascimento é obrigatória' })
+  register('terms', { validate: v => v === true || 'Você deve aceitar os termos de uso' })
+
+  const birthdate = watch('birthdate')
+  const framework = watch('framework')
+  const tags = watch('tags')
+  const newsletter = watch('newsletter')
+  const terms = watch('terms')
+  const [submitted, setSubmitted] = useState<FormValues | null>(null)
+
+  const onSubmit = (data: FormValues) => {
+    setSubmitted(data)
+  }
+
+  return (
+    <section id="form" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="Formulário com react-hook-form"
+        description="Integração dos componentes Single UI com react-hook-form. Todos os campos são obrigatórios. Select retorna null quando vazio (single) e [] quando vazio (múltiplo)."
+      />
+
+      <StepTitle>Demo completo</StepTitle>
+      <DemoBox>
+        {isSubmitSuccessful && submitted ? (
+          <div className="flex flex-col gap-3">
+            <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Formulário enviado com sucesso!</p>
+            <pre className="text-xs bg-stone-950 text-stone-200 p-4 rounded-lg overflow-x-auto">{JSON.stringify({ ...submitted, birthdate: submitted.birthdate?.toLocaleDateString('pt-BR') ?? null }, null, 2)}</pre>
+            <Button variant="secondary" size="sm" onClick={() => setSubmitted(null)}>Resetar</Button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: 'Nome é obrigatório' }}
+              render={({ field }) => (
+                <Input
+                  label="Nome completo *"
+                  placeholder="João Silva"
+                  error={errors.name?.message}
+                  value={field.value}
+                  onChange={(v) => field.onChange(v)}
+                />
+              )}
+            />
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: 'E-mail é obrigatório',
+                pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'E-mail inválido' },
+              }}
+              render={({ field }) => (
+                <Input
+                  label="E-mail *"
+                  placeholder="joao@exemplo.com"
+                  error={errors.email?.message}
+                  value={field.value}
+                  onChange={(v) => field.onChange(v)}
+                />
+              )}
+            />
+            <Select
+              label="Framework favorito *"
+              placeholder="Selecione..."
+              searchable
+              clearable
+              value={framework}
+              onChange={v => setValue('framework', v as string | number | null, { shouldValidate: true })}
+              error={errors.framework?.message}
+              options={[
+                { value: 'react', label: 'React' },
+                { value: 'vue', label: 'Vue' },
+                { value: 'angular', label: 'Angular' },
+                { value: 'svelte', label: 'Svelte' },
+              ]}
+            />
+            <Select
+              label="Tecnologias *"
+              placeholder="Selecione uma ou mais..."
+              multiple
+              clearable
+              value={tags}
+              onChange={v => setValue('tags', v as (string | number)[], { shouldValidate: true })}
+              error={errors.tags?.message}
+              options={[
+                { value: 'ts', label: 'TypeScript' },
+                { value: 'css', label: 'CSS' },
+                { value: 'node', label: 'Node.js' },
+                { value: 'docker', label: 'Docker' },
+                { value: 'graphql', label: 'GraphQL' },
+              ]}
+            />
+            <DatePickerInput
+              label="Data de nascimento *"
+              value={birthdate}
+              onChange={d => setValue('birthdate', d, { shouldValidate: true })}
+              clearable
+              error={errors.birthdate?.message}
+            />
+            <Switch
+              label="Receber newsletter"
+              checked={newsletter}
+              onChange={e => setValue('newsletter', e.target.checked)}
+            />
+            <Checkbox
+              label="Concordo com os termos de uso *"
+              checked={terms}
+              onChange={e => setValue('terms', e.target.checked, { shouldValidate: true })}
+              error={errors.terms?.message}
+            />
+            <Button type="submit" loading={isSubmitting}>Enviar formulário</Button>
+          </form>
+        )}
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { useForm, Controller } from 'react-hook-form'
+import { Input, Select, DatePickerInput, Switch, Checkbox, Button } from '@single-ui/react'
+
+interface FormValues {
+  name: string
+  email: string
+  framework: string | number | null  // null quando vazio (single)
+  tags: (string | number)[]          // [] quando vazio (multiple)
+  birthdate: Date | null
+  newsletter: boolean
+  terms: boolean
+}
+
+function MyForm() {
+  const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormValues>({
+    defaultValues: { name: '', email: '', framework: null, tags: [], birthdate: null, newsletter: false, terms: false },
+  })
+
+  return (
+    <form onSubmit={handleSubmit(data => console.log(data))}>
+      {/* Input — use Controller para compatibilidade com onChange customizado */}
+      <Controller
+        name="name"
+        control={control}
+        rules={{ required: 'Obrigatório' }}
+        render={({ field }) => (
+          <Input label="Nome" error={errors.name?.message}
+            value={field.value} onChange={v => field.onChange(v)} />
+        )}
+      />
+
+      {/* Select single — retorna null quando limpo */}
+      <Select
+        label="Framework"
+        value={watch('framework')}
+        onChange={v => setValue('framework', v as string | number | null, { shouldValidate: true })}
+        clearable
+        options={[...]}
+      />
+
+      {/* Select múltiplo — retorna [] quando vazio */}
+      <Select
+        label="Tags"
+        multiple
+        value={watch('tags')}
+        onChange={v => setValue('tags', v as (string | number)[], { shouldValidate: true })}
+        options={[...]}
+      />
+
+      {/* DatePickerInput */}
+      <DatePickerInput
+        label="Data"
+        value={watch('birthdate')}
+        onChange={d => setValue('birthdate', d)}
+        clearable
+      />
+
+      <Switch label="Newsletter" checked={watch('newsletter')}
+        onChange={e => setValue('newsletter', e.target.checked)} />
+
+      <Checkbox label="Aceito os termos" checked={watch('terms')}
+        onChange={e => setValue('terms', e.target.checked, { shouldValidate: true })} />
+
+      <Button type="submit">Enviar</Button>
+    </form>
+  )
+}`} />
+
+      <InfoBox>
+        <strong className="text-stone-700 dark:text-stone-300">Select null/[]:</strong> Single select retorna <IC>null</IC> quando nada está selecionado (ou ao limpar). Multiple select retorna <IC>[]</IC> quando nada está selecionado. Use <IC>Controller</IC> do react-hook-form para o <IC>Input</IC>, pois seu <IC>onChange</IC> tem assinatura customizada.
+      </InfoBox>
+    </section>
+  )
+}
+
 // ─── Themes Section ───────────────────────────────────────────────────────────
 function ThemesSection() {
   return (
@@ -1133,99 +1627,283 @@ useEffect(() => {
   )
 }
 
+// ─── MenuIcon ─────────────────────────────────────────────────────────────────
+function MenuIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  )
+}
+
+function XIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  )
+}
+
+// ─── TOC data per section ──────────────────────────────────────────────────────
+type TocItem = { id: string; label: string }
+const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
+  install: [
+    { id: '1-instale-o-pacote', label: '1. Instale o pacote' },
+    { id: '2-importe-os-estilos', label: '2. Importe os estilos' },
+    { id: '3-use-os-componentes', label: '3. Use os componentes' },
+    { id: '4-dark-mode-opcional', label: '4. Dark Mode' },
+  ],
+  themes: [
+    { id: 'dark-light-mode', label: 'Dark / Light Mode' },
+    { id: 'temas-de-cor-accent', label: 'Temas de cor' },
+    { id: 'variaveis-css-sobrescritas-por-accent', label: 'Variáveis CSS' },
+    { id: 'demo-ao-vivo', label: 'Demo ao vivo' },
+  ],
+  button: [
+    { id: 'variantes', label: 'Variantes' },
+    { id: 'tamanhos', label: 'Tamanhos' },
+    { id: 'estados', label: 'Estados' },
+    { id: 'com-icone', label: 'Com ícone' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  input: [
+    { id: 'basico', label: 'Básico' },
+    { id: 'mascaras', label: 'Máscaras' },
+    { id: 'estado-de-erro', label: 'Estado de erro' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  card: [
+    { id: 'variacoes', label: 'Variações' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  modal: [
+    { id: 'tamanhos', label: 'Tamanhos' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  table: [
+    { id: 'demo-interativo', label: 'Demo interativo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+    { id: 'tablecolumn', label: 'TableColumn' },
+  ],
+  select: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  datepicker: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'com-limites-de-data', label: 'Com limites de data' },
+    { id: 'props', label: 'Props' },
+  ],
+  daterangepicker: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  datepickerinput: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  daterangepickerinput: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  switch: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'tamanhos', label: 'Tamanhos' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  checkbox: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'estado-indeterminado', label: 'Indeterminate' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  form: [
+    { id: 'demo-completo', label: 'Demo completo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+  ],
+}
+
+const GUIDE_ITEMS: Section[] = ['install', 'themes', 'form']
+const COMPONENT_ITEMS: Section[] = ['button', 'input', 'card', 'modal', 'table', 'select', 'switch', 'checkbox', 'datepicker', 'daterangepicker', 'datepickerinput', 'daterangepickerinput']
+
 // ─── Components Page ──────────────────────────────────────────────────────────
 function ComponentsPage({ initialSection }: { initialSection: Section }) {
   const [activeSection, setActiveSection] = useState<Section>(initialSection)
+  const [activeTocId, setActiveTocId] = useState<string>(SECTION_TOC[initialSection]?.[0]?.id ?? '')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const mainRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const el = document.getElementById(initialSection)
-    if (el && initialSection !== 'install') {
-      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80)
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const sectionLabel = (id: Section) => SIDEBAR_ITEMS.find(i => i.id === id)?.label ?? id
 
+  const navigate = (id: Section) => {
+    setActiveSection(id)
+    setSidebarOpen(false)
+    if (mainRef.current) mainRef.current.scrollTop = 0
+    setActiveTocId(SECTION_TOC[id]?.[0]?.id ?? '')
+  }
+
+  // Track active TOC heading as user scrolls within main
   useEffect(() => {
+    const el = mainRef.current
+    if (!el) return
+    const toc = SECTION_TOC[activeSection] ?? []
     const handleScroll = () => {
-      let current: Section = 'install'
-      for (const { id } of SIDEBAR_ITEMS) {
-        const el = document.getElementById(id)
-        if (el && el.getBoundingClientRect().top <= 90) current = id
+      let current = toc[0]?.id ?? ''
+      for (const { id } of toc) {
+        const heading = document.getElementById(id)
+        if (heading && heading.getBoundingClientRect().top <= 120) current = id
       }
-      setActiveSection(current)
+      setActiveTocId(current)
     }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    el.addEventListener('scroll', handleScroll, { passive: true })
+    return () => el.removeEventListener('scroll', handleScroll)
+  }, [activeSection])
 
-  const scrollTo = (id: Section) => {
+  const scrollToToc = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  const linkClass = (id: Section) => clsx(
-    'text-left w-full bg-transparent border-0 cursor-pointer px-2.5 py-2 rounded-lg text-sm font-medium transition-colors',
+  const navLinkClass = (id: Section) => clsx(
+    'text-left w-full bg-transparent border-0 cursor-pointer px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
     activeSection === id
-      ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 font-semibold'
+      ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30'
       : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800/60'
   )
 
+  const sections: Record<Section, () => JSX.Element> = {
+    install: InstallSection,
+    themes: ThemesSection,
+    form: FormSection,
+    button: ButtonSection,
+    input: InputSection,
+    card: CardSection,
+    modal: ModalSection,
+    table: TableSection,
+    select: SelectSection,
+    switch: SwitchSection,
+    checkbox: CheckboxSection,
+    datepicker: DatePickerSection,
+    daterangepicker: DateRangePickerSection,
+    datepickerinput: DatePickerInputSection,
+    daterangepickerinput: DateRangePickerInputSection,
+  }
+  const ActiveSection = sections[activeSection]
+  const toc = SECTION_TOC[activeSection] ?? []
+
+  const SidebarContent = () => (
+    <div className="py-6 px-3 flex flex-col gap-5">
+      <div className="flex flex-col gap-0.5">
+        <span className="text-[0.65rem] font-bold uppercase tracking-widest text-stone-400 dark:text-stone-600 px-3 pb-1.5">
+          Guia
+        </span>
+        {GUIDE_ITEMS.map(id => (
+          <button key={id} className={navLinkClass(id)} onClick={() => navigate(id)}>
+            {sectionLabel(id)}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-[0.65rem] font-bold uppercase tracking-widest text-stone-400 dark:text-stone-600 px-3 pb-1.5">
+          Componentes
+        </span>
+        {COMPONENT_ITEMS.map(id => (
+          <button key={id} className={navLinkClass(id)} onClick={() => navigate(id)}>
+            {sectionLabel(id)}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+
   return (
-    <div className="flex min-h-[calc(100vh-60px)] bg-stone-50 dark:bg-stone-950">
-      {/* Sidebar — desktop */}
-      <aside className="hidden md:block w-[220px] shrink-0 border-r border-stone-200 dark:border-stone-800 sticky top-[60px] h-[calc(100vh-60px)] overflow-y-auto">
-        <div className="py-7 px-3 flex flex-col gap-6">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[0.65rem] font-bold uppercase tracking-widest text-stone-400 dark:text-stone-600 px-2.5 pb-2">
-              Guia
-            </span>
-            <button className={linkClass('install')} onClick={() => scrollTo('install')}>
-              Como Instalar
-            </button>
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[0.65rem] font-bold uppercase tracking-widest text-stone-400 dark:text-stone-600 px-2.5 pb-2">
-              Componentes
-            </span>
-            {SIDEBAR_ITEMS.filter(i => i.id !== 'install').map(item => (
-              <button key={item.id} className={linkClass(item.id)} onClick={() => scrollTo(item.id)}>
-                {item.label}
-              </button>
-            ))}
-          </div>
+    <div className="flex flex-col bg-stone-50 dark:bg-stone-950" style={{ height: 'calc(100vh - 60px)' }}>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Mobile slide-in sidebar */}
+      <aside className={clsx(
+        'fixed top-0 left-0 bottom-0 z-50 w-[260px] bg-stone-50 dark:bg-stone-950 border-r border-stone-200 dark:border-stone-800 overflow-y-auto transition-transform duration-200 md:hidden pt-[60px]',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      )}>
+        <div className="flex justify-end px-3 pt-2">
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="p-1.5 rounded-lg text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800 border-0 bg-transparent cursor-pointer"
+            aria-label="Fechar menu"
+          >
+            <XIcon />
+          </button>
         </div>
+        <SidebarContent />
       </aside>
 
-      <div className="flex-1 min-w-0 flex flex-col">
-        {/* Nav horizontal mobile */}
-        <div className="md:hidden overflow-x-auto no-scrollbar flex gap-1 px-4 py-2 border-b border-stone-200 dark:border-stone-800 sticky top-[60px] z-10 bg-stone-50 dark:bg-stone-950">
-          {SIDEBAR_ITEMS.map(item => (
-            <button
-              key={item.id}
-              onClick={() => scrollTo(item.id)}
-              className={clsx(
-                'shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors bg-transparent border-0 cursor-pointer',
-                activeSection === item.id
-                  ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 font-semibold'
-                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50'
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+      {/* Mobile top bar */}
+      <div className="md:hidden shrink-0 flex items-center gap-3 px-4 py-2.5 border-b border-stone-200 dark:border-stone-800 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-sm">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="p-1.5 rounded-lg text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700 bg-transparent cursor-pointer flex items-center gap-1.5 text-sm font-medium"
+        >
+          <MenuIcon />
+          Menu
+        </button>
+        <span className="text-stone-300 dark:text-stone-700">/</span>
+        <span className="text-sm font-medium text-stone-700 dark:text-stone-300 truncate">{sectionLabel(activeSection)}</span>
+      </div>
 
-        {/* Content */}
-        <main className="flex-1 max-w-[860px] px-4 sm:px-8 lg:px-[52px] pb-24">
-          <InstallSection />
-          <ThemesSection />
-          <ButtonSection />
-          <InputSection />
-          <CardSection />
-          <ModalSection />
-          <TableSection />
-          <SelectSection />
-          <DatePickerSection />
-          <DateRangePickerSection />
+      {/* Three-column content row */}
+      <div className="flex flex-1 min-h-0">
+        {/* Left sidebar — desktop */}
+        <aside className="hidden md:block w-[240px] shrink-0 border-r border-stone-200 dark:border-stone-800 overflow-y-auto">
+          <SidebarContent />
+        </aside>
+
+        {/* Main scrollable article */}
+        <main ref={mainRef} className="flex-1 min-w-0 overflow-y-auto">
+          <div className="max-w-[760px] mx-auto px-4 sm:px-8 lg:px-14 pb-24 pt-2">
+            <ActiveSection />
+          </div>
         </main>
+
+        {/* Right TOC — xl screens */}
+        {toc.length > 0 && (
+          <aside className="hidden xl:flex flex-col w-[220px] shrink-0 border-l border-stone-200 dark:border-stone-800 overflow-y-auto">
+            <div className="py-8 px-5 sticky top-0">
+              <p className="text-[0.65rem] font-bold uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-3">
+                On This Page
+              </p>
+              <ul className="flex flex-col gap-0.5">
+                {toc.map(item => (
+                  <li key={item.id}>
+                    <button
+                      onClick={() => scrollToToc(item.id)}
+                      className={clsx(
+                        'text-left w-full bg-transparent border-0 cursor-pointer text-sm py-1 transition-colors leading-snug',
+                        activeTocId === item.id
+                          ? 'text-amber-600 dark:text-amber-400 font-medium'
+                          : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50'
+                      )}
+                    >
+                      {item.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   )

@@ -1,0 +1,91 @@
+.single-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--single-font-family);
+  font-weight: var(--single-font-weight-medium);
+  border-radius: var(--single-radius-full);
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ─── Sizes ──────────────────────────────────────────────────────────────── */
+.single-chip--sm {
+  font-size: var(--single-font-size-xs);
+  padding: 2px 8px;
+  gap: 3px;
+}
+
+.single-chip--md {
+  font-size: var(--single-font-size-sm);
+  padding: 4px 10px;
+}
+
+/* ─── Variants ───────────────────────────────────────────────────────────── */
+.single-chip--default {
+  background-color: var(--single-surface);
+  color: var(--single-text-secondary);
+  border: 1px solid var(--single-border);
+}
+
+.single-chip--primary {
+  background-color: var(--single-primary-light);
+  color: var(--single-primary);
+  border: 1px solid color-mix(in srgb, var(--single-primary) 25%, transparent);
+}
+
+.single-chip--secondary {
+  background-color: var(--single-surface);
+  color: var(--single-text-secondary);
+  border: 1px solid var(--single-border-hover);
+}
+
+.single-chip--success {
+  background-color: var(--single-success-light);
+  color: var(--single-success);
+  border: 1px solid color-mix(in srgb, var(--single-success) 25%, transparent);
+}
+
+.single-chip--warning {
+  background-color: var(--single-warning-light);
+  color: var(--single-warning);
+  border: 1px solid color-mix(in srgb, var(--single-warning) 25%, transparent);
+}
+
+.single-chip--error {
+  background-color: var(--single-error-light);
+  color: var(--single-error);
+  border: 1px solid color-mix(in srgb, var(--single-error) 25%, transparent);
+}
+
+.single-chip--info {
+  background-color: var(--single-info-light);
+  color: var(--single-info);
+  border: 1px solid color-mix(in srgb, var(--single-info) 25%, transparent);
+}
+
+/* ─── Label ──────────────────────────────────────────────────────────────── */
+.single-chip__label {
+  line-height: 1;
+}
+
+/* ─── Remove button ──────────────────────────────────────────────────────── */
+.single-chip__remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  border-radius: var(--single-radius-full);
+  transition: opacity var(--single-transition);
+  line-height: 1;
+}
+
+.single-chip__remove:hover {
+  opacity: 1;
+}
