@@ -20,6 +20,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:showcase": "vite build --config vite.showcase.config.ts",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",

@@ -1,0 +1,6 @@
+{
+  "buildCommand": "vite build --config vite.showcase.config.ts",
+  "outputDirectory": "dist-showcase",
+  "installCommand": "npm install",
+  "framework": null
+}
