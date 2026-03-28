@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* Dark mode ativado pelo atributo data-theme="dark" no elemento raiz */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Remove scrollbar da nav mobile sem perder funcionalidade */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

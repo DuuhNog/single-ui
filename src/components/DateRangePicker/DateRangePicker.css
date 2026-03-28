@@ -1,0 +1,272 @@
+.single-drp {
+  display: inline-flex;
+  flex-direction: column;
+  background: var(--single-background);
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-xl);
+  padding: var(--single-spacing-lg);
+  box-shadow: var(--single-shadow-md);
+  user-select: none;
+}
+
+/* ─── Global header (nav arrows + period label for months/years view) ─────── */
+.single-drp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--single-spacing-xs);
+  margin-bottom: var(--single-spacing-sm);
+}
+
+.single-drp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: var(--single-text-secondary);
+  border-radius: var(--single-radius-md);
+  transition: all var(--single-transition);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.single-drp-nav:hover:not(:disabled) {
+  background: var(--single-surface-hover);
+  color: var(--single-text-primary);
+}
+
+.single-drp-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.single-drp-period-btn {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-base);
+  font-weight: var(--single-font-weight-semibold);
+  color: var(--single-text-primary);
+  padding: var(--single-spacing-xs) var(--single-spacing-sm);
+  border-radius: var(--single-radius-md);
+  transition: background var(--single-transition);
+  text-align: center;
+}
+
+.single-drp-period-btn:hover {
+  background: var(--single-surface-hover);
+  color: var(--single-primary);
+}
+
+/* ─── Picker grids (months/years mode) ───────────────────────────────────── */
+.single-drp-picker-grid {
+  display: grid;
+  gap: var(--single-spacing-xs);
+  padding: var(--single-spacing-xs) 0;
+}
+
+.single-drp-picker-grid--months {
+  grid-template-columns: repeat(3, 1fr);
+  min-width: 280px;
+}
+
+.single-drp-picker-grid--years {
+  grid-template-columns: repeat(4, 1fr);
+  min-width: 320px;
+}
+
+.single-drp-picker-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--single-spacing-sm);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-sm);
+  color: var(--single-text-primary);
+  border-radius: var(--single-radius-md);
+  transition: background var(--single-transition), color var(--single-transition);
+}
+
+.single-drp-picker-cell:hover {
+  background: var(--single-surface-hover);
+}
+
+.single-drp-picker-cell--current {
+  color: var(--single-primary);
+  font-weight: var(--single-font-weight-bold);
+}
+
+.single-drp-picker-cell--selected {
+  background: var(--single-text-primary);
+  color: var(--single-background);
+  font-weight: var(--single-font-weight-semibold);
+}
+
+/* ─── Two-calendar layout ────────────────────────────────────────────────── */
+.single-drp-calendars {
+  display: flex;
+  gap: 0;
+}
+
+.single-drp-divider {
+  width: 1px;
+  background: var(--single-border);
+  margin: 0 var(--single-spacing-lg);
+  flex-shrink: 0;
+}
+
+/* ─── Individual calendar panel ──────────────────────────────────────────── */
+.single-drp-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--single-spacing-sm);
+  min-width: 252px;
+}
+
+.single-drp-cal-header {
+  display: flex;
+  justify-content: center;
+  gap: var(--single-spacing-xs);
+  margin-bottom: var(--single-spacing-xs);
+}
+
+.single-drp-header-btn {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-base);
+  font-weight: var(--single-font-weight-semibold);
+  color: var(--single-text-primary);
+  padding: var(--single-spacing-xs) var(--single-spacing-sm);
+  border-radius: var(--single-radius-md);
+  transition: background var(--single-transition);
+  line-height: 1.4;
+}
+
+.single-drp-header-btn:hover {
+  background: var(--single-surface-hover);
+  color: var(--single-primary);
+}
+
+/* ─── Weekdays ───────────────────────────────────────────────────────────── */
+.single-drp-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.single-drp-weekday {
+  text-align: center;
+  font-size: var(--single-font-size-xs);
+  font-weight: var(--single-font-weight-semibold);
+  color: var(--single-text-disabled);
+  padding: var(--single-spacing-xs) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Days grid ──────────────────────────────────────────────────────────── */
+.single-drp-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+}
+
+/* Day button */
+.single-drp-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-sm);
+  color: var(--single-text-primary);
+  padding: 2px 0;
+  position: relative;
+  transition: color var(--single-transition);
+}
+
+.single-drp-day-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--single-radius-full);
+  position: relative;
+  z-index: 1;
+  transition: background var(--single-transition), color var(--single-transition);
+  font-size: var(--single-font-size-sm);
+}
+
+.single-drp-day--other-month {
+  color: var(--single-text-disabled);
+}
+
+.single-drp-day--today .single-drp-day-inner {
+  font-weight: var(--single-font-weight-bold);
+  color: var(--single-primary);
+}
+
+.single-drp-day:hover:not(:disabled) .single-drp-day-inner {
+  background: var(--single-surface-hover);
+}
+
+.single-drp-day--disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── Range highlighting ──────────────────────────────────────────────────── */
+
+/* Days strictly between start and end: full-width gray band */
+.single-drp-day--in-range {
+  background: var(--single-surface);
+}
+
+.single-drp-day--in-range .single-drp-day-inner {
+  background: transparent;
+}
+
+.single-drp-day--in-range:hover:not(:disabled) .single-drp-day-inner {
+  background: var(--single-surface-hover);
+}
+
+/* Start: dark circle + range band on right half */
+.single-drp-day--range-start {
+  background: linear-gradient(to right, transparent 50%, var(--single-surface) 50%);
+}
+
+.single-drp-day--range-start .single-drp-day-inner {
+  background: var(--single-text-primary);
+  color: var(--single-background);
+  font-weight: var(--single-font-weight-semibold);
+}
+
+/* End: dark circle + range band on left half */
+.single-drp-day--range-end {
+  background: linear-gradient(to left, transparent 50%, var(--single-surface) 50%);
+}
+
+.single-drp-day--range-end .single-drp-day-inner {
+  background: var(--single-text-primary);
+  color: var(--single-background);
+  font-weight: var(--single-font-weight-semibold);
+}
+
+/* When start === end (single day selected), no range band */
+.single-drp-day--range-start.single-drp-day--range-end {
+  background: transparent;
+}

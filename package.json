@@ -1,0 +1,74 @@
+{
+  "name": "@single-ui/react",
+  "version": "1.0.0",
+  "description": "Modern React UI component library built with Vite and TypeScript",
+  "type": "module",
+  "main": "./dist/single-ui-react.umd.cjs",
+  "module": "./dist/single-ui-react.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/single-ui-react.js",
+      "require": "./dist/single-ui-react.umd.cjs"
+    },
+    "./styles": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "react",
+    "ui",
+    "components",
+    "design-system",
+    "typescript",
+    "vite",
+    "atomic-design",
+    "dark-mode"
+  ],
+  "author": "Eduardo Nogueira - EN Technology Ltda",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/single-ui-react"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^15.0.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.0.0",
+    "jsdom": "^25.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^4.0.0",
+    "vitest": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  },
+  "dependencies": {
+    "clsx": "^2.0.0"
+  }
+}
