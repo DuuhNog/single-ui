@@ -9,8 +9,9 @@ export default defineConfig({
     tailwindcss(),
     react(),
     dts({
-      include: ['src/**/*'],
-      exclude: ['src/**/*.test.tsx', 'src/**/*.stories.tsx'],
+      include: ['src/index.ts', 'src/components/**/*', 'src/hooks/**/*'],
+      exclude: ['src/**/*.test.tsx', 'src/**/*.stories.tsx', 'src/App.tsx', 'src/main.tsx', 'src/test/**/*'],
+      rollupTypes: true,
     }),
   ],
   build: {
@@ -28,6 +29,7 @@ export default defineConfig({
           'react-dom': 'ReactDOM',
           'react/jsx-runtime': 'jsxRuntime',
         },
+        assetFileNames: () => 'style.css',
       },
     },
     sourcemap: true,

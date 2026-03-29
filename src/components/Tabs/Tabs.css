@@ -1,0 +1,159 @@
+/* ─── Tabs root ──────────────────────────────────────────────────────────────── */
+
+.single-tabs {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--single-font-family);
+}
+
+/* ─── Tab list ───────────────────────────────────────────────────────────────── */
+
+.single-tabs__list {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+}
+
+/* underline variant: bottom border track */
+.single-tabs__list--underline {
+  border-bottom: 1px solid var(--single-border);
+}
+
+/* pills variant: pill container background */
+.single-tabs__list--pills {
+  gap: var(--single-spacing-xs);
+  background-color: var(--single-surface);
+  border-radius: var(--single-radius-lg);
+  padding: var(--single-spacing-xs);
+}
+
+/* ─── Tab button ─────────────────────────────────────────────────────────────── */
+
+.single-tabs__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--single-spacing-xs);
+  padding: var(--single-spacing-sm) var(--single-spacing-lg);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-sm);
+  font-weight: var(--single-font-weight-medium);
+  color: var(--single-text-secondary);
+  transition: color var(--single-transition), background-color var(--single-transition);
+  white-space: nowrap;
+  border-radius: 0;
+  z-index: 1;
+}
+
+.single-tabs__tab:focus-visible {
+  outline: 2px solid var(--single-primary);
+  outline-offset: -2px;
+  border-radius: var(--single-radius-sm);
+}
+
+/* underline tab hover */
+.single-tabs__tab--underline:hover:not(.single-tabs__tab--disabled) {
+  color: var(--single-text-primary);
+}
+
+/* underline active */
+.single-tabs__tab--underline.single-tabs__tab--active {
+  color: var(--single-primary);
+  font-weight: var(--single-font-weight-semibold);
+}
+
+/* pills tab hover */
+.single-tabs__tab--pills:hover:not(.single-tabs__tab--disabled):not(.single-tabs__tab--active) {
+  color: var(--single-text-primary);
+  background-color: var(--single-surface-hover);
+  border-radius: var(--single-radius-md);
+}
+
+/* pills active */
+.single-tabs__tab--pills.single-tabs__tab--active {
+  color: var(--single-text-primary);
+  font-weight: var(--single-font-weight-semibold);
+}
+
+/* disabled */
+.single-tabs__tab--disabled {
+  color: var(--single-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ─── Badge ──────────────────────────────────────────────────────────────────── */
+
+.single-tabs__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--single-spacing-xs);
+  border-radius: var(--single-radius-full);
+  font-size: var(--single-font-size-xs);
+  font-weight: var(--single-font-weight-semibold);
+  line-height: 1;
+  background-color: var(--single-surface-hover);
+  color: var(--single-text-secondary);
+  transition: background-color var(--single-transition), color var(--single-transition);
+}
+
+.single-tabs__badge--active {
+  background-color: var(--single-primary-light);
+  color: var(--single-primary);
+}
+
+/* ─── Sliding indicator ──────────────────────────────────────────────────────── */
+
+.single-tabs__indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transition: transform var(--single-transition), width var(--single-transition);
+  pointer-events: none;
+}
+
+/* underline: 2px bottom line */
+.single-tabs__indicator--underline {
+  height: 2px;
+  background-color: var(--single-primary);
+  border-radius: var(--single-radius-full) var(--single-radius-full) 0 0;
+  bottom: -1px; /* sit on the border */
+}
+
+/* pills: full pill background behind active tab */
+.single-tabs__indicator--pills {
+  top: 0;
+  bottom: 0;
+  height: auto;
+  background-color: var(--single-background);
+  border-radius: var(--single-radius-md);
+  box-shadow: var(--single-shadow-sm);
+  border: 1px solid var(--single-border);
+  z-index: 0;
+}
+
+/* ─── Panel ──────────────────────────────────────────────────────────────────── */
+
+.single-tabs__panel {
+  padding-top: var(--single-spacing-lg);
+  color: var(--single-text-primary);
+  font-size: var(--single-font-size-base);
+  line-height: 1.6;
+}
+
+.single-tabs__panel[hidden] {
+  display: none;
+}
+
+/* ─── Dark mode adjustments ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .single-tabs__indicator--pills {
+  background-color: var(--single-surface-hover);
+}

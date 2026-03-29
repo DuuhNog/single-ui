@@ -9,6 +9,7 @@ export interface TableColumn<T = any> {
   align?: 'left' | 'center' | 'right';
   sortable?: boolean;
   render?: (value: any, row: T, index: number) => React.ReactNode;
+  renderHeader?: () => React.ReactNode;
 }
 
 export interface TableProps<T = any> {
@@ -83,7 +84,7 @@ export function Table<T = any>({
                 onClick={() => handleSort(column)}
               >
                 <div className="single-table__header-content">
-                  <span>{column.label}</span>
+                  {column.renderHeader ? column.renderHeader() : <span>{column.label}</span>}
                   {column.sortable && (
                     <span className="single-table__sort-icon">
                       {sortColumn === column.key ? (
@@ -102,12 +103,11 @@ export function Table<T = any>({
         <tbody className="single-table__body">
           {loading ? (
             <tr>
-              <td
-                colSpan={columns.length}
-                className="single-table__loading"
-              >
-                <div className="single-table__spinner" />
-                <span>Carregando...</span>
+              <td colSpan={columns.length} className="single-table__loading-cell">
+                <div className="single-table__loading">
+                  <div className="single-table__spinner" />
+                  <span>Carregando...</span>
+                </div>
               </td>
             </tr>
           ) : sortedData.length === 0 ? (

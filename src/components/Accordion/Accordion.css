@@ -1,0 +1,160 @@
+/* ─── Accordion ──────────────────────────────────────────────────────────────── */
+
+.single-accordion {
+  font-family: var(--single-font-family);
+  width: 100%;
+}
+
+/* ── Variant: default (shared container with dividers + outer border) ─────── */
+
+.single-accordion--default {
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-xl);
+  overflow: hidden;
+}
+
+.single-accordion--default .single-accordion__item + .single-accordion__item {
+  border-top: 1px solid var(--single-border);
+}
+
+/* ── Variant: bordered (each item has its own border) ───────────────────────── */
+
+.single-accordion--bordered {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.single-accordion--bordered .single-accordion__item--bordered {
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-xl);
+  overflow: hidden;
+  margin-bottom: var(--single-spacing-xs);
+}
+
+.single-accordion--bordered .single-accordion__item--bordered:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Variant: separated (each item is a card with gap) ──────────────────────── */
+
+.single-accordion--separated {
+  display: flex;
+  flex-direction: column;
+  gap: var(--single-spacing-sm);
+}
+
+.single-accordion--separated .single-accordion__item--separated {
+  background: var(--single-surface);
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-xl);
+  box-shadow: var(--single-shadow-sm);
+  overflow: hidden;
+}
+
+/* ── Trigger ────────────────────────────────────────────────────────────────── */
+
+.single-accordion__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--single-spacing-md) var(--single-spacing-lg);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-sm);
+  font-weight: var(--single-font-weight-medium);
+  color: var(--single-text-primary);
+  transition: background var(--single-transition), color var(--single-transition);
+  gap: var(--single-spacing-sm);
+}
+
+.single-accordion__trigger:hover:not(:disabled) {
+  background: var(--single-surface-hover);
+}
+
+.single-accordion__trigger:focus-visible {
+  outline: 2px solid var(--single-primary);
+  outline-offset: -2px;
+}
+
+.single-accordion__trigger:disabled {
+  cursor: not-allowed;
+  color: var(--single-text-disabled);
+  opacity: 0.6;
+}
+
+/* ── Trigger label + badge ──────────────────────────────────────────────────── */
+
+.single-accordion__trigger-label {
+  display: flex;
+  align-items: center;
+  gap: var(--single-spacing-sm);
+  flex: 1;
+}
+
+.single-accordion__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--single-spacing-xs);
+  font-size: var(--single-font-size-xs);
+  font-weight: var(--single-font-weight-semibold);
+  line-height: 1;
+  background: var(--single-primary-light);
+  color: var(--single-primary);
+  border-radius: var(--single-radius-full);
+}
+
+/* ── Chevron ────────────────────────────────────────────────────────────────── */
+
+.single-accordion__chevron {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--single-text-secondary);
+  transition: transform var(--single-transition);
+}
+
+.single-accordion__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ── Body (smooth height via CSS grid trick) ────────────────────────────────── */
+
+.single-accordion__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.single-accordion__body--open {
+  grid-template-rows: 1fr;
+}
+
+.single-accordion__body-inner {
+  overflow: hidden;
+  font-size: var(--single-font-size-sm);
+  color: var(--single-text-secondary);
+  line-height: 1.6;
+}
+
+/* Padding on inner content — visible only when expanded */
+.single-accordion__body--open .single-accordion__body-inner {
+  padding: 0 var(--single-spacing-lg) var(--single-spacing-lg);
+}
+
+/* ── Open item highlight ────────────────────────────────────────────────────── */
+
+.single-accordion__item--open > .single-accordion__trigger {
+  color: var(--single-text-primary);
+}
+
+.single-accordion--separated .single-accordion__item--separated.single-accordion__item--open {
+  border-color: var(--single-border-hover);
+}

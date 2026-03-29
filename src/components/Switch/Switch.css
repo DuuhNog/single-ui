@@ -17,7 +17,7 @@
 }
 
 .single-switch-label--left {
-  flex-direction: row-reverse;
+  justify-content: space-between;
 }
 
 .single-switch-text {

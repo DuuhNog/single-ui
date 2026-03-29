@@ -28,13 +28,19 @@ Each component lives in `src/components/[Name]/` and follows this pattern:
 - `Name.tsx` — component using `forwardRef`, prop interface, `clsx` for conditional classes
 - `Name.css` — scoped CSS using design token variables (no CSS-in-JS)
 
-Current components: Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker.
+Current components: Button, Input, Textarea, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, Toast, Tabs, Skeleton, Avatar, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP.
 
 ### Styling system
 
-Design tokens are defined in `src/styles/tokens.css` as CSS custom properties on `:root`. Dark mode overrides are applied via `[data-theme="dark"]`. Accent color variants use `[data-accent="blue"]` and `[data-accent="red"]`. Consumers must import `dist/style.css` to get tokens and component styles.
+Design tokens are defined in `src/styles/tokens.css` as CSS custom properties on `:root`. Dark mode overrides are applied via `[data-theme="dark"]`. Accent color variants use `[data-accent="blue"]`, `[data-accent="red"]`, and `[data-accent="purple"]`. Consumers must import `dist/style.css` to get tokens and component styles.
 
 The only runtime dependency is `clsx`. Tailwind CSS v4 is used only during development/build — no Tailwind classes are in the published output.
+
+### Special component patterns
+
+- **Toast**: context-based. `ToastProvider` must wrap the app root; `useToast()` returns `{ toast }` to trigger notifications. `ToastContainer` is rendered inside the provider.
+- **Drawer / Modal**: use React Portal (`document.body`), scroll lock, and ESC key handling.
+- **Tooltip / Popover**: use absolute positioning with placement logic; no external positioning library.
 
 ### Masks / hooks
 

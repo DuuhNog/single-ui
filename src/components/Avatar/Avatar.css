@@ -1,0 +1,118 @@
+/* Base avatar */
+.single-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--single-radius-full);
+  background-color: var(--single-surface-hover);
+  color: var(--single-text-secondary);
+  font-family: var(--single-font-family);
+  font-weight: var(--single-font-weight-semibold);
+  overflow: hidden;
+  user-select: none;
+  vertical-align: middle;
+}
+
+/* Sizes */
+.single-avatar--xs {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.single-avatar--sm {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.single-avatar--md {
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+
+.single-avatar--lg {
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
+}
+
+.single-avatar--xl {
+  width: 56px;
+  height: 56px;
+  font-size: 21px;
+}
+
+/* Image variant */
+.single-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+/* Initials */
+.single-avatar__initials {
+  line-height: 1;
+  color: #ffffff;
+}
+
+/* Overflow chip (AvatarGroup "+N") */
+.single-avatar--overflow {
+  background-color: var(--single-border-hover);
+  color: var(--single-text-secondary);
+}
+
+/* Fallback user icon */
+.single-avatar__icon {
+  width: 55%;
+  height: 55%;
+  color: var(--single-text-disabled);
+}
+
+/* Status dot */
+.single-avatar__status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 25%;
+  height: 25%;
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: var(--single-radius-full);
+  border: 2px solid var(--single-background);
+}
+
+.single-avatar__status--online {
+  background-color: var(--single-success);
+}
+
+.single-avatar__status--offline {
+  background-color: var(--single-text-disabled);
+}
+
+.single-avatar__status--busy {
+  background-color: var(--single-error);
+}
+
+.single-avatar__status--away {
+  background-color: var(--single-warning);
+}
+
+/* AvatarGroup */
+.single-avatar-group {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.single-avatar-group__item {
+  margin-left: -8px;
+  box-shadow: 0 0 0 2px var(--single-background);
+}
+
+.single-avatar-group__item:first-child {
+  margin-left: 0;
+}

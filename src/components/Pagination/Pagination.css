@@ -1,0 +1,126 @@
+.single-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--single-spacing-xs);
+  font-family: var(--single-font-family);
+}
+
+/* ── Base button ───────────────────────────────────────────────────────────── */
+.single-pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--single-font-family);
+  font-weight: var(--single-font-weight-medium);
+  line-height: 1;
+  color: var(--single-text-primary);
+  background-color: transparent;
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-md);
+  cursor: pointer;
+  transition: all var(--single-transition);
+  user-select: none;
+  padding: 0;
+}
+
+.single-pagination__btn:hover:not(:disabled) {
+  background-color: var(--single-surface-hover);
+  border-color: var(--single-border-hover);
+}
+
+.single-pagination__btn:focus-visible {
+  outline: 2px solid var(--single-primary);
+  outline-offset: 2px;
+}
+
+/* ── Active page ───────────────────────────────────────────────────────────── */
+.single-pagination__btn--active {
+  background-color: var(--single-primary);
+  border-color: var(--single-primary);
+  color: var(--single-text-on-primary);
+  cursor: default;
+}
+
+.single-pagination__btn--active:hover:not(:disabled) {
+  background-color: var(--single-primary-hover);
+  border-color: var(--single-primary-hover);
+}
+
+/* ── Disabled ──────────────────────────────────────────────────────────────── */
+.single-pagination__btn--disabled,
+.single-pagination__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Ellipsis ──────────────────────────────────────────────────────────────── */
+.single-pagination__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--single-font-family);
+  color: var(--single-text-secondary);
+  user-select: none;
+  cursor: default;
+  letter-spacing: 0.05em;
+}
+
+/* ── Sizes ─────────────────────────────────────────────────────────────────── */
+
+/* sm: 28px buttons */
+.single-pagination--sm .single-pagination__btn {
+  width: 28px;
+  height: 28px;
+  font-size: var(--single-font-size-xs);
+}
+
+.single-pagination--sm .single-pagination__ellipsis {
+  width: 28px;
+  height: 28px;
+  font-size: var(--single-font-size-xs);
+}
+
+/* md: 36px buttons */
+.single-pagination--md .single-pagination__btn {
+  width: 36px;
+  height: 36px;
+  font-size: var(--single-font-size-sm);
+}
+
+.single-pagination--md .single-pagination__ellipsis {
+  width: 36px;
+  height: 36px;
+  font-size: var(--single-font-size-sm);
+}
+
+/* lg: 44px buttons */
+.single-pagination--lg .single-pagination__btn {
+  width: 44px;
+  height: 44px;
+  font-size: var(--single-font-size-base);
+}
+
+.single-pagination--lg .single-pagination__ellipsis {
+  width: 44px;
+  height: 44px;
+  font-size: var(--single-font-size-base);
+}
+
+/* ── Dark mode ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] .single-pagination__btn {
+  color: var(--single-text-primary);
+  border-color: var(--single-border);
+}
+
+[data-theme="dark"] .single-pagination__btn:hover:not(:disabled) {
+  background-color: var(--single-surface-hover);
+  border-color: var(--single-border-hover);
+}
+
+[data-theme="dark"] .single-pagination__btn--active {
+  background-color: var(--single-primary);
+  border-color: var(--single-primary);
+  color: var(--single-text-on-primary);
+}

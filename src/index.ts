@@ -45,6 +45,45 @@ export type { CheckboxProps } from './components/Checkbox/Checkbox';
 export { Chip } from './components/Chip/Chip';
 export type { ChipProps, ChipVariant, ChipSize } from './components/Chip/Chip';
 
+export { ToastProvider, ToastContainer, useToast } from './components/Toast/Toast';
+export type { ToastVariant, ToastOptions } from './components/Toast/Toast';
+
+export { Textarea } from './components/Textarea/Textarea';
+export type { TextareaProps } from './components/Textarea/Textarea';
+
+export { Tabs } from './components/Tabs/Tabs';
+export type { TabsProps, TabItem } from './components/Tabs/Tabs';
+
+export { Skeleton } from './components/Skeleton/Skeleton';
+export type { SkeletonProps } from './components/Skeleton/Skeleton';
+
+export { Avatar, AvatarGroup } from './components/Avatar/Avatar';
+export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarStatus } from './components/Avatar/Avatar';
+
+export { Drawer } from './components/Drawer/Drawer';
+export type { DrawerProps, DrawerSide, DrawerSize } from './components/Drawer/Drawer';
+
+export { Popover } from './components/Popover/Popover';
+export type { PopoverProps, PopoverPlacement } from './components/Popover/Popover';
+
+export { Tooltip } from './components/Tooltip/Tooltip';
+export type { TooltipProps, TooltipPlacement } from './components/Tooltip/Tooltip';
+
+export { Accordion } from './components/Accordion/Accordion';
+export type { AccordionProps, AccordionItem } from './components/Accordion/Accordion';
+
+export { Pagination } from './components/Pagination/Pagination';
+export type { PaginationProps } from './components/Pagination/Pagination';
+
+export { InputOTP } from './components/InputOTP/InputOTP';
+export type { InputOTPProps } from './components/InputOTP/InputOTP';
+
+export { Badge } from './components/Badge/Badge';
+export type { BadgeProps, BadgeVariant, BadgeSize } from './components/Badge/Badge';
+
+export { Slider } from './components/Slider/Slider';
+export type { SliderProps } from './components/Slider/Slider';
+
 // Hooks
 export { useMask } from './hooks/useMask';
 export type { MaskType } from './hooks/useMask';

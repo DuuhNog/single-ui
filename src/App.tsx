@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
 import { clsx } from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
-import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox } from './index'
+import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider } from './index'
 import type { TableColumn, DateRange } from './index'
 import './styles/tokens.css'
 
-type Page = 'home' | 'components'
-type Section = 'install' | 'button' | 'input' | 'card' | 'modal' | 'table' | 'select' | 'themes' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'switch' | 'checkbox' | 'form'
-type Accent = 'orange' | 'blue' | 'red'
+type Page = 'home' | 'components' | 'examples' | 'tasks'
+type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'drawer' | 'table' | 'select' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp'
+type Accent = 'orange' | 'blue' | 'red' | 'purple'
 
 const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'install', label: 'Como Instalar' },
@@ -15,12 +15,26 @@ const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'form', label: 'Formulário (react-hook-form)' },
   { id: 'button', label: 'Button' },
   { id: 'input', label: 'Input' },
+  { id: 'textarea', label: 'Textarea' },
   { id: 'card', label: 'Card' },
   { id: 'modal', label: 'Modal' },
+  { id: 'drawer', label: 'Drawer' },
   { id: 'table', label: 'Table' },
   { id: 'select', label: 'Select' },
   { id: 'switch', label: 'Switch' },
   { id: 'checkbox', label: 'Checkbox' },
+  { id: 'chip', label: 'Chip' },
+  { id: 'badge', label: 'Badge' },
+  { id: 'slider', label: 'Slider' },
+  { id: 'tabs', label: 'Tabs' },
+  { id: 'accordion', label: 'Accordion' },
+  { id: 'avatar', label: 'Avatar' },
+  { id: 'skeleton', label: 'Skeleton' },
+  { id: 'tooltip', label: 'Tooltip' },
+  { id: 'popover', label: 'Popover' },
+  { id: 'toast', label: 'Toast' },
+  { id: 'pagination', label: 'Pagination' },
+  { id: 'inputotp', label: 'InputOTP' },
   { id: 'datepicker', label: 'DatePicker' },
   { id: 'daterangepicker', label: 'DateRangePicker' },
   { id: 'datepickerinput', label: 'DatePickerInput' },
@@ -31,6 +45,7 @@ const ACCENTS: { id: Accent; label: string; color: string; darkColor: string }[]
   { id: 'orange', label: 'Laranja', color: '#D97706', darkColor: '#F59E0B' },
   { id: 'blue',   label: 'Azul',    color: '#2563EB', darkColor: '#60A5FA' },
   { id: 'red',    label: 'Vermelho', color: '#DC2626', darkColor: '#F87171' },
+  { id: 'purple', label: 'Roxo',    color: '#7C3AED', darkColor: '#A78BFA' },
 ]
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -51,6 +66,49 @@ function MoonIcon() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
+  )
+}
+
+// ─── SectionNavContext ────────────────────────────────────────────────────────
+const SectionNavContext = createContext<((id: Section) => void) | null>(null)
+
+function SectionNav({ current }: { current: Section }) {
+  const navigate = useContext(SectionNavContext)
+  const all: Section[] = [...([] as Section[]).concat(
+    SIDEBAR_ITEMS.map(i => i.id)
+  )]
+  const idx = all.indexOf(current)
+  const prev = idx > 0 ? all[idx - 1] : null
+  const next = idx < all.length - 1 ? all[idx + 1] : null
+  const label = (id: Section) => SIDEBAR_ITEMS.find(i => i.id === id)?.label ?? id
+
+  if (!navigate) return null
+
+  return (
+    <div className="flex items-center justify-between mt-12 pt-6 border-t border-stone-200 dark:border-stone-800">
+      <div>
+        {prev && (
+          <button
+            onClick={() => navigate(prev)}
+            className="flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors bg-transparent border-0 cursor-pointer p-0"
+          >
+            <span>←</span>
+            <span>{label(prev)}</span>
+          </button>
+        )}
+      </div>
+      <div>
+        {next && (
+          <button
+            onClick={() => navigate(next)}
+            className="flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors bg-transparent border-0 cursor-pointer p-0"
+          >
+            <span>{label(next)}</span>
+            <span>→</span>
+          </button>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -108,17 +166,17 @@ function PropsTable({ props }: { props: PropDef[] }) {
                 </code>
                 {p.required && <span className="text-red-500 ml-1 font-bold text-xs">*</span>}
               </td>
-              <td className="px-4 py-2.5 align-top">
-                <code className="font-mono text-[0.8125rem] bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded border border-stone-200 dark:border-stone-700 text-amber-600 dark:text-amber-400">
+              <td className="px-4 py-2.5 align-top max-w-[260px]">
+                <code className="font-mono text-[0.8125rem] bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded border border-stone-200 dark:border-stone-700 text-amber-600 dark:text-amber-400 break-words whitespace-pre-wrap">
                   {p.type}
                 </code>
               </td>
-              <td className="px-4 py-2.5 align-top">
+              <td className="px-4 py-2.5 align-top whitespace-nowrap">
                 <code className="font-mono text-[0.8125rem] bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400">
                   {p.default ?? '—'}
                 </code>
               </td>
-              <td className="px-4 py-2.5 align-top text-stone-600 dark:text-stone-400 leading-relaxed">
+              <td className="px-4 py-2.5 align-top text-stone-600 dark:text-stone-400 leading-relaxed min-w-[200px]">
                 {p.description}
               </td>
             </tr>
@@ -140,38 +198,41 @@ function Navbar({ theme, toggleTheme, accent, setAccent, page, navigate }: {
 }) {
   return (
     <nav className="fixed top-0 inset-x-0 z-50 h-[60px] bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-sm border-b border-stone-200 dark:border-stone-800">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 h-full flex items-center gap-1">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 h-full flex items-center gap-1 min-w-0">
         <button
           onClick={() => navigate('home')}
-          className="flex items-center gap-2 mr-4 bg-transparent border-0 cursor-pointer p-0 shrink-0"
+          className="flex items-center gap-2 mr-2 sm:mr-4 bg-transparent border-0 cursor-pointer p-0 shrink-0"
         >
           <span className="text-[1.0625rem] font-bold text-amber-600 dark:text-amber-500 tracking-tight">
             Single UI
           </span>
-          <span className="text-[0.625rem] font-bold px-1.5 py-0.5 bg-amber-600 dark:bg-amber-500 text-white rounded-full uppercase tracking-wider">
+          <span className="hidden sm:inline text-[0.625rem] font-bold px-1.5 py-0.5 bg-amber-600 dark:bg-amber-500 text-white rounded-full uppercase tracking-wider">
             React
           </span>
         </button>
 
-        <div className="flex gap-0.5 flex-1">
-          {(['home', 'components'] as const).map(p => (
+        <div className="flex gap-0.5">
+          {([
+            { id: 'home', label: 'Início' },
+            { id: 'components', label: 'Componentes' },
+          ] as { id: Page; label: string }[]).map(p => (
             <button
-              key={p}
-              onClick={() => navigate(p)}
+              key={p.id}
+              onClick={() => navigate(p.id)}
               className={clsx(
-                'bg-transparent border-0 cursor-pointer px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-                page === p
+                'bg-transparent border-0 cursor-pointer px-2.5 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap',
+                page === p.id
                   ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40'
                   : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800/60'
               )}
             >
-              {p === 'home' ? 'Início' : 'Componentes'}
+              {p.label}
             </button>
           ))}
         </div>
 
-        {/* Accent swatches */}
-        <div className="flex items-center gap-1.5 ml-auto mr-2">
+        {/* Accent swatches — hidden on very small screens */}
+        <div className="hidden sm:flex items-center gap-1.5 ml-auto mr-2">
           {ACCENTS.map(a => (
             <button
               key={a.id}
@@ -192,7 +253,7 @@ function Navbar({ theme, toggleTheme, accent, setAccent, page, navigate }: {
         <button
           onClick={toggleTheme}
           aria-label="Alternar tema"
-          className="p-2 rounded-lg border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors flex items-center justify-center bg-transparent cursor-pointer"
+          className="ml-auto sm:ml-0 p-2 rounded-lg border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors flex items-center justify-center bg-transparent cursor-pointer shrink-0"
         >
           {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
         </button>
@@ -231,12 +292,28 @@ function HomePage({ onStart }: { onStart: () => void }) {
   const tableData: ComponentRow[] = [
     { id: 1, component: 'Button', descricao: 'Botões com variantes e estados', status: 'Estável' },
     { id: 2, component: 'Input', descricao: 'Campos com máscara e validação', status: 'Estável' },
-    { id: 3, component: 'Card', descricao: 'Containers de conteúdo', status: 'Estável' },
-    { id: 4, component: 'Modal', descricao: 'Diálogos com portal', status: 'Estável' },
-    { id: 5, component: 'Table', descricao: 'Tabelas com ordenação', status: 'Estável' },
-    { id: 6, component: 'Select', descricao: 'Seleção com busca integrada', status: 'Estável' },
-    { id: 7, component: 'DatePicker', descricao: 'Seleção de data com navegação mês/ano', status: 'Estável' },
-    { id: 8, component: 'DateRangePicker', descricao: 'Seleção de intervalo entre duas datas', status: 'Estável' },
+    { id: 3, component: 'Textarea', descricao: 'Área de texto com auto-resize', status: 'Estável' },
+    { id: 4, component: 'Select', descricao: 'Seleção com busca e múltipla seleção', status: 'Estável' },
+    { id: 5, component: 'Checkbox', descricao: 'Caixa de seleção acessível', status: 'Estável' },
+    { id: 6, component: 'Switch', descricao: 'Toggle com animação suave', status: 'Estável' },
+    { id: 7, component: 'Chip', descricao: 'Tags e etiquetas removíveis', status: 'Estável' },
+    { id: 8, component: 'InputOTP', descricao: 'Entrada de código OTP por dígito', status: 'Estável' },
+    { id: 9, component: 'Card', descricao: 'Containers de conteúdo', status: 'Estável' },
+    { id: 10, component: 'Modal', descricao: 'Diálogos com portal', status: 'Estável' },
+    { id: 11, component: 'Drawer', descricao: 'Painel lateral deslizante', status: 'Estável' },
+    { id: 12, component: 'Popover', descricao: 'Painel flutuante com posicionamento', status: 'Estável' },
+    { id: 13, component: 'Tooltip', descricao: 'Dicas contextuais com hover', status: 'Estável' },
+    { id: 14, component: 'Toast', descricao: 'Notificações temporárias', status: 'Estável' },
+    { id: 15, component: 'Table', descricao: 'Tabelas com ordenação', status: 'Estável' },
+    { id: 16, component: 'Tabs', descricao: 'Abas com variantes underline e pills', status: 'Estável' },
+    { id: 17, component: 'Accordion', descricao: 'Painéis colapsáveis com animação', status: 'Estável' },
+    { id: 18, component: 'Pagination', descricao: 'Paginação com ellipsis', status: 'Estável' },
+    { id: 19, component: 'Avatar', descricao: 'Avatares com fallback e grupos', status: 'Estável' },
+    { id: 20, component: 'Skeleton', descricao: 'Placeholder animado de carregamento', status: 'Estável' },
+    { id: 21, component: 'DatePicker', descricao: 'Seleção de data com navegação mês/ano', status: 'Estável' },
+    { id: 22, component: 'DateRangePicker', descricao: 'Seleção de intervalo entre duas datas', status: 'Estável' },
+    { id: 23, component: 'DatePickerInput', descricao: 'Input com popup de data', status: 'Estável' },
+    { id: 24, component: 'DateRangePickerInput', descricao: 'Input com popup de intervalo', status: 'Estável' },
   ]
 
   return (
@@ -245,7 +322,7 @@ function HomePage({ onStart }: { onStart: () => void }) {
       <section className="pt-24 pb-20 px-4 sm:px-6 text-center">
         <div className="max-w-[680px] mx-auto">
           <div className="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 mb-6 tracking-wide">
-            8 componentes · TypeScript · Dark Mode · v1.0.0
+            24 componentes · TypeScript · Dark Mode · v1.0.0
           </div>
           <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.1] tracking-[-0.04em] text-stone-900 dark:text-stone-50 mb-5">
             Construa interfaces<br />com Single UI
@@ -558,6 +635,7 @@ function ButtonSection() {
         { name: 'iconPosition', type: "'left'|'right'", default: "'left'", description: 'Posição do ícone' },
         { name: 'children', type: 'ReactNode', required: true, description: 'Conteúdo do botão' },
       ]} />
+      <SectionNav current="button" />
     </section>
   )
 }
@@ -636,6 +714,7 @@ const [value, setValue] = useState('')
         { name: 'disabled', type: 'boolean', default: 'false', description: 'Desabilita o campo' },
         { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Ocupa 100% da largura' },
       ]} />
+      <SectionNav current="input" />
     </section>
   )
 }
@@ -1540,6 +1619,615 @@ function MyForm() {
   )
 }
 
+// ─── Textarea Section ────────────────────────────────────────────────────────
+function TextareaSection() {
+  return (
+    <section id="textarea" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Textarea" description="Campo de texto multilinha com as mesmas variantes de estado do Input: erro, helper text, label e resize." />
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-4">
+        <Textarea label="Descrição" placeholder="Digite sua mensagem..." rows={3} />
+        <Textarea label="Com erro" error="Campo obrigatório" defaultValue="Texto inválido" />
+        <Textarea label="Sem resize" resize="none" placeholder="Não redimensionável..." />
+        <Textarea label="Desabilitado" disabled defaultValue="Conteúdo desabilitado" />
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Textarea } from '@single-ui/react'
+
+<Textarea
+  label="Mensagem"
+  placeholder="Digite aqui..."
+  rows={4}
+  resize="vertical"
+/>`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'label', type: 'string', description: 'Label do campo' },
+        { name: 'error', type: 'string', description: 'Mensagem de erro' },
+        { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
+        { name: 'rows', type: 'number', default: '3', description: 'Número de linhas visíveis' },
+        { name: 'resize', type: "'none' | 'vertical' | 'horizontal' | 'both'", default: "'vertical'", description: 'Direção de redimensionamento' },
+        { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Ocupa toda a largura' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita o campo' },
+      ]} />
+      <SectionNav current="textarea" />
+    </section>
+  )
+}
+
+// ─── Drawer Section ───────────────────────────────────────────────────────────
+function DrawerSection() {
+  const [side, setSide] = useState<'right' | 'left' | 'top' | 'bottom'>('right')
+  const [open, setOpen] = useState(false)
+  return (
+    <section id="drawer" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Drawer" description="Painel lateral deslizante com suporte a 4 lados, 4 tamanhos, header, footer e backdrop." />
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-4">
+        <div className="flex gap-2 flex-wrap">
+          {(['right', 'left', 'bottom', 'top'] as const).map(s => (
+            <Button key={s} variant="secondary" size="sm" onClick={() => { setSide(s); setOpen(true) }}>
+              Abrir {s}
+            </Button>
+          ))}
+        </div>
+        <Drawer open={open} onClose={() => setOpen(false)} side={side} title={`Drawer — ${side}`}
+          footer={<div className="flex justify-end gap-2"><Button variant="secondary" size="sm" onClick={() => setOpen(false)}>Fechar</Button><Button size="sm" onClick={() => setOpen(false)}>Confirmar</Button></div>}>
+          <p className="text-stone-500 dark:text-stone-400 text-sm">Conteúdo do drawer. Feche com ESC, clicando no backdrop ou no botão.</p>
+        </Drawer>
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Drawer, Button } from '@single-ui/react'
+
+const [open, setOpen] = useState(false)
+
+<Button onClick={() => setOpen(true)}>Abrir Drawer</Button>
+
+<Drawer
+  open={open}
+  onClose={() => setOpen(false)}
+  side="right"
+  size="md"
+  title="Título"
+  footer={<Button onClick={() => setOpen(false)}>Fechar</Button>}
+>
+  Conteúdo aqui
+</Drawer>`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'open', type: 'boolean', required: true, description: 'Controla a visibilidade' },
+        { name: 'onClose', type: '() => void', required: true, description: 'Callback ao fechar' },
+        { name: 'side', type: "'left' | 'right' | 'top' | 'bottom'", default: "'right'", description: 'Lado de onde o drawer abre' },
+        { name: 'size', type: "'sm' | 'md' | 'lg' | 'full'", default: "'md'", description: 'Tamanho do drawer' },
+        { name: 'title', type: 'string', description: 'Título do header' },
+        { name: 'footer', type: 'ReactNode', description: 'Conteúdo do footer fixo' },
+        { name: 'closeOnBackdrop', type: 'boolean', default: 'true', description: 'Fechar ao clicar no backdrop' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Chip Section ─────────────────────────────────────────────────────────────
+function ChipSection() {
+  return (
+    <section id="chip" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Chip" description="Tags compactas com variantes de cor e botão de remoção opcional. Mesmo esquema de cores dos botões." />
+      <StepTitle>Variantes</StepTitle>
+      <DemoBox className="flex flex-wrap gap-2">
+        {(['default', 'primary', 'secondary', 'success', 'warning', 'error', 'info'] as const).map(v => (
+          <Chip key={v} label={v.charAt(0).toUpperCase() + v.slice(1)} variant={v} />
+        ))}
+      </DemoBox>
+      <StepTitle>Com remoção</StepTitle>
+      <DemoBox className="flex flex-wrap gap-2">
+        {(['primary', 'success', 'error'] as const).map(v => (
+          <Chip key={v} label={`${v} removível`} variant={v} onRemove={() => {}} />
+        ))}
+      </DemoBox>
+      <StepTitle>Tamanhos</StepTitle>
+      <DemoBox className="flex items-center gap-3">
+        <Chip label="Small" size="sm" variant="primary" />
+        <Chip label="Medium" size="md" variant="primary" />
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Chip } from '@single-ui/react'
+
+<Chip label="Tag" variant="primary" />
+<Chip label="Removível" variant="success" onRemove={() => removeTag(id)} />`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'label', type: 'string', required: true, description: 'Texto do chip' },
+        { name: 'variant', type: "'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'", default: "'default'", description: 'Variante de cor' },
+        { name: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Tamanho' },
+        { name: 'onRemove', type: '(e: MouseEvent) => void', description: 'Exibe botão × e chama ao clicar' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Badge Section ────────────────────────────────────────────────────────────
+function BadgeSection() {
+  return (
+    <section id="badge" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Badge" description="Etiquetas de status e categorias com variantes de cor." />
+
+      <h3 id="variantes" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Variantes</h3>
+      <DemoBox>
+        <div className="flex gap-2 flex-wrap items-center">
+          <Badge variant="default">Default</Badge>
+          <Badge variant="primary">Primary</Badge>
+          <Badge variant="success">Success</Badge>
+          <Badge variant="warning">Warning</Badge>
+          <Badge variant="error">Error</Badge>
+          <Badge variant="info">Info</Badge>
+        </div>
+        <div className="flex gap-2 flex-wrap items-center mt-3">
+          <Badge variant="success" dot>Online</Badge>
+          <Badge variant="warning" dot>Pendente</Badge>
+          <Badge variant="error" dot>Offline</Badge>
+          <Badge variant="info" dot>Sincronizando</Badge>
+        </div>
+      </DemoBox>
+
+      <div id="uso-basico" className="scroll-mt-19" />
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Badge } from '@single-ui/react'
+
+<Badge variant="primary">Primary</Badge>
+<Badge variant="success" dot>Online</Badge>
+<Badge variant="error">Erro</Badge>`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'variant', type: "'default'|'primary'|'success'|'warning'|'error'|'info'", default: "'default'", description: 'Cor do badge' },
+        { name: 'size', type: "'sm'|'md'", default: "'sm'", description: 'Tamanho' },
+        { name: 'dot', type: 'boolean', default: 'false', description: 'Exibe ponto colorido à esquerda' },
+        { name: 'children', type: 'ReactNode', required: true, description: 'Conteúdo do badge' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Slider Section ───────────────────────────────────────────────────────────
+function SliderSection() {
+  const [val, setVal] = useState(40)
+  const [range, setRange] = useState(200)
+  return (
+    <section id="slider" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Slider" description="Controle deslizante para seleção de valores numéricos." />
+
+      <h3 id="demo" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Demo</h3>
+      <DemoBox>
+        <div className="flex flex-col gap-6 w-full max-w-sm">
+          <Slider label="Volume" showValue value={val} onChange={setVal} />
+          <Slider
+            label="Faixa de preço"
+            min={0} max={1000} step={10}
+            showValue
+            formatValue={v => `R$ ${v}`}
+            value={range}
+            onChange={setRange}
+          />
+          <Slider label="Desabilitado" value={60} disabled />
+        </div>
+      </DemoBox>
+
+      <div id="uso-basico" className="scroll-mt-19" />
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Slider } from '@single-ui/react'
+
+const [vol, setVol] = useState(40)
+
+<Slider label="Volume" showValue value={vol} onChange={setVol} />
+<Slider
+  label="Preço"
+  min={0} max={1000} step={10}
+  formatValue={v => \`R$ \${v}\`}
+  showValue
+  value={price}
+  onChange={setPrice}
+/>`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'min', type: 'number', default: '0', description: 'Valor mínimo' },
+        { name: 'max', type: 'number', default: '100', description: 'Valor máximo' },
+        { name: 'step', type: 'number', default: '1', description: 'Incremento por passo' },
+        { name: 'value', type: 'number', description: 'Valor controlado' },
+        { name: 'defaultValue', type: 'number', description: 'Valor inicial (não controlado)' },
+        { name: 'onChange', type: '(value: number) => void', description: 'Callback de mudança' },
+        { name: 'label', type: 'string', description: 'Rótulo acima do slider' },
+        { name: 'showValue', type: 'boolean', default: 'false', description: 'Exibe o valor atual' },
+        { name: 'formatValue', type: '(v: number) => string', description: 'Formata o valor exibido' },
+        { name: 'disabled', type: 'boolean', default: 'false', description: 'Desabilita o slider' },
+        { name: 'helperText', type: 'string', description: 'Texto auxiliar abaixo' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Tabs Section ─────────────────────────────────────────────────────────────
+function TabsSection() {
+  const tabItems = [
+    { id: 'integrations', label: 'Active integrations', badge: 16, content: <p className="text-stone-500 dark:text-stone-400 text-sm">Mostrando integrações ativas.</p> },
+    { id: 'directory', label: 'Integration directory', content: <p className="text-stone-500 dark:text-stone-400 text-sm">Diretório de integrações disponíveis.</p> },
+    { id: 'disabled', label: 'Desabilitado', disabled: true, content: null },
+  ]
+  return (
+    <section id="tabs" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Tabs" description="Navegação em abas com variantes underline e pills, suporte a badge, estado desabilitado e modos controlado/não-controlado." />
+      <StepTitle>Underline</StepTitle>
+      <DemoBox>
+        <Tabs items={tabItems} variant="underline" defaultTab="integrations" />
+      </DemoBox>
+      <StepTitle>Pills</StepTitle>
+      <DemoBox>
+        <Tabs items={tabItems} variant="pills" defaultTab="integrations" />
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Tabs } from '@single-ui/react'
+import type { TabItem } from '@single-ui/react'
+
+const items: TabItem[] = [
+  { id: 'tab1', label: 'Tab 1', content: <div>Conteúdo 1</div> },
+  { id: 'tab2', label: 'Tab 2', badge: 3, content: <div>Conteúdo 2</div> },
+  { id: 'tab3', label: 'Desabilitado', disabled: true, content: null },
+]
+
+// Não controlado
+<Tabs items={items} defaultTab="tab1" variant="underline" />
+
+// Controlado
+<Tabs items={items} activeTab={active} onChange={setActive} />`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'items', type: 'TabItem[]', required: true, description: 'Lista de abas' },
+        { name: 'variant', type: "'underline' | 'pills'", default: "'underline'", description: 'Estilo visual' },
+        { name: 'defaultTab', type: 'string', description: 'ID da aba aberta por padrão (não controlado)' },
+        { name: 'activeTab', type: 'string', description: 'ID da aba ativa (controlado)' },
+        { name: 'onChange', type: '(id: string) => void', description: 'Callback ao trocar de aba' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Accordion Section ────────────────────────────────────────────────────────
+function AccordionSection() {
+  const items = [
+    { id: '1', title: 'O que é Single UI?', content: <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed">Single UI é uma biblioteca de componentes React moderna, tipada em TypeScript, com suporte a dark mode e temas de cor via CSS custom properties.</p> },
+    { id: '2', title: 'Como instalar?', content: <CodeBlock code="npm install @single-ui/react" /> },
+    { id: '3', title: 'Suporta SSR?', content: <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed">Sim. Todos os componentes são compatíveis com React Server Components e frameworks como Next.js.</p> },
+    { id: '4', title: 'Item desabilitado', disabled: true, content: null },
+  ]
+  return (
+    <section id="accordion" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Accordion" description="Lista de itens expansíveis com animação suave. Suporte a seleção múltipla e 3 variantes visuais." />
+      <StepTitle>Demo</StepTitle>
+      <DemoBox><Accordion items={items} defaultOpen="1" /></DemoBox>
+      <StepTitle>Variante bordered</StepTitle>
+      <DemoBox><Accordion items={items.slice(0, 3)} variant="bordered" multiple /></DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Accordion } from '@single-ui/react'
+import type { AccordionItem } from '@single-ui/react'
+
+const items: AccordionItem[] = [
+  { id: '1', title: 'Pergunta 1', content: <p>Resposta 1</p> },
+  { id: '2', title: 'Pergunta 2', content: <p>Resposta 2</p> },
+]
+
+<Accordion items={items} defaultOpen="1" />
+<Accordion items={items} multiple variant="bordered" />`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'items', type: 'AccordionItem[]', required: true, description: 'Lista de itens' },
+        { name: 'variant', type: "'default' | 'bordered' | 'separated'", default: "'default'", description: 'Estilo visual' },
+        { name: 'multiple', type: 'boolean', default: 'false', description: 'Permite múltiplos itens abertos' },
+        { name: 'defaultOpen', type: 'string | string[]', description: 'ID(s) abertos por padrão' },
+        { name: 'open', type: 'string | string[]', description: 'ID(s) abertos (controlado)' },
+        { name: 'onChange', type: '(id: string, isOpen: boolean) => void', description: 'Callback ao expandir/recolher' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Avatar Section ───────────────────────────────────────────────────────────
+function AvatarSection() {
+  return (
+    <section id="avatar" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Avatar" description="Exibe foto, iniciais geradas a partir do nome com cor determinística, ou ícone genérico. Suporte a status e grupo." />
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-wrap items-center gap-4">
+        <Avatar src="https://i.pravatar.cc/150?img=1" name="Ana Silva" size="xl" status="online" />
+        <Avatar name="Bruno Costa" size="lg" status="busy" />
+        <Avatar name="Carlos Lima" size="md" status="away" />
+        <Avatar name="Daniela Mota" size="sm" status="offline" />
+        <Avatar size="xs" />
+      </DemoBox>
+      <StepTitle>Avatar Group</StepTitle>
+      <DemoBox>
+        <AvatarGroup max={4}>
+          <Avatar src="https://i.pravatar.cc/150?img=1" name="Ana" />
+          <Avatar name="Bruno Costa" />
+          <Avatar name="Carlos Lima" />
+          <Avatar name="Daniela Mota" />
+          <Avatar name="Eduardo Nogueira" />
+          <Avatar name="Fernanda Souza" />
+        </AvatarGroup>
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Avatar, AvatarGroup } from '@single-ui/react'
+
+<Avatar src="/foto.jpg" name="Ana Silva" size="md" status="online" />
+<Avatar name="Bruno Costa" size="lg" />
+
+<AvatarGroup max={4}>
+  <Avatar name="Ana Silva" />
+  <Avatar name="Bruno Costa" />
+  <Avatar name="Carlos Lima" />
+  {/* +N overflow automático */}
+</AvatarGroup>`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'src', type: 'string', description: 'URL da imagem' },
+        { name: 'name', type: 'string', description: 'Nome para gerar iniciais e cor' },
+        { name: 'size', type: "'xs' | 'sm' | 'md' | 'lg' | 'xl'", default: "'md'", description: 'Tamanho do avatar' },
+        { name: 'status', type: "'online' | 'offline' | 'busy' | 'away'", description: 'Ponto de status' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Skeleton Section ─────────────────────────────────────────────────────────
+function SkeletonSection() {
+  return (
+    <section id="skeleton" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Skeleton" description="Placeholder de carregamento com animação shimmer. Variantes text, rect e circle." />
+      <StepTitle>Variantes</StepTitle>
+      <DemoBox className="flex flex-col gap-5">
+        <div className="flex items-center gap-3">
+          <Skeleton variant="circle" width={48} height={48} />
+          <div className="flex-1 flex flex-col gap-2">
+            <Skeleton variant="text" width="60%" height={14} />
+            <Skeleton variant="text" width="40%" height={12} />
+          </div>
+        </div>
+        <Skeleton variant="rect" width="100%" height={120} />
+        <Skeleton variant="text" lines={4} />
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Skeleton } from '@single-ui/react'
+
+// Texto com múltiplas linhas
+<Skeleton variant="text" lines={3} />
+
+// Card placeholder
+<Skeleton variant="rect" width="100%" height={200} />
+
+// Avatar placeholder
+<Skeleton variant="circle" width={40} height={40} />`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'variant', type: "'text' | 'rect' | 'circle'", default: "'rect'", description: 'Formato do skeleton' },
+        { name: 'width', type: 'string | number', description: 'Largura (number = px)' },
+        { name: 'height', type: 'string | number', description: 'Altura (number = px)' },
+        { name: 'lines', type: 'number', description: 'Nº de linhas (variant=text). Última linha 60% de largura.' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Tooltip Section ──────────────────────────────────────────────────────────
+function TooltipSection() {
+  return (
+    <section id="tooltip" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Tooltip" description="Dica flutuante que aparece ao hover/focus. 4 posições, delay configurável." />
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-wrap gap-4 justify-center py-6">
+        <Tooltip content="Tooltip em cima" placement="top"><Button variant="secondary" size="sm">Top</Button></Tooltip>
+        <Tooltip content="Tooltip em baixo" placement="bottom"><Button variant="secondary" size="sm">Bottom</Button></Tooltip>
+        <Tooltip content="Tooltip à esquerda" placement="left"><Button variant="secondary" size="sm">Left</Button></Tooltip>
+        <Tooltip content="Tooltip à direita" placement="right"><Button variant="secondary" size="sm">Right</Button></Tooltip>
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Tooltip, Button } from '@single-ui/react'
+
+<Tooltip content="Texto da dica" placement="top">
+  <Button>Passe o mouse</Button>
+</Tooltip>`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'content', type: 'ReactNode', required: true, description: 'Conteúdo do tooltip' },
+        { name: 'children', type: 'ReactElement', required: true, description: 'Elemento que dispara o tooltip' },
+        { name: 'placement', type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'", description: 'Posição do tooltip' },
+        { name: 'delay', type: 'number', default: '300', description: 'Delay em ms antes de exibir' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita o tooltip' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Popover Section ──────────────────────────────────────────────────────────
+function PopoverSection() {
+  return (
+    <section id="popover" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Popover" description="Painel flutuante ativado por clique. Suporte a título, 8 posições e modo controlado." />
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-wrap gap-4 justify-center py-6">
+        <Popover
+          placement="bottom-start"
+          title="Filtros"
+          trigger={<Button variant="secondary" size="sm">Abrir popover</Button>}
+          content={
+            <div className="flex flex-col gap-3 min-w-[200px]">
+              <Input placeholder="Buscar..." />
+              <Button size="sm">Aplicar</Button>
+            </div>
+          }
+        />
+        <Popover
+          placement="bottom-end"
+          trigger={<Button variant="secondary" size="sm">Sem título</Button>}
+          content={<p className="text-sm text-stone-500 dark:text-stone-400">Conteúdo simples sem header.</p>}
+        />
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Popover, Button } from '@single-ui/react'
+
+<Popover
+  trigger={<Button>Abrir</Button>}
+  title="Opções"
+  placement="bottom-start"
+  content={
+    <div>
+      <p>Conteúdo do popover</p>
+    </div>
+  }
+/>`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'trigger', type: 'ReactElement', required: true, description: 'Elemento que abre o popover' },
+        { name: 'content', type: 'ReactNode', required: true, description: 'Conteúdo do popover' },
+        { name: 'title', type: 'string', description: 'Título do header (com botão fechar)' },
+        { name: 'placement', type: "'top' | 'bottom' | 'bottom-start' | 'bottom-end' | ...", default: "'bottom-start'", description: 'Posição do painel' },
+        { name: 'open', type: 'boolean', description: 'Controlado' },
+        { name: 'onOpenChange', type: '(open: boolean) => void', description: 'Callback de abertura/fechamento' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Toast Section ────────────────────────────────────────────────────────────
+function ToastDemo() {
+  const { toast } = useToast()
+  return (
+    <DemoBox className="flex flex-wrap gap-2">
+      <Button variant="success" size="sm" onClick={() => toast.success('Operação realizada com sucesso!', { title: 'Sucesso' })}>Success</Button>
+      <Button variant="error" size="sm" onClick={() => toast.error('Algo deu errado. Tente novamente.', { title: 'Erro' })}>Error</Button>
+      <Button variant="warning" size="sm" onClick={() => toast.warning('Atenção: verifique os dados.', { title: 'Aviso' })}>Warning</Button>
+      <Button variant="info" size="sm" onClick={() => toast.info('Atualização disponível.', { title: 'Info' })}>Info</Button>
+    </DemoBox>
+  )
+}
+
+function ToastSection() {
+  return (
+    <section id="toast" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Toast" description="Notificações temporárias com auto-dismiss, barra de progresso e 4 variantes. Requer ToastProvider no root da aplicação." />
+      <StepTitle>Demo</StepTitle>
+      <ToastDemo />
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`// 1. Adicione ToastProvider no root (main.tsx ou App.tsx)
+import { ToastProvider } from '@single-ui/react'
+
+<ToastProvider>
+  <App />
+</ToastProvider>
+
+// 2. Use o hook em qualquer componente
+import { useToast } from '@single-ui/react'
+
+function MyComponent() {
+  const { toast } = useToast()
+
+  return (
+    <Button onClick={() => toast.success('Salvo!', { title: 'Sucesso' })}>
+      Salvar
+    </Button>
+  )
+}`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'toast.success(msg, opts?)', type: 'function', description: 'Exibe toast de sucesso' },
+        { name: 'toast.error(msg, opts?)', type: 'function', description: 'Exibe toast de erro' },
+        { name: 'toast.warning(msg, opts?)', type: 'function', description: 'Exibe toast de aviso' },
+        { name: 'toast.info(msg, opts?)', type: 'function', description: 'Exibe toast informativo' },
+        { name: 'opts.title', type: 'string', description: 'Título em negrito acima da mensagem' },
+        { name: 'opts.duration', type: 'number', default: '4000', description: 'Duração em ms antes do auto-dismiss' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── Pagination Section ───────────────────────────────────────────────────────
+function PaginationSection() {
+  const [page, setPage] = useState(1)
+  return (
+    <section id="pagination" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Pagination" description="Navegação entre páginas com ellipsis automático, primeiros/últimos e 3 tamanhos." />
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-6 items-start">
+        <div className="flex flex-col gap-2 w-full">
+          <p className="text-sm text-stone-500 dark:text-stone-400">Página atual: <strong className="text-stone-800 dark:text-stone-200">{page}</strong></p>
+          <Pagination totalPages={20} currentPage={page} onChange={setPage} />
+        </div>
+        <Pagination totalPages={10} currentPage={3} onChange={() => {}} size="sm" />
+        <Pagination totalPages={10} currentPage={3} onChange={() => {}} size="lg" showFirstLast={false} />
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Pagination } from '@single-ui/react'
+
+const [page, setPage] = useState(1)
+
+<Pagination
+  totalPages={20}
+  currentPage={page}
+  onChange={setPage}
+  siblingCount={1}
+/>`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'totalPages', type: 'number', required: true, description: 'Total de páginas' },
+        { name: 'currentPage', type: 'number', required: true, description: 'Página atual' },
+        { name: 'onChange', type: '(page: number) => void', required: true, description: 'Callback ao mudar de página' },
+        { name: 'siblingCount', type: 'number', default: '1', description: 'Páginas exibidas ao redor da atual' },
+        { name: 'showFirstLast', type: 'boolean', default: 'true', description: 'Exibe botões de primeira/última página' },
+        { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Tamanho dos botões' },
+      ]} />
+    </section>
+  )
+}
+
+// ─── InputOTP Section ─────────────────────────────────────────────────────────
+function InputOTPSection() {
+  const [otp, setOtp] = useState('')
+  return (
+    <section id="inputotp" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="InputOTP" description="Campo de código de verificação com boxes individuais, auto-focus, paste inteligente e separadores configuráveis." />
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-stone-500 dark:text-stone-400">Valor: <strong className="text-stone-800 dark:text-stone-200 font-mono">{otp || '—'}</strong></p>
+          <InputOTP length={6} value={otp} onChange={setOtp} onComplete={(v) => console.log('OTP completo:', v)} separator={3} label="Código de verificação" helperText="Digite o código enviado por SMS." />
+        </div>
+        <InputOTP length={4} label="PIN (4 dígitos)" />
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { InputOTP } from '@single-ui/react'
+
+const [otp, setOtp] = useState('')
+
+<InputOTP
+  length={6}
+  value={otp}
+  onChange={setOtp}
+  onComplete={(code) => verifyCode(code)}
+  separator={3}
+  label="Código de verificação"
+/>`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'length', type: 'number', default: '6', description: 'Número de dígitos' },
+        { name: 'value', type: 'string', description: 'Valor controlado' },
+        { name: 'onChange', type: '(value: string) => void', description: 'Callback a cada dígito' },
+        { name: 'onComplete', type: '(value: string) => void', description: 'Callback quando todos os dígitos são preenchidos' },
+        { name: 'separator', type: 'number | number[]', description: 'Posição(ões) do separador visual' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita todos os campos' },
+        { name: 'error', type: 'string', description: 'Mensagem de erro' },
+      ]} />
+    </section>
+  )
+}
+
 // ─── Themes Section ───────────────────────────────────────────────────────────
 function ThemesSection() {
   return (
@@ -1732,10 +2420,87 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
     { id: 'demo-completo', label: 'Demo completo' },
     { id: 'uso-basico', label: 'Uso básico' },
   ],
+  textarea: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  drawer: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  chip: [
+    { id: 'variantes', label: 'Variantes' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  tabs: [
+    { id: 'underline', label: 'Underline' },
+    { id: 'pills', label: 'Pills' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  accordion: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  avatar: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'avatar-group', label: 'AvatarGroup' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  skeleton: [
+    { id: 'variantes', label: 'Variantes' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  tooltip: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  popover: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  toast: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  pagination: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  inputotp: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  badge: [
+    { id: 'variantes', label: 'Variantes' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  slider: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
 }
 
 const GUIDE_ITEMS: Section[] = ['install', 'themes', 'form']
-const COMPONENT_ITEMS: Section[] = ['button', 'input', 'card', 'modal', 'table', 'select', 'switch', 'checkbox', 'datepicker', 'daterangepicker', 'datepickerinput', 'daterangepickerinput']
+const COMPONENT_ITEMS: Section[] = [
+  'button', 'input', 'textarea', 'card', 'modal', 'drawer',
+  'table', 'select', 'switch', 'checkbox', 'chip', 'badge', 'slider', 'tabs', 'accordion',
+  'avatar', 'skeleton', 'tooltip', 'popover', 'toast', 'pagination', 'inputotp',
+  'datepicker', 'daterangepicker', 'datepickerinput', 'daterangepickerinput',
+]
 
 // ─── Components Page ──────────────────────────────────────────────────────────
 function ComponentsPage({ initialSection }: { initialSection: Section }) {
@@ -1781,18 +2546,32 @@ function ComponentsPage({ initialSection }: { initialSection: Section }) {
       : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800/60'
   )
 
-  const sections: Record<Section, () => JSX.Element> = {
+  const sections: Record<Section, () => React.ReactElement> = {
     install: InstallSection,
     themes: ThemesSection,
     form: FormSection,
     button: ButtonSection,
     input: InputSection,
+    textarea: TextareaSection,
     card: CardSection,
     modal: ModalSection,
+    drawer: DrawerSection,
     table: TableSection,
     select: SelectSection,
     switch: SwitchSection,
     checkbox: CheckboxSection,
+    chip: ChipSection,
+    badge: BadgeSection,
+    slider: SliderSection,
+    tabs: TabsSection,
+    accordion: AccordionSection,
+    avatar: AvatarSection,
+    skeleton: SkeletonSection,
+    tooltip: TooltipSection,
+    popover: PopoverSection,
+    toast: ToastSection,
+    pagination: PaginationSection,
+    inputotp: InputOTPSection,
     datepicker: DatePickerSection,
     daterangepicker: DateRangePickerSection,
     datepickerinput: DatePickerInputSection,
@@ -1872,8 +2651,10 @@ function ComponentsPage({ initialSection }: { initialSection: Section }) {
 
         {/* Main scrollable article */}
         <main ref={mainRef} className="flex-1 min-w-0 overflow-y-auto">
-          <div className="max-w-[760px] mx-auto px-4 sm:px-8 lg:px-14 pb-24 pt-2">
-            <ActiveSection />
+          <div className="max-w-[900px] mx-auto px-4 sm:px-8 lg:px-12 pb-24 pt-2">
+            <SectionNavContext.Provider value={navigate}>
+              <ActiveSection />
+            </SectionNavContext.Provider>
           </div>
         </main>
 
@@ -1906,6 +2687,429 @@ function ComponentsPage({ initialSection }: { initialSection: Section }) {
         )}
       </div>
     </div>
+  )
+}
+
+// ─── TasksPage ────────────────────────────────────────────────────────────────
+interface Task {
+  id: string
+  title: string
+  category: 'Bug' | 'Feature' | 'Documentation'
+  status: 'Todo' | 'In Progress' | 'Done' | 'Backlog' | 'Canceled'
+  priority: 'Low' | 'Medium' | 'High'
+  checked: boolean
+}
+
+const INITIAL_TASKS: Task[] = [
+  { id: 'TASK-8782', title: 'Corrigir crash no formulário de login', category: 'Bug', status: 'In Progress', priority: 'High', checked: false },
+  { id: 'TASK-7890', title: 'Adicionar suporte a dark mode no dashboard', category: 'Feature', status: 'Todo', priority: 'Medium', checked: false },
+  { id: 'TASK-7423', title: 'Documentar API de autenticação', category: 'Documentation', status: 'Done', priority: 'Low', checked: false },
+  { id: 'TASK-6934', title: 'Validação de CPF no cadastro de usuários', category: 'Bug', status: 'Backlog', priority: 'High', checked: false },
+  { id: 'TASK-6210', title: 'Implementar paginação na listagem de produtos', category: 'Feature', status: 'In Progress', priority: 'Medium', checked: false },
+  { id: 'TASK-5891', title: 'Atualizar guia de instalação da biblioteca', category: 'Documentation', status: 'Todo', priority: 'Low', checked: false },
+  { id: 'TASK-5540', title: 'Erro de layout no mobile em resoluções < 360px', category: 'Bug', status: 'Canceled', priority: 'Low', checked: false },
+  { id: 'TASK-4812', title: 'Criar componente de upload de arquivos', category: 'Feature', status: 'Backlog', priority: 'Medium', checked: false },
+  { id: 'TASK-4201', title: 'Documentar tokens de design do sistema', category: 'Documentation', status: 'Done', priority: 'Medium', checked: false },
+  { id: 'TASK-3987', title: 'Select múltiplo não reseta ao limpar', category: 'Bug', status: 'In Progress', priority: 'High', checked: false },
+  { id: 'TASK-3412', title: 'Adicionar skeleton na tela de carregamento', category: 'Feature', status: 'Done', priority: 'Low', checked: false },
+  { id: 'TASK-2890', title: 'Revisar acessibilidade dos componentes de formulário', category: 'Documentation', status: 'Backlog', priority: 'Medium', checked: false },
+]
+
+function StatusIcon({ status }: { status: Task['status'] }) {
+  if (status === 'In Progress') return <span className="text-blue-500" title="In Progress">◷</span>
+  if (status === 'Done') return <span className="text-emerald-500" title="Done">✓</span>
+  if (status === 'Canceled') return <span className="text-stone-400" title="Canceled">⊘</span>
+  if (status === 'Backlog') return <span className="text-stone-400" title="Backlog">◎</span>
+  return <span className="text-stone-400" title="Todo">○</span>
+}
+
+function PriorityIcon({ priority }: { priority: Task['priority'] }) {
+  if (priority === 'High') return <span className="text-red-500" title="High">↑</span>
+  if (priority === 'Low') return <span className="text-stone-400" title="Low">↓</span>
+  return <span className="text-amber-500" title="Medium">→</span>
+}
+
+function categoryVariant(cat: Task['category']): 'error' | 'primary' | 'default' {
+  if (cat === 'Bug') return 'error'
+  if (cat === 'Feature') return 'primary'
+  return 'default'
+}
+
+function statusVariant(s: Task['status']): 'info' | 'success' | 'default' {
+  if (s === 'In Progress') return 'info'
+  if (s === 'Done') return 'success'
+  return 'default'
+}
+
+function TasksPage() {
+  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS)
+  const [filter, setFilter] = useState('')
+  const [selectAll, setSelectAll] = useState(false)
+
+  const filtered = tasks.filter(t =>
+    t.title.toLowerCase().includes(filter.toLowerCase()) ||
+    t.id.toLowerCase().includes(filter.toLowerCase())
+  )
+
+  const toggleAll = (checked: boolean) => {
+    setSelectAll(checked)
+    setTasks(prev => prev.map(t => ({ ...t, checked })))
+  }
+
+  const toggleOne = (id: string, checked: boolean) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, checked } : t))
+  }
+
+  type TaskCol = { key: string; label: string; width?: string | number; align?: 'left' | 'center' | 'right'; render: (row: Task) => React.ReactNode; renderHeader?: () => React.ReactNode }
+  const columns: TaskCol[] = [
+    {
+      key: 'check',
+      label: '',
+      width: 40,
+      align: 'center' as const,
+      renderHeader: () => (
+        <Checkbox
+          checked={selectAll}
+          indeterminate={tasks.some(t => t.checked) && !tasks.every(t => t.checked)}
+          onChange={e => toggleAll(e.target.checked)}
+        />
+      ),
+      render: (row: Task) => (
+        <Checkbox
+          checked={row.checked}
+          onChange={e => toggleOne(row.id, e.target.checked)}
+        />
+      ),
+    },
+    {
+      key: 'id', label: 'Tarefa', width: 110,
+      render: (row) => (
+        <span className="font-mono text-xs text-stone-400 dark:text-stone-500">{row.id}</span>
+      ),
+    },
+    {
+      key: 'title', label: 'Título',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-stone-800 dark:text-stone-200">{row.title}</span>
+          <Badge variant={categoryVariant(row.category)} size="sm">{row.category}</Badge>
+        </div>
+      ),
+    },
+    {
+      key: 'status', label: 'Status', width: 140,
+      render: (row) => (
+        <div className="flex items-center gap-1.5">
+          <StatusIcon status={row.status} />
+          <Badge variant={statusVariant(row.status)} size="sm">{row.status}</Badge>
+        </div>
+      ),
+    },
+    {
+      key: 'priority', label: 'Prioridade', width: 120,
+      render: (row) => (
+        <div className="flex items-center gap-1.5">
+          <PriorityIcon priority={row.priority} />
+          <span className="text-sm text-stone-600 dark:text-stone-400">{row.priority}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'actions', label: '', width: 40, align: 'center',
+      render: () => (
+        <button className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 bg-transparent border-0 cursor-pointer text-lg leading-none px-1">···</button>
+      ),
+    },
+  ]
+
+  const tableColumns = columns.map(col => ({
+    key: col.key as keyof Task,
+    label: col.label,
+    width: col.width,
+    align: col.align,
+    render: (_v: Task[keyof Task], row: Task) => col.render(row),
+    renderHeader: col.renderHeader,
+  }))
+
+  return (
+    <main className="bg-stone-50 dark:bg-stone-950 min-h-screen pt-8 pb-24 px-4 sm:px-6">
+      <div className="max-w-[1280px] mx-auto">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              Bem-vindo de volta!
+            </h1>
+            <p className="text-stone-500 dark:text-stone-400 text-sm mt-1">
+              Aqui está a lista de tarefas para este mês.
+            </p>
+          </div>
+          <Avatar name="Eduardo Nogueira" size="md" status="online" />
+        </div>
+
+        {/* Filter row */}
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          <div className="flex-1 min-w-[200px] max-w-[320px]">
+            <Input
+              placeholder="Filtrar tarefas..."
+              value={filter}
+              onChange={v => setFilter(v)}
+            />
+          </div>
+          <Button variant="secondary" size="sm" icon={<span>+</span>} iconPosition="left">Status</Button>
+          <Button variant="secondary" size="sm" icon={<span>+</span>} iconPosition="left">Prioridade</Button>
+          <div className="ml-auto flex gap-2">
+            <Button variant="secondary" size="sm">Visualizar</Button>
+            <Button size="sm">Adicionar Tarefa</Button>
+          </div>
+        </div>
+
+        {/* Table */}
+        <Table
+          columns={tableColumns}
+          data={filtered}
+          rowKey="id"
+          emptyMessage="Nenhuma tarefa encontrada."
+        />
+      </div>
+    </main>
+  )
+}
+
+// ─── ExamplesPage ─────────────────────────────────────────────────────────────
+function ExamplesPage() {
+  const [cardNumber, setCardNumber] = useState('')
+  const [cvv, setCvv] = useState('')
+  const [month, setMonth] = useState<string | number | null>(null)
+  const [year, setYear] = useState<string | number | null>(null)
+  const [sameAsBilling, setSameAsBilling] = useState(false)
+  const [twoFA, setTwoFA] = useState(true)
+  const [syncing, setSyncing] = useState(true)
+  const [updating, setUpdating] = useState(false)
+  const [logging, setLogging] = useState(true)
+  const [compute, setCompute] = useState<'k8s' | 'vm'>('k8s')
+  const [gpuCount, setGpuCount] = useState(2)
+  const [hearAbout, setHearAbout] = useState<string | null>(null)
+
+  const months = ['01','02','03','04','05','06','07','08','09','10','11','12'].map(m => ({ value: m, label: m }))
+  const years = Array.from({ length: 10 }, (_, i) => {
+    const y = String(new Date().getFullYear() + i)
+    return { value: y, label: y }
+  })
+
+  const hearOptions = ['Redes Sociais', 'Mecanismo de Busca', 'Indicação', 'Outro']
+
+  return (
+    <main className="bg-stone-50 dark:bg-stone-950 min-h-screen">
+      <div className="pt-8 pb-24 px-4 sm:px-6 max-w-[1280px] mx-auto">
+        <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1">Exemplos</h1>
+        <p className="text-stone-500 dark:text-stone-400 text-sm mb-8">
+          Padrões de UI do mundo real construídos com os componentes Single UI.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+
+          {/* 1. Payment form */}
+          <Card title="Pagamento" subtitle="Dados do cartão de crédito">
+            <div className="flex flex-col gap-3">
+              <Input
+                label="Número do cartão"
+                placeholder="0000 0000 0000 0000"
+                value={cardNumber}
+                onChange={v => setCardNumber(v)}
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <Select label="Mês" placeholder="MM" options={months} value={month} onChange={v => setMonth(v as string | number | null)} />
+                <Select label="Ano" placeholder="AAAA" options={years} value={year} onChange={v => setYear(v as string | number | null)} />
+              </div>
+              <Input
+                label="CVV"
+                placeholder="000"
+                value={cvv}
+                onChange={v => setCvv(v)}
+              />
+              <Checkbox
+                label="Mesmo endereço de cobrança"
+                checked={sameAsBilling}
+                onChange={e => setSameAsBilling(e.target.checked)}
+              />
+              <Textarea label="Observações" placeholder="Instruções especiais..." rows={2} />
+              <div className="flex gap-2 mt-1">
+                <Button variant="secondary" size="sm">Cancelar</Button>
+                <Button size="sm">Confirmar pagamento</Button>
+              </div>
+            </div>
+          </Card>
+
+          {/* 2. Team members */}
+          <Card title="Time" subtitle="Membros do projeto">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <AvatarGroup max={4}>
+                  <Avatar src="https://i.pravatar.cc/150?img=1" name="Ana Silva" />
+                  <Avatar name="Bruno Costa" />
+                  <Avatar name="Carlos Lima" />
+                  <Avatar name="Daniela Mota" />
+                  <Avatar name="Eduardo Nogueira" />
+                </AvatarGroup>
+                <Button size="sm" variant="secondary" icon={<span>+</span>} iconPosition="left">Convidar</Button>
+              </div>
+              <div className="flex flex-col gap-2 mt-1">
+                {[
+                  { name: 'Ana Silva', role: 'Design Lead', badge: 'Admin' as const },
+                  { name: 'Bruno Costa', role: 'Engenheiro Frontend', badge: 'Dev' as const },
+                  { name: 'Carlos Lima', role: 'Engenheiro Backend', badge: 'Dev' as const },
+                ].map(m => (
+                  <div key={m.name} className="flex items-center gap-3">
+                    <Avatar name={m.name} size="sm" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-stone-800 dark:text-stone-200 truncate">{m.name}</p>
+                      <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{m.role}</p>
+                    </div>
+                    <Badge variant={m.badge === 'Admin' ? 'warning' : 'info'} size="sm">{m.badge}</Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          {/* 3. Status chips / switches */}
+          <Card title="Integrações" subtitle="Status dos serviços">
+            <div className="flex flex-col gap-3">
+              {[
+                { label: 'Sincronização de dados', badge: 'Sincronizando', variant: 'info' as const, checked: syncing, set: setSyncing },
+                { label: 'Atualizações automáticas', badge: 'Atualizando', variant: 'warning' as const, checked: updating, set: setUpdating },
+                { label: 'Logs de auditoria', badge: 'Ativo', variant: 'success' as const, checked: logging, set: setLogging },
+              ].map(item => (
+                <div key={item.label} className="flex items-center justify-between gap-3">
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm text-stone-800 dark:text-stone-200 truncate">{item.label}</span>
+                    <Badge variant={item.checked ? item.variant : 'default'} dot size="sm">
+                      {item.checked ? item.badge : 'Inativo'}
+                    </Badge>
+                  </div>
+                  <Switch
+                    checked={item.checked}
+                    onChange={e => item.set(e.target.checked)}
+                    size="sm"
+                  />
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* 4. Authentication */}
+          <Card title="Segurança" subtitle="Configurações de autenticação">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-stone-800 dark:text-stone-200">Autenticação em dois fatores</p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">Adicione uma camada extra de segurança</p>
+                </div>
+                <Switch checked={twoFA} onChange={e => setTwoFA(e.target.checked)} size="sm" />
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40">
+                <span className="text-emerald-500 text-lg">✓</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">E-mail verificado</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-500">usuario@empresa.com</p>
+                </div>
+                <span className="text-emerald-500">→</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide">Sessões ativas</p>
+                {[
+                  { device: 'MacBook Pro', location: 'São Paulo, BR', active: true },
+                  { device: 'iPhone 15', location: 'São Paulo, BR', active: false },
+                ].map(s => (
+                  <div key={s.device} className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-stone-800 dark:text-stone-200">{s.device}</p>
+                      <p className="text-xs text-stone-500 dark:text-stone-400">{s.location}</p>
+                    </div>
+                    <Badge variant={s.active ? 'success' : 'default'} dot size="sm">
+                      {s.active ? 'Atual' : 'Inativa'}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          {/* 5. Compute options */}
+          <Card title="Infraestrutura" subtitle="Selecione o tipo de computação">
+            <div className="flex flex-col gap-3">
+              {([
+                { id: 'k8s', label: 'Kubernetes', desc: 'Orquestração de contêineres escalável' },
+                { id: 'vm', label: 'Máquina Virtual', desc: 'Instância de VM dedicada' },
+              ] as { id: 'k8s' | 'vm'; label: string; desc: string }[]).map(opt => (
+                <div
+                  key={opt.id}
+                  onClick={() => setCompute(opt.id)}
+                  className={clsx(
+                    'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
+                    compute === opt.id
+                      ? 'border-amber-400 dark:border-amber-500 bg-amber-50 dark:bg-amber-950/20'
+                      : 'border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600'
+                  )}
+                >
+                  <Checkbox
+                    checked={compute === opt.id}
+                    onChange={() => setCompute(opt.id)}
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-stone-800 dark:text-stone-200">{opt.label}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400">{opt.desc}</p>
+                  </div>
+                </div>
+              ))}
+              <div className="mt-2">
+                <Slider
+                  label="GPUs"
+                  min={1}
+                  max={8}
+                  step={1}
+                  value={gpuCount}
+                  onChange={setGpuCount}
+                  showValue
+                  formatValue={v => `${v} GPU${v > 1 ? 's' : ''}`}
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* 6. How did you hear */}
+          <Card title="Como nos encontrou?" subtitle="Selecione uma opção">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap gap-2">
+                {hearOptions.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => setHearAbout(hearAbout === opt ? null : opt)}
+                    className="bg-transparent border-0 cursor-pointer p-0"
+                  >
+                    <Chip
+                      label={opt}
+                      variant={hearAbout === opt ? 'primary' : 'default'}
+                    />
+                  </button>
+                ))}
+              </div>
+              {hearAbout && (
+                <p className="text-sm text-stone-500 dark:text-stone-400">
+                  Selecionado: <strong className="text-stone-700 dark:text-stone-300">{hearAbout}</strong>
+                </p>
+              )}
+              <div className="mt-2">
+                <Textarea label="Conte-nos mais (opcional)" placeholder="Detalhes adicionais..." rows={2} />
+              </div>
+              <Button size="sm">Enviar resposta</Button>
+            </div>
+          </Card>
+
+        </div>
+      </div>
+    </main>
   )
 }
 
@@ -1947,6 +3151,10 @@ export default function App() {
       <div className="pt-[60px]">
         {page === 'home' ? (
           <HomePage onStart={() => navigate('components', 'install')} />
+        ) : page === 'examples' ? (
+          <ExamplesPage />
+        ) : page === 'tasks' ? (
+          <TasksPage />
         ) : (
           <ComponentsPage key={initialSection} initialSection={initialSection} />
         )}

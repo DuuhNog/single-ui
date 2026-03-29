@@ -94,7 +94,7 @@
 }
 
 /* Loading */
-.single-table__loading {
+.single-table__loading-cell {
   padding: var(--single-spacing-3xl) !important;
   text-align: center !important;
 }

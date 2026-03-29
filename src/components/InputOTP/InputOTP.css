@@ -1,0 +1,85 @@
+.single-otp-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--single-spacing-xs);
+}
+
+.single-otp__label {
+  display: block;
+  font-size: var(--single-font-size-sm);
+  font-weight: var(--single-font-weight-medium);
+  color: var(--single-text-primary);
+}
+
+/* ─── Input row ──────────────────────────────────────────────────────────── */
+.single-otp__inputs {
+  display: flex;
+  align-items: center;
+  gap: var(--single-spacing-sm);
+}
+
+.single-otp__separator {
+  display: flex;
+  align-items: center;
+  color: var(--single-text-disabled);
+  font-size: var(--single-font-size-lg);
+  font-weight: var(--single-font-weight-semibold);
+  flex-shrink: 0;
+  padding: 0 2px;
+  user-select: none;
+}
+
+/* ─── Single digit box ───────────────────────────────────────────────────── */
+.single-otp__box {
+  width: 48px;
+  height: 48px;
+  text-align: center;
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-xl);
+  font-weight: var(--single-font-weight-semibold);
+  color: var(--single-text-primary);
+  background-color: var(--single-background);
+  border: 1.5px solid var(--single-border);
+  border-radius: var(--single-radius-md);
+  outline: none;
+  transition: all var(--single-transition);
+  caret-color: var(--single-primary);
+}
+
+.single-otp__box:hover:not(:disabled) {
+  border-color: var(--single-border-hover);
+}
+
+.single-otp__box:focus {
+  border-color: var(--single-primary);
+  box-shadow: 0 0 0 3px var(--single-primary-light);
+}
+
+.single-otp__box--filled {
+  background-color: var(--single-surface);
+}
+
+.single-otp__box--error {
+  border-color: var(--single-error);
+}
+
+.single-otp__box--error:focus {
+  box-shadow: 0 0 0 3px var(--single-error-light);
+}
+
+.single-otp__box:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--single-surface);
+}
+
+/* ─── Error & Helper ─────────────────────────────────────────────────────── */
+.single-otp__error {
+  font-size: var(--single-font-size-sm);
+  color: var(--single-error);
+}
+
+.single-otp__helper {
+  font-size: var(--single-font-size-sm);
+  color: var(--single-text-secondary);
+}

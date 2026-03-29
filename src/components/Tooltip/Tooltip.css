@@ -1,0 +1,124 @@
+/* ─── Tooltip ────────────────────────────────────────────────────────────────── */
+
+.single-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+/* Panel */
+.single-tooltip__panel {
+  position: absolute;
+  z-index: 9999;
+  min-width: max-content;
+  max-width: 240px;
+  padding: var(--single-spacing-xs) var(--single-spacing-sm);
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-xs);
+  font-weight: var(--single-font-weight-normal);
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+  background: var(--single-text-primary);
+  color: var(--single-background);
+  border-radius: var(--single-radius-md);
+  box-shadow: var(--single-shadow-md);
+  pointer-events: none;
+
+  /* Hidden state */
+  opacity: 0;
+  transition: opacity 100ms ease, transform 100ms ease;
+}
+
+.single-tooltip__panel--visible {
+  opacity: 1;
+}
+
+/* ── Placements ─────────────────────────────────────────────────────────────── */
+
+/* Top */
+.single-tooltip__panel--top {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+}
+.single-tooltip__panel--top.single-tooltip__panel--visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Bottom */
+.single-tooltip__panel--bottom {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+}
+.single-tooltip__panel--bottom.single-tooltip__panel--visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Left */
+.single-tooltip__panel--left {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+}
+.single-tooltip__panel--left.single-tooltip__panel--visible {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Right */
+.single-tooltip__panel--right {
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+}
+.single-tooltip__panel--right.single-tooltip__panel--visible {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ── Arrow ──────────────────────────────────────────────────────────────────── */
+
+.single-tooltip__arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Top arrow — points down toward trigger */
+.single-tooltip__panel--top .single-tooltip__arrow {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--single-text-primary);
+}
+
+/* Bottom arrow — points up toward trigger */
+.single-tooltip__panel--bottom .single-tooltip__arrow {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid var(--single-text-primary);
+}
+
+/* Left arrow — points right toward trigger */
+.single-tooltip__panel--left .single-tooltip__arrow {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid var(--single-text-primary);
+}
+
+/* Right arrow — points left toward trigger */
+.single-tooltip__panel--right .single-tooltip__arrow {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 5px solid var(--single-text-primary);
+}

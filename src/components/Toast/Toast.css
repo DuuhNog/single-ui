@@ -1,0 +1,172 @@
+/* ─── Toast Container ────────────────────────────────────────────────────────── */
+
+.single-toast-container {
+  position: fixed;
+  top: var(--single-spacing-xl);
+  right: var(--single-spacing-xl);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: var(--single-spacing-sm);
+  max-width: 400px;
+  width: calc(100vw - var(--single-spacing-xl) * 2);
+  pointer-events: none;
+}
+
+/* ─── Toast Item ─────────────────────────────────────────────────────────────── */
+
+.single-toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--single-spacing-md);
+  padding: var(--single-spacing-md) var(--single-spacing-lg);
+  padding-bottom: calc(var(--single-spacing-md) + 3px);
+  background-color: var(--single-surface);
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-lg);
+  box-shadow: var(--single-shadow-lg);
+  font-family: var(--single-font-family);
+  overflow: hidden;
+  pointer-events: all;
+  animation: single-toast-slide-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.single-toast--dismissing {
+  animation: single-toast-slide-out 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Colored left border per variant */
+.single-toast--success { border-left: 4px solid var(--single-success); }
+.single-toast--error   { border-left: 4px solid var(--single-error); }
+.single-toast--warning { border-left: 4px solid var(--single-warning); }
+.single-toast--info    { border-left: 4px solid var(--single-info); }
+
+/* ─── Icon ───────────────────────────────────────────────────────────────────── */
+
+.single-toast__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.single-toast__icon--success { color: var(--single-success); }
+.single-toast__icon--error   { color: var(--single-error); }
+.single-toast__icon--warning { color: var(--single-warning); }
+.single-toast__icon--info    { color: var(--single-info); }
+
+/* ─── Body ───────────────────────────────────────────────────────────────────── */
+
+.single-toast__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.single-toast__title {
+  margin: 0;
+  font-size: var(--single-font-size-sm);
+  font-weight: var(--single-font-weight-semibold);
+  color: var(--single-text-primary);
+  line-height: 1.4;
+}
+
+.single-toast__message {
+  margin: 0;
+  font-size: var(--single-font-size-sm);
+  color: var(--single-text-secondary);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ─── Close button ───────────────────────────────────────────────────────────── */
+
+.single-toast__close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--single-radius-sm);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--single-text-disabled);
+  transition: color var(--single-transition), background-color var(--single-transition);
+  margin-top: 1px;
+}
+
+.single-toast__close:hover {
+  color: var(--single-text-primary);
+  background-color: var(--single-surface-hover);
+}
+
+.single-toast__close:focus-visible {
+  outline: 2px solid var(--single-primary);
+  outline-offset: 1px;
+}
+
+/* ─── Progress bar ───────────────────────────────────────────────────────────── */
+
+.single-toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--single-border);
+  overflow: hidden;
+}
+
+.single-toast__progress-bar {
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  animation: single-toast-progress linear forwards;
+}
+
+.single-toast__progress--success .single-toast__progress-bar { background-color: var(--single-success); }
+.single-toast__progress--error   .single-toast__progress-bar { background-color: var(--single-error); }
+.single-toast__progress--warning .single-toast__progress-bar { background-color: var(--single-warning); }
+.single-toast__progress--info    .single-toast__progress-bar { background-color: var(--single-info); }
+
+/* ─── Animations ─────────────────────────────────────────────────────────────── */
+
+@keyframes single-toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(110%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes single-toast-slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 200px;
+    margin-bottom: 0;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(110%);
+    max-height: 0;
+    margin-bottom: calc(-1 * var(--single-spacing-sm));
+  }
+}
+
+@keyframes single-toast-progress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
