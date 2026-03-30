@@ -1,6 +1,6 @@
 {
   "name": "@single-ui/react",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Modern React UI component library built with Vite and TypeScript",
   "type": "module",
   "main": "./dist/single-ui-react.umd.cjs",
@@ -12,7 +12,15 @@
       "import": "./dist/single-ui-react.js",
       "require": "./dist/single-ui-react.umd.cjs"
     },
-    "./styles": "./dist/style.css"
+    "./styles": {
+      "types": "./dist/style.d.ts",
+      "default": "./dist/style.css"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "styles": ["./dist/style.d.ts"]
+    }
   },
   "files": [
     "dist"

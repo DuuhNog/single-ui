@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
+import { writeFileSync } from 'fs';
 
 export default defineConfig({
   plugins: [
@@ -13,6 +14,15 @@ export default defineConfig({
       exclude: ['src/**/*.test.tsx', 'src/**/*.stories.tsx', 'src/App.tsx', 'src/main.tsx', 'src/test/**/*'],
       rollupTypes: true,
     }),
+    {
+      name: 'copy-style-dts',
+      closeBundle() {
+        writeFileSync(
+          resolve(__dirname, 'dist/style.d.ts'),
+          `declare module '@single-ui/react/styles' {\n  const styles: string;\n  export default styles;\n}\n`
+        );
+      },
+    },
   ],
   build: {
     lib: {
