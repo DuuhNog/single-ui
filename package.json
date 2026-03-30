@@ -1,6 +1,6 @@
 {
   "name": "@single-ui/react",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Modern React UI component library built with Vite and TypeScript",
   "type": "module",
   "main": "./dist/single-ui-react.umd.cjs",
