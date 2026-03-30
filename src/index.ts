@@ -81,6 +81,9 @@ export type { InputOTPProps } from './components/InputOTP/InputOTP';
 export { Badge } from './components/Badge/Badge';
 export type { BadgeProps, BadgeVariant, BadgeSize } from './components/Badge/Badge';
 
+export { Navbar } from './components/Navbar/Navbar';
+export type { NavbarProps, NavbarMenuItem, NavbarSubItem, NavbarSubGroup, NavbarMenuConfig, NavbarProfile, NavbarProfileAction } from './components/Navbar/Navbar';
+
 export { Slider } from './components/Slider/Slider';
 export type { SliderProps } from './components/Slider/Slider';
 

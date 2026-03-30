@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
 import { clsx } from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
-import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider } from './index'
+import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar } from './index'
 import type { TableColumn, DateRange } from './index'
 import './styles/tokens.css'
 
 type Page = 'home' | 'components' | 'examples' | 'tasks'
-type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'drawer' | 'table' | 'select' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp'
+type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'drawer' | 'navbar' | 'table' | 'select' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp'
 type Accent = 'orange' | 'blue' | 'red' | 'purple'
 
 const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
@@ -19,6 +19,7 @@ const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'card', label: 'Card' },
   { id: 'modal', label: 'Modal' },
   { id: 'drawer', label: 'Drawer' },
+  { id: 'navbar', label: 'Navbar' },
   { id: 'table', label: 'Table' },
   { id: 'select', label: 'Select' },
   { id: 'switch', label: 'Switch' },
@@ -301,6 +302,7 @@ function HomePage({ onStart }: { onStart: () => void }) {
     { id: 9, component: 'Card', descricao: 'Containers de conteúdo', status: 'Estável' },
     { id: 10, component: 'Modal', descricao: 'Diálogos com portal', status: 'Estável' },
     { id: 11, component: 'Drawer', descricao: 'Painel lateral deslizante', status: 'Estável' },
+    { id: 25, component: 'Navbar', descricao: 'Barra de navegação com menu e perfil', status: 'Estável' },
     { id: 12, component: 'Popover', descricao: 'Painel flutuante com posicionamento', status: 'Estável' },
     { id: 13, component: 'Tooltip', descricao: 'Dicas contextuais com hover', status: 'Estável' },
     { id: 14, component: 'Toast', descricao: 'Notificações temporárias', status: 'Estável' },
@@ -1707,6 +1709,290 @@ const [open, setOpen] = useState(false)
   )
 }
 
+// ─── Navbar Section ───────────────────────────────────────────────────────────
+function NavbarSection() {
+  const navMenu = {
+    searchPlaceholder: 'Search resources, services, documentation...',
+    items: [
+      { id: 'home', label: 'Home', onClick: () => {} },
+      {
+        id: 'compute', label: 'Compute',
+        groups: [
+          { id: 'instances', label: 'Instances', items: [
+            { id: 'vm', label: 'VM Instances' },
+            { id: 'dedicated', label: 'Dedicated VM Hosts' },
+            { id: 'instance-config', label: 'Instance Configurations' },
+            { id: 'instance-pools', label: 'Instance Pools' },
+          ]},
+          { id: 'images', label: 'Images & OS', items: [
+            { id: 'custom-images', label: 'Custom Images' },
+            { id: 'boot-volumes', label: 'Boot Volumes' },
+          ]},
+          { id: 'autoscale', label: 'Autoscaling', items: [
+            { id: 'as-config', label: 'Autoscaling Configurations' },
+          ]},
+        ],
+      },
+      {
+        id: 'storage', label: 'Storage',
+        groups: [
+          { id: 'block', label: 'Block Storage', items: [
+            { id: 'volumes', label: 'Block Volumes' },
+            { id: 'vol-backups', label: 'Block Volume Backups' },
+            { id: 'vol-replicas', label: 'Block Volume Replicas' },
+            { id: 'vol-groups', label: 'Volume Groups' },
+            { id: 'vol-group-backups', label: 'Volume Group Backups' },
+            { id: 'backup-policies', label: 'Backup Policies' },
+          ]},
+          { id: 'file', label: 'File Storage', items: [
+            { id: 'filesystems', label: 'File Systems' },
+            { id: 'mount-targets', label: 'Mount Targets' },
+            { id: 'outbound', label: 'Outbound Connectors' },
+            { id: 'snapshot-policies', label: 'Snapshot Policies' },
+          ]},
+          { id: 'lustre', label: 'Lustre File Storage', items: [
+            { id: 'lustre-fs', label: 'Lustre File Systems' },
+          ]},
+          { id: 'object', label: 'Object Storage & Archive Storage', items: [
+            { id: 'buckets', label: 'Buckets' },
+            { id: 'private-endpoints', label: 'Private Endpoints' },
+          ]},
+        ],
+      },
+      {
+        id: 'networking', label: 'Networking',
+        groups: [
+          { id: 'vcn', label: 'Virtual Cloud Networks', items: [
+            { id: 'vcns', label: 'Virtual Cloud Networks' },
+            { id: 'subnets', label: 'Subnets' },
+            { id: 'route-tables', label: 'Route Tables' },
+            { id: 'security-lists', label: 'Security Lists' },
+          ]},
+          { id: 'connectivity', label: 'Connectivity', items: [
+            { id: 'fastconnect', label: 'FastConnect' },
+            { id: 'vpn', label: 'Site-to-Site VPN' },
+            { id: 'drg', label: 'Dynamic Routing Gateways' },
+          ]},
+        ],
+      },
+      {
+        id: 'databases', label: 'Databases',
+        groups: [
+          { id: 'oracle-db', label: 'Oracle Database', items: [
+            { id: 'atp', label: 'Autonomous Transaction Processing' },
+            { id: 'adw', label: 'Autonomous Data Warehouse' },
+            { id: 'base-db', label: 'Base Database Service' },
+            { id: 'exadata', label: 'Exadata Database Service' },
+          ]},
+          { id: 'nosql', label: 'NoSQL', items: [
+            { id: 'nosql-tables', label: 'NoSQL Tables' },
+          ]},
+          { id: 'cache', label: 'Cache', items: [
+            { id: 'redis', label: 'OCI Cache with Redis' },
+          ]},
+        ],
+      },
+      {
+        id: 'analytics', label: 'Analytics & AI',
+        groups: [
+          { id: 'analytics', label: 'Analytics', items: [
+            { id: 'analytics-cloud', label: 'Analytics Cloud' },
+            { id: 'data-integration', label: 'Data Integration' },
+          ]},
+          { id: 'ai', label: 'AI Services', items: [
+            { id: 'generative-ai', label: 'Generative AI' },
+            { id: 'vision', label: 'Vision' },
+            { id: 'language', label: 'Language' },
+            { id: 'speech', label: 'Speech' },
+          ]},
+        ],
+      },
+      {
+        id: 'identity', label: 'Identity & Security',
+        groups: [
+          { id: 'iam', label: 'Identity', items: [
+            { id: 'users', label: 'Users' },
+            { id: 'groups', label: 'Groups' },
+            { id: 'policies', label: 'Policies' },
+            { id: 'domains', label: 'Domains' },
+          ]},
+          { id: 'security', label: 'Security', items: [
+            { id: 'cloud-guard', label: 'Cloud Guard' },
+            { id: 'security-zones', label: 'Security Zones' },
+            { id: 'vault', label: 'Vault' },
+          ]},
+        ],
+      },
+      { id: 'hidden-example', label: 'Oculto (visible: false)', visible: false },
+    ],
+  }
+
+  const navProfile = {
+    name: 'Eduardo Nogueira',
+    email: 'eduardo@entechnology.com.br',
+    info: [
+      { label: 'Identity domain', value: 'Default' },
+      { label: 'Tenancy', value: 'fortewholesale' },
+      { label: 'Language', value: 'English' },
+    ],
+    actions: [
+      { id: 'settings', label: 'User settings', onClick: () => {} },
+      { id: 'console', label: 'Console settings', onClick: () => {} },
+      { id: 'signout', label: 'Sign out', divider: true, danger: true, onClick: () => {} },
+    ],
+  }
+
+  return (
+    <section id="navbar" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Navbar" description="Barra de navegação com two-panel menu (busca + sub-menus) e dropdown de perfil. Configuração via JSON." />
+
+      <StepTitle>Demo interativo</StepTitle>
+      <StepDesc>Clique no hamburger para abrir o menu. Busque ou clique em um item para ver os sub-menus à direita. Clique no avatar para ver o dropdown de perfil.</StepDesc>
+      <div className="rounded-xl border border-stone-200 dark:border-stone-800" style={{ height: 420, position: 'relative', overflow: 'clip' }}>
+        <SingleNavbar
+          brand="Cloud"
+          menu={navMenu}
+          profile={navProfile}
+          contained
+        />
+      </div>
+
+      <StepTitle>Sem menu</StepTitle>
+      <StepDesc>Passe <IC>showMenu={'{false}'}</IC> para ocultar o botão hamburguer.</StepDesc>
+      <div className="rounded-xl border border-stone-200 dark:border-stone-800">
+        <SingleNavbar
+          brand="Cloud"
+          showMenu={false}
+          profile={{ name: 'Eduardo', email: 'edu@example.com', actions: [{ id: 'out', label: 'Sign out', danger: true }] }}
+          contained
+        />
+      </div>
+
+      <StepTitle>Cores customizadas</StepTitle>
+      <StepDesc>Use a prop <IC>color</IC> para mudar a cor de fundo. Para controle fino, sobrescreva as variáveis CSS <IC>--navbar-bg</IC>, <IC>--navbar-text</IC>, <IC>--navbar-text-strong</IC> e <IC>--navbar-border</IC> via <IC>className</IC>.</StepDesc>
+      <div className="flex flex-col gap-2">
+        {[
+          { color: '#0f172a', label: 'Slate 900' },
+          { color: '#1e3a5f', label: 'Navy' },
+          { color: '#14532d', label: 'Green 900' },
+          { color: '#3b0764', label: 'Purple 950' },
+          { color: '#7c2d12', label: 'Orange 950' },
+        ].map(({ color, label }) => (
+          <div key={color} className="rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden">
+            <SingleNavbar
+              brand={label}
+              color={color}
+              showMenu={false}
+              profile={{ name: 'Eduardo', actions: [{ id: 'out', label: 'Sign out', danger: true }] }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Navbar } from '@single-ui/react'
+import type { NavbarMenuConfig, NavbarProfile } from '@single-ui/react'
+
+const menu: NavbarMenuConfig = {
+  searchPlaceholder: 'Search resources...',
+  items: [
+    { id: 'home', label: 'Home', onClick: () => router.push('/') },
+    {
+      id: 'storage', label: 'Storage',
+      groups: [
+        {
+          id: 'block', label: 'Block Storage',
+          items: [
+            { id: 'volumes', label: 'Block Volumes', onClick: () => router.push('/storage/volumes') },
+            { id: 'backups', label: 'Block Volume Backups' },
+            // visible: false oculta o item sem removê-lo do array
+            { id: 'legacy', label: 'Legacy Volumes', visible: false },
+          ],
+        },
+        {
+          id: 'object', label: 'Object Storage',
+          items: [
+            { id: 'buckets', label: 'Buckets' },
+          ],
+        },
+      ],
+    },
+  ],
+}
+
+const profile: NavbarProfile = {
+  name: 'Eduardo Nogueira',
+  email: 'edu@company.com',
+  info: [{ label: 'Tenancy', value: 'acme-corp' }],
+  actions: [
+    { id: 'settings', label: 'User settings', onClick: () => {} },
+    { id: 'signout', label: 'Sign out', divider: true, danger: true, onClick: () => signOut() },
+  ],
+}
+
+// Uncontrolled (Navbar gerencia o estado do menu internamente)
+<Navbar brand="My App" menu={menu} profile={profile} />
+
+// Controlled
+const [open, setOpen] = useState(false)
+<Navbar brand="My App" menu={menu} profile={profile} menuOpen={open} onMenuToggle={setOpen} />`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'logo', type: 'ReactNode', description: 'Elemento logo (substitui brand)' },
+        { name: 'brand', type: 'string', description: 'Texto da marca quando logo não é informado' },
+        { name: 'showMenu', type: 'boolean', default: 'true', description: 'Exibe o botão hamburguer' },
+        { name: 'menu', type: 'NavbarMenuConfig', description: 'Menu estruturado com two-panel layout e busca integrada' },
+        { name: 'menuOpen', type: 'boolean', description: 'Estado controlado do menu (opcional)' },
+        { name: 'onMenuToggle', type: '(open: boolean) => void', description: 'Callback ao abrir/fechar menu' },
+        { name: 'menuContent', type: 'ReactNode', description: 'Drawer customizado (alternativa simples ao menu)' },
+        { name: 'actions', type: 'ReactNode', description: 'Elementos extras no lado direito (antes do perfil)' },
+        { name: 'profile', type: 'NavbarProfile', description: 'Configuração do dropdown de perfil' },
+      ]} />
+
+      <StepTitle>NavbarMenuConfig</StepTitle>
+      <PropsTable props={[
+        { name: 'items', type: 'NavbarMenuItem[]', required: true, description: 'Itens do menu lateral' },
+        { name: 'searchPlaceholder', type: 'string', default: "'Search'", description: 'Placeholder do campo de busca' },
+      ]} />
+
+      <StepTitle>NavbarMenuItem</StepTitle>
+      <PropsTable props={[
+        { name: 'id', type: 'string', required: true, description: 'Identificador único' },
+        { name: 'label', type: 'string', required: true, description: 'Texto exibido no menu' },
+        { name: 'groups', type: 'NavbarSubGroup[]', description: 'Sub-itens agrupados por categoria (painel direito)' },
+        { name: 'items', type: 'NavbarSubItem[]', description: 'Sub-itens sem agrupamento (painel direito)' },
+        { name: 'visible', type: 'boolean', default: 'true', description: 'Exibe ou oculta o item' },
+        { name: 'onClick', type: '() => void', description: 'Callback (para itens sem groups/items)' },
+        { name: 'href', type: 'string', description: 'URL de navegação (para itens sem groups/items)' },
+        { name: 'icon', type: 'ReactNode', description: 'Ícone à esquerda do label' },
+      ]} />
+
+      <StepTitle>NavbarProfile</StepTitle>
+      <PropsTable props={[
+        { name: 'name', type: 'string', description: 'Nome do usuário' },
+        { name: 'email', type: 'string', description: 'E-mail do usuário' },
+        { name: 'avatar', type: 'string', description: 'URL do avatar' },
+        { name: 'info', type: '{ label: string; value: string }[]', description: 'Linhas extras de info (ex: Tenancy, Identity domain)' },
+        { name: 'actions', type: 'NavbarProfileAction[]', description: 'Ações do dropdown de perfil' },
+      ]} />
+
+      <StepTitle>NavbarProfileAction</StepTitle>
+      <PropsTable props={[
+        { name: 'id', type: 'string', required: true, description: 'Identificador único' },
+        { name: 'label', type: 'string', required: true, description: 'Texto exibido' },
+        { name: 'onClick', type: '() => void', description: 'Callback ao clicar' },
+        { name: 'visible', type: 'boolean', default: 'true', description: 'Exibe ou oculta o item' },
+        { name: 'divider', type: 'boolean', description: 'Adiciona separador acima do item' },
+        { name: 'danger', type: 'boolean', description: 'Estilo vermelho (ex: Sign out)' },
+        { name: 'icon', type: 'ReactNode', description: 'Ícone à esquerda do label' },
+      ]} />
+
+      <SectionNav current="navbar" />
+    </section>
+  )
+}
+
 // ─── Chip Section ─────────────────────────────────────────────────────────────
 function ChipSection() {
   return (
@@ -2372,6 +2658,12 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
     { id: 'uso-basico', label: 'Uso básico' },
     { id: 'props', label: 'Props' },
   ],
+  navbar: [
+    { id: 'demo-interativo', label: 'Demo interativo' },
+    { id: 'sem-menu', label: 'Sem menu' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
   table: [
     { id: 'demo-interativo', label: 'Demo interativo' },
     { id: 'uso-basico', label: 'Uso básico' },
@@ -2496,7 +2788,7 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
 
 const GUIDE_ITEMS: Section[] = ['install', 'themes', 'form']
 const COMPONENT_ITEMS: Section[] = [
-  'button', 'input', 'textarea', 'card', 'modal', 'drawer',
+  'button', 'input', 'textarea', 'card', 'modal', 'drawer', 'navbar',
   'table', 'select', 'switch', 'checkbox', 'chip', 'badge', 'slider', 'tabs', 'accordion',
   'avatar', 'skeleton', 'tooltip', 'popover', 'toast', 'pagination', 'inputotp',
   'datepicker', 'daterangepicker', 'datepickerinput', 'daterangepickerinput',
@@ -2556,6 +2848,7 @@ function ComponentsPage({ initialSection }: { initialSection: Section }) {
     card: CardSection,
     modal: ModalSection,
     drawer: DrawerSection,
+    navbar: NavbarSection,
     table: TableSection,
     select: SelectSection,
     switch: SwitchSection,
