@@ -68,10 +68,12 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
       return () => document.removeEventListener('mousedown', handleMouseDown);
     }, [open, closeOnOutside, setOpen]);
 
-    const triggerEl = React.cloneElement(trigger, {
+    type TriggerProps = { onClick?: (e: React.MouseEvent) => void };
+    const typedTrigger = trigger as React.ReactElement<TriggerProps>;
+    const triggerEl = React.cloneElement(typedTrigger, {
       onClick: (e: React.MouseEvent) => {
         toggle();
-        trigger.props.onClick?.(e);
+        typedTrigger.props.onClick?.(e);
       },
     });
 

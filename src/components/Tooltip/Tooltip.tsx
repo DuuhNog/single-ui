@@ -48,22 +48,30 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
       className
     );
 
-    const child = React.cloneElement(children, {
+    type ChildProps = {
+      onMouseEnter?: (e: React.MouseEvent) => void;
+      onMouseLeave?: (e: React.MouseEvent) => void;
+      onFocus?: (e: React.FocusEvent) => void;
+      onBlur?: (e: React.FocusEvent) => void;
+    };
+    const typedChildren = children as React.ReactElement<ChildProps>;
+    const childProps = typedChildren.props;
+    const child = React.cloneElement(typedChildren, {
       onMouseEnter: (e: React.MouseEvent) => {
         show();
-        children.props.onMouseEnter?.(e);
+        childProps.onMouseEnter?.(e);
       },
       onMouseLeave: (e: React.MouseEvent) => {
         hide();
-        children.props.onMouseLeave?.(e);
+        childProps.onMouseLeave?.(e);
       },
       onFocus: (e: React.FocusEvent) => {
         show();
-        children.props.onFocus?.(e);
+        childProps.onFocus?.(e);
       },
       onBlur: (e: React.FocusEvent) => {
         hide();
-        children.props.onBlur?.(e);
+        childProps.onBlur?.(e);
       },
     });
 
