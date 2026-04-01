@@ -7,6 +7,64 @@
   border: 1px solid var(--single-border);
 }
 
+/* ─── Toolbar ─────────────────────────────────────────────────────────────── */
+.single-table__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--single-spacing-sm) var(--single-spacing-md);
+  border-bottom: 1px solid var(--single-border);
+  background-color: var(--single-surface);
+}
+
+/* ─── Filter ──────────────────────────────────────────────────────────────── */
+.single-table__filter-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.single-table__filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--single-spacing-xs);
+  padding: var(--single-spacing-xs) var(--single-spacing-sm);
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-sm);
+  font-weight: var(--single-font-weight-medium);
+  color: var(--single-text-secondary);
+  background: transparent;
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-md);
+  cursor: pointer;
+  transition: all var(--single-transition);
+}
+
+.single-table__filter-btn:hover,
+.single-table__filter-btn--open {
+  color: var(--single-primary);
+  border-color: var(--single-primary);
+  background-color: var(--single-primary-light);
+}
+
+.single-table__filter-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 200;
+  min-width: 280px;
+  padding: var(--single-spacing-md);
+  background: var(--single-background);
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-xl);
+  box-shadow: var(--single-shadow-lg);
+  animation: single-table-filter-in 140ms ease-out;
+}
+
+@keyframes single-table-filter-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .single-table {
   width: 100%;
   border-collapse: collapse;
@@ -53,12 +111,15 @@
 
 .single-table__sort-icon {
   display: inline-flex;
+  align-items: center;
   color: var(--single-text-secondary);
-  font-size: var(--single-font-size-base);
+  opacity: 0.5;
+  flex-shrink: 0;
 }
 
 .single-table__header-cell--sorted .single-table__sort-icon {
   color: var(--single-primary);
+  opacity: 1;
 }
 
 /* Body */

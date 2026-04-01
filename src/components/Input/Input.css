@@ -71,3 +71,77 @@
   font-size: var(--single-font-size-sm);
   color: var(--single-text-secondary);
 }
+
+/* ─── Password field ─────────────────────────────────────────────────────── */
+.single-input-password-field {
+  display: flex;
+  align-items: center;
+  background-color: var(--single-background);
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-md);
+  transition: all var(--single-transition);
+  overflow: hidden;
+}
+
+.single-input-password-field:hover:not(.single-input-password-field--disabled) {
+  border-color: var(--single-border-hover);
+}
+
+.single-input-password-field:focus-within:not(.single-input-password-field--disabled) {
+  border-color: var(--single-primary);
+  box-shadow: 0 0 0 3px var(--single-primary-light);
+}
+
+.single-input-password-field--error {
+  border-color: var(--single-error);
+}
+
+.single-input-password-field--error:focus-within {
+  border-color: var(--single-error) !important;
+  box-shadow: 0 0 0 3px var(--single-error-light) !important;
+}
+
+.single-input-password-field--disabled {
+  background-color: var(--single-surface);
+  opacity: 0.6;
+}
+
+.single-input-password-field .single-input--password {
+  border: none;
+  box-shadow: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.single-input-password-field .single-input--password:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+.single-input-password-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--single-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--single-radius-sm);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--single-transition);
+  margin-right: 2px;
+}
+
+.single-input-password-toggle:hover:not(:disabled) {
+  color: var(--single-text-primary);
+  background-color: var(--single-surface-hover);
+}
+
+.single-input-password-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

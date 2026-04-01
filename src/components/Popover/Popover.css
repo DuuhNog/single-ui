@@ -86,7 +86,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--single-spacing-sm);
-  padding: var(--single-spacing-md) var(--single-spacing-lg);
+  padding: var(--single-spacing-xs) var(--single-spacing-sm);
   border-bottom: 1px solid var(--single-border);
 }
 
@@ -126,5 +126,5 @@
 /* ── Content ─────────────────────────────────────────────────────────────────── */
 
 .single-popover__content {
-  padding: var(--single-spacing-lg);
+  padding: var(--single-spacing-sm);
 }

@@ -18,7 +18,7 @@
 }
 
 .single-card__header {
-  padding: var(--single-spacing-lg);
+  padding: calc(var(--single-spacing-lg) * 0.7) var(--single-spacing-lg);
   border-bottom: 1px solid var(--single-border);
 }
 
@@ -41,7 +41,7 @@
 }
 
 .single-card__footer {
-  padding: var(--single-spacing-lg);
+  padding: calc(var(--single-spacing-lg) * 0.7) var(--single-spacing-lg);
   border-top: 1px solid var(--single-border);
   background-color: var(--single-surface);
 }

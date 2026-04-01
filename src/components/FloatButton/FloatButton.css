@@ -1,0 +1,56 @@
+.single-float-btn {
+  position: fixed;
+  z-index: 9999;
+  bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background-color: var(--single-primary);
+  color: var(--single-text-on-primary);
+  border: none;
+  border-radius: var(--single-radius-full);
+  box-shadow: var(--single-shadow-lg);
+  cursor: pointer;
+  transition: opacity 200ms ease, transform 200ms ease, background-color var(--single-transition);
+
+  /* Hidden by default */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+}
+
+.single-float-btn--bottom-right {
+  right: 2rem;
+}
+
+.single-float-btn--bottom-left {
+  left: 2rem;
+}
+
+.single-float-btn--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.single-float-btn:hover {
+  background-color: var(--single-primary-hover);
+}
+
+.single-float-btn:active {
+  background-color: var(--single-primary-active);
+  transform: translateY(1px);
+}
+
+.single-float-btn:focus-visible {
+  outline: 2px solid var(--single-primary);
+  outline-offset: 3px;
+}
+
+[data-theme="dark"] .single-float-btn {
+  background-color: var(--single-primary);
+  color: var(--single-text-on-primary);
+}

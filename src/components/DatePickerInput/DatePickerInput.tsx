@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { clsx } from 'clsx';
 import { DatePicker } from '../DatePicker/DatePicker';
 import './DatePickerInput.css';
@@ -29,6 +29,28 @@ function buildFormatter(fmt: DateInputFormat) {
     const y = String(date.getFullYear());
     return fmt === 'DD/MM/YYYY' ? `${d}/${m}/${y}` : `${m}/${d}/${y}`;
   };
+}
+
+function applyDateMask(raw: string): string {
+  const digits = raw.replace(/\D/g, '').substring(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+function parseDate(str: string, fmt: DateInputFormat): Date | null {
+  const parts = str.trim().split('/');
+  if (parts.length !== 3) return null;
+  let day: number, month: number, year: number;
+  if (fmt === 'DD/MM/YYYY') {
+    [day, month, year] = parts.map(Number);
+  } else {
+    [month, day, year] = parts.map(Number);
+  }
+  if (!day || !month || !year || year < 1000 || year > 9999) return null;
+  const d = new Date(year, month - 1, day);
+  if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) return null;
+  return d;
 }
 
 function CalendarIcon() {
@@ -78,8 +100,22 @@ export function DatePickerInput({
 }: DatePickerInputProps) {
   const formatter = dateFormat ?? buildFormatter(format);
   const resolvedPlaceholder = placeholder ?? format;
+
+  const [inputText, setInputText] = useState(() =>
+    value instanceof Date && !isNaN(value.getTime()) ? formatter(value) : ''
+  );
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Sync external value → input text (when controlled externally)
+  useEffect(() => {
+    if (value === null || value === undefined) {
+      setInputText('');
+    } else if (value instanceof Date && !isNaN(value.getTime())) {
+      setInputText(formatter(value));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -91,17 +127,36 @@ export function DatePickerInput({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleBlur = useCallback(() => {
+    if (!inputText.trim()) {
+      onChange?.(null);
+      return;
+    }
+    const parsed = parseDate(inputText, format);
+    if (!parsed) {
+      // Invalid → clear
+      setInputText('');
+      onChange?.(null);
+    } else {
+      setInputText(formatter(parsed));
+      onChange?.(parsed);
+    }
+  }, [inputText, format, formatter, onChange]);
+
   const handleDaySelect = (date: Date) => {
+    setInputText(formatter(date));
     onChange?.(date);
     setIsOpen(false);
   };
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
+    setInputText('');
     onChange?.(null);
   };
 
-  const hasValue = value != null;
+  const hasValue = inputText.trim().length > 0;
+  const isFocused = isOpen;
 
   return (
     <div
@@ -113,40 +168,52 @@ export function DatePickerInput({
     >
       {label && <label className="single-dpi__label">{label}</label>}
 
-      <div className="single-dpi">
-        <div
-          className={clsx('single-dpi__trigger', {
-            'single-dpi__trigger--open': isOpen,
-            'single-dpi__trigger--error': error,
-            'single-dpi__trigger--placeholder': !hasValue,
-          })}
-          onClick={() => !disabled && setIsOpen(o => !o)}
-          role="button"
-          tabIndex={disabled ? -1 : 0}
-          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); !disabled && setIsOpen(o => !o); } }}
-        >
-          <CalendarIcon />
-          <span className="single-dpi__value">
-            {hasValue ? formatter(value!) : resolvedPlaceholder}
-          </span>
-          <div className="single-dpi__icons">
-            {clearable && hasValue && !disabled && (
-              <button
-                type="button"
-                className="single-dpi__clear"
-                onClick={handleClear}
-                aria-label="Clear date"
-              >
-                <XIcon />
-              </button>
-            )}
-          </div>
+      <div className={clsx('single-dpi__field', {
+        'single-dpi__field--open': isFocused,
+        'single-dpi__field--error': !!error,
+        'single-dpi__field--disabled': disabled,
+      })}>
+        <input
+          type="text"
+          className="single-dpi__input"
+          value={inputText}
+          placeholder={resolvedPlaceholder}
+          disabled={disabled}
+          onChange={(e) => setInputText(applyDateMask(e.target.value))}
+          onBlur={handleBlur}
+          aria-invalid={!!error}
+        />
+
+        <div className="single-dpi__actions">
+          {clearable && !disabled && (
+            <button
+              type="button"
+              className="single-dpi__clear"
+              onClick={handleClear}
+              tabIndex={-1}
+              aria-label="Limpar data"
+              style={hasValue ? undefined : { visibility: 'hidden', pointerEvents: 'none' }}
+            >
+              <XIcon />
+            </button>
+          )}
+          <button
+            type="button"
+            className="single-dpi__calendar-btn"
+            disabled={disabled}
+            onClick={() => !disabled && setIsOpen((o) => !o)}
+            tabIndex={-1}
+            aria-label="Abrir calendário"
+            aria-expanded={isOpen}
+          >
+            <CalendarIcon />
+          </button>
         </div>
 
         {isOpen && (
           <div className="single-dpi__popup">
             <DatePicker
-              value={value}
+              value={parseDate(inputText, format) ?? value ?? null}
               onChange={handleDaySelect}
               minDate={minDate}
               maxDate={maxDate}

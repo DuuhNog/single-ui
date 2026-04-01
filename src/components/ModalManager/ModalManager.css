@@ -1,0 +1,183 @@
+/* ─── Container & Overlay ──────────────────────────────────────────────────── */
+.smm-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--single-spacing-xl);
+  animation: smm-fadein 180ms ease-out;
+}
+
+@keyframes smm-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.smm-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(3px);
+}
+
+/* ─── Window ─────────────────────────────────────────────────────────────────*/
+.smm-window {
+  position: relative;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--single-background);
+  border-radius: var(--single-radius-xl);
+  box-shadow: var(--single-shadow-lg);
+  animation: smm-slideup 180ms ease-out;
+  overflow: hidden;
+}
+
+@keyframes smm-slideup {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────────*/
+.smm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--single-spacing-md) var(--single-spacing-lg);
+  border-bottom: 1px solid var(--single-border);
+  flex-shrink: 0;
+}
+
+.smm-title {
+  font-size: var(--single-font-size-xl);
+  font-weight: var(--single-font-weight-semibold);
+  color: var(--single-text-primary);
+}
+
+.smm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--single-spacing-xs);
+  margin-left: auto;
+}
+
+.smm-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--single-radius-md);
+  color: var(--single-text-secondary);
+  cursor: pointer;
+  transition: all var(--single-transition);
+}
+
+.smm-btn-icon:hover {
+  background-color: var(--single-surface-hover);
+  color: var(--single-text-primary);
+}
+
+/* ─── Body ───────────────────────────────────────────────────────────────────*/
+.smm-body {
+  flex: 1;
+  padding: var(--single-spacing-xl);
+  overflow-y: auto;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────────*/
+.smm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--single-spacing-sm);
+  padding: var(--single-spacing-md) var(--single-spacing-lg);
+  border-top: 1px solid var(--single-border);
+  flex-shrink: 0;
+}
+
+/* ─── Minimized tray ─────────────────────────────────────────────────────────*/
+.smm-tray {
+  position: fixed;
+  bottom: 0;
+  left: var(--single-spacing-lg);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--single-spacing-xs);
+  z-index: 2000;
+}
+
+.smm-tray-item {
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--single-radius-md) var(--single-radius-md) 0 0;
+  overflow: hidden;
+  box-shadow: var(--single-shadow-md);
+  min-height: 34px;
+}
+
+.smm-tray-restore {
+  display: flex;
+  align-items: center;
+  gap: var(--single-spacing-xs);
+  padding: 0 var(--single-spacing-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: var(--single-font-size-sm);
+  font-weight: var(--single-font-weight-medium);
+  transition: background-color var(--single-transition);
+}
+
+.smm-tray-restore:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.smm-tray-label {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.smm-tray-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  min-height: 34px;
+  flex-shrink: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color var(--single-transition);
+}
+
+.smm-tray-close:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────────*/
+@media (max-width: 768px) {
+  .smm-container {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .smm-window {
+    max-height: 95vh;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-width: 100% !important;
+  }
+}

@@ -16,83 +16,79 @@
   color: var(--single-text-primary);
 }
 
-.single-dpi {
+/* ─── Field ──────────────────────────────────────────────────────────────── */
+.single-dpi__field {
   position: relative;
-}
-
-/* ─── Trigger ────────────────────────────────────────────────────────────── */
-.single-dpi__trigger {
   display: flex;
   align-items: center;
-  gap: var(--single-spacing-sm);
   width: 100%;
   min-height: 40px;
-  padding: var(--single-spacing-sm) var(--single-spacing-md);
-  font-family: var(--single-font-family);
-  font-size: var(--single-font-size-base);
-  color: var(--single-text-primary);
   background-color: var(--single-background);
   border: 1px solid var(--single-border);
   border-radius: var(--single-radius-md);
-  cursor: pointer;
   transition: all var(--single-transition);
-  user-select: none;
-  outline: none;
 }
 
-.single-dpi__trigger:hover {
+.single-dpi__field:hover:not(.single-dpi__field--disabled) {
   border-color: var(--single-border-hover);
 }
 
-.single-dpi__trigger--open {
+.single-dpi__field--open {
   border-color: var(--single-primary);
   box-shadow: 0 0 0 3px var(--single-primary-light);
 }
 
-.single-dpi__trigger--error {
+.single-dpi__field--error {
   border-color: var(--single-error);
 }
 
-.single-dpi__trigger--error.single-dpi__trigger--open {
+.single-dpi__field--error.single-dpi__field--open {
   box-shadow: 0 0 0 3px var(--single-error-light);
 }
 
-.single-dpi-wrapper--disabled .single-dpi__trigger {
+.single-dpi__field--disabled {
   background-color: var(--single-surface);
-  color: var(--single-text-disabled);
-  cursor: not-allowed;
   opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.single-dpi__calendar-icon {
-  flex-shrink: 0;
-  color: var(--single-text-secondary);
-}
-
-.single-dpi__value {
+/* ─── Input ──────────────────────────────────────────────────────────────── */
+.single-dpi__input {
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 0;
+  padding: var(--single-spacing-sm) var(--single-spacing-md);
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-base);
+  color: var(--single-text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
 }
 
-.single-dpi__trigger--placeholder .single-dpi__value {
+.single-dpi__input::placeholder {
   color: var(--single-text-disabled);
 }
 
-.single-dpi__icons {
+.single-dpi__input:disabled {
+  cursor: not-allowed;
+  color: var(--single-text-disabled);
+}
+
+/* ─── Actions ────────────────────────────────────────────────────────────── */
+.single-dpi__actions {
   display: flex;
   align-items: center;
-  gap: var(--single-spacing-xs);
-  margin-left: auto;
+  gap: 2px;
+  padding-right: var(--single-spacing-xs);
+  flex-shrink: 0;
 }
 
 .single-dpi__clear {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   padding: 0;
   color: var(--single-text-secondary);
   background: transparent;
@@ -105,6 +101,35 @@
 .single-dpi__clear:hover {
   background-color: var(--single-surface-hover);
   color: var(--single-text-primary);
+}
+
+.single-dpi__calendar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--single-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--single-radius-sm);
+  cursor: pointer;
+  transition: all var(--single-transition);
+}
+
+.single-dpi__calendar-btn:hover:not(:disabled) {
+  background-color: var(--single-surface-hover);
+  color: var(--single-primary);
+}
+
+.single-dpi__calendar-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.single-dpi__calendar-icon {
+  flex-shrink: 0;
 }
 
 /* ─── Popup ──────────────────────────────────────────────────────────────── */

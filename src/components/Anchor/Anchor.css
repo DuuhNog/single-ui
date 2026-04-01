@@ -1,0 +1,18 @@
+.single-anchor {
+  color: var(--single-primary);
+  text-decoration: none;
+  font-family: var(--single-font-family);
+  transition: color var(--single-transition), text-decoration var(--single-transition);
+  cursor: pointer;
+}
+
+.single-anchor:hover {
+  color: var(--single-primary-hover);
+  text-decoration: underline;
+}
+
+.single-anchor:focus-visible {
+  outline: 2px solid var(--single-primary);
+  outline-offset: 2px;
+  border-radius: var(--single-radius-sm);
+}

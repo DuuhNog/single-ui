@@ -4,6 +4,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/@single-ui/react.svg)](https://www.npmjs.com/package/@single-ui/react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GitHub](https://img.shields.io/badge/GitHub-DuuhNog%2Fsingle--ui-181717?logo=github)](https://github.com/DuuhNog/single-ui)
 
 ## 👀 Veja os componentes ao vivo
 
@@ -15,7 +16,7 @@ Acesse o site para explorar todos os componentes interativos com exemplos de có
 
 ## ✨ Características
 
-- ⚛️ **React 18** - Componentes modernos com hooks
+- ⚛️ **React 19** - Componentes modernos com hooks
 - 📝 **TypeScript** - Tipagem completa
 - ⚡ **Vite** - Build rápido e HMR
 - 🎨 **CSS Puro** - Sem dependências de frameworks

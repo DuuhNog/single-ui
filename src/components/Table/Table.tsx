@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { clsx } from 'clsx';
 import './Table.css';
 
@@ -19,11 +19,85 @@ export interface TableProps<T = any> {
   loading?: boolean;
   emptyMessage?: string;
   onRowClick?: (row: T, index: number) => void;
+  /** Content rendered inside the filter popover */
+  filterContent?: React.ReactNode;
   className?: string;
 }
 
 type SortDirection = 'asc' | 'desc' | null;
 
+/* ─── Sort icons ─────────────────────────────────────────────────────────── */
+function IconSortNeutral() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 4.5L6 2l3 2.5M3 7.5L6 10l3-2.5" />
+    </svg>
+  );
+}
+
+function IconSortAsc() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 7L6 4l3 3" />
+    </svg>
+  );
+}
+
+function IconSortDesc() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 5l3 3 3-3" />
+    </svg>
+  );
+}
+
+/* ─── Filter icon ────────────────────────────────────────────────────────── */
+function IconFilter() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+    </svg>
+  );
+}
+
+/* ─── Filter Popover ─────────────────────────────────────────────────────── */
+function FilterPopover({ content }: { content: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={wrapperRef} className="single-table__filter-wrap">
+      <button
+        type="button"
+        className={clsx('single-table__filter-btn', { 'single-table__filter-btn--open': open })}
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Filtros"
+        aria-expanded={open}
+      >
+        <IconFilter />
+        <span>Filtros</span>
+      </button>
+      {open && (
+        <div className="single-table__filter-panel">
+          {content}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Table ──────────────────────────────────────────────────────────────── */
 export function Table<T = any>({
   columns,
   data,
@@ -31,6 +105,7 @@ export function Table<T = any>({
   loading = false,
   emptyMessage = 'Nenhum registro encontrado',
   onRowClick,
+  filterContent,
   className,
 }: TableProps<T>) {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -65,10 +140,14 @@ export function Table<T = any>({
     });
   }, [data, sortColumn, sortDirection]);
 
-  const tableClasses = clsx('single-table-wrapper', className);
-
   return (
-    <div className={tableClasses}>
+    <div className={clsx('single-table-wrapper', className)}>
+      {filterContent && (
+        <div className="single-table__toolbar">
+          <FilterPopover content={filterContent} />
+        </div>
+      )}
+
       <table className="single-table">
         <thead className="single-table__header">
           <tr>
@@ -88,9 +167,9 @@ export function Table<T = any>({
                   {column.sortable && (
                     <span className="single-table__sort-icon">
                       {sortColumn === column.key ? (
-                        sortDirection === 'asc' ? '↑' : '↓'
+                        sortDirection === 'asc' ? <IconSortAsc /> : <IconSortDesc />
                       ) : (
-                        '↕'
+                        <IconSortNeutral />
                       )}
                     </span>
                   )}
@@ -112,10 +191,7 @@ export function Table<T = any>({
             </tr>
           ) : sortedData.length === 0 ? (
             <tr>
-              <td
-                colSpan={columns.length}
-                className="single-table__empty"
-              >
+              <td colSpan={columns.length} className="single-table__empty">
                 {emptyMessage}
               </td>
             </tr>

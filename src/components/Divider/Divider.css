@@ -1,0 +1,56 @@
+/* ─── Horizontal ─────────────────────────────────────────────────────────── */
+.single-divider--horizontal {
+  display: block;
+  width: 100%;
+  height: 0;
+  border: none;
+  border-top: 1px solid var(--single-border);
+  margin: 0;
+}
+
+/* ─── Vertical ───────────────────────────────────────────────────────────── */
+.single-divider--vertical {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  background-color: var(--single-border);
+  vertical-align: middle;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+/* ─── Labeled ────────────────────────────────────────────────────────────── */
+.single-divider--labeled {
+  display: flex;
+  align-items: center;
+  gap: var(--single-spacing-md);
+  width: 100%;
+  color: var(--single-text-secondary);
+  font-size: var(--single-font-size-sm);
+  font-family: var(--single-font-family);
+  white-space: nowrap;
+}
+
+.single-divider--labeled::before,
+.single-divider--labeled::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--single-border);
+}
+
+/* Label position: start — no left line */
+.single-divider--label-start::before {
+  flex: 0;
+}
+
+/* Label position: end — no right line */
+.single-divider--label-end::after {
+  flex: 0;
+}
+
+.single-divider__label {
+  flex-shrink: 0;
+  padding: 0 var(--single-spacing-xs);
+  font-weight: var(--single-font-weight-medium);
+}

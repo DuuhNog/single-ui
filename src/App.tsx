@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
 import { clsx } from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
-import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar } from './index'
+import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar, Spinner, FloatButton, Divider, Anchor, ModalManagerProvider, useModal } from './index'
 import type { TableColumn, DateRange } from './index'
 import './styles/tokens.css'
 
 type Page = 'home' | 'components' | 'examples' | 'tasks'
-type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'drawer' | 'navbar' | 'table' | 'select' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp'
+type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'modalmanager' | 'drawer' | 'navbar' | 'table' | 'select' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp' | 'spinner' | 'floatbutton' | 'divider' | 'anchor'
 type Accent = 'orange' | 'blue' | 'red' | 'purple'
 
 const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
@@ -18,6 +18,7 @@ const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'textarea', label: 'Textarea' },
   { id: 'card', label: 'Card' },
   { id: 'modal', label: 'Modal' },
+  { id: 'modalmanager', label: 'Modal Manager' },
   { id: 'drawer', label: 'Drawer' },
   { id: 'navbar', label: 'Navbar' },
   { id: 'table', label: 'Table' },
@@ -40,6 +41,10 @@ const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'daterangepicker', label: 'DateRangePicker' },
   { id: 'datepickerinput', label: 'DatePickerInput' },
   { id: 'daterangepickerinput', label: 'DateRangePickerInput' },
+  { id: 'spinner', label: 'Spinner' },
+  { id: 'floatbutton', label: 'FloatButton' },
+  { id: 'divider', label: 'Divider' },
+  { id: 'anchor', label: 'Anchor' },
 ]
 
 const ACCENTS: { id: Accent; label: string; color: string; darkColor: string }[] = [
@@ -275,6 +280,17 @@ function HomePage({ onStart }: { onStart: () => void }) {
   const [modalOpen, setModalOpen] = useState(false)
   const [selectValue, setSelectValue] = useState<string | number | null>(null)
 
+  // Form demo state
+  const [formName, setFormName] = useState('')
+  const [formEmail, setFormEmail] = useState('')
+  const [formPhone, setFormPhone] = useState('')
+  const [formDept, setFormDept] = useState<string | number | null>(null)
+  const [formRole, setFormRole] = useState<string | number | null>(null)
+  const [formBio, setFormBio] = useState('')
+  const [formTerms, setFormTerms] = useState(false)
+  const [formNotif, setFormNotif] = useState(true)
+  const [formSubmitted, setFormSubmitted] = useState(false)
+
   interface ComponentRow { id: number; component: string; descricao: string; status: string }
 
   const tableColumns: TableColumn<ComponentRow>[] = [
@@ -318,6 +334,55 @@ function HomePage({ onStart }: { onStart: () => void }) {
     { id: 24, component: 'DateRangePickerInput', descricao: 'Input com popup de intervalo', status: 'Estável' },
   ]
 
+  interface OrderRow { id: number; num: string; cliente: string; produto: string; status: string; valor: string; data: string; cidade: string }
+  const orderColumns: TableColumn<OrderRow>[] = [
+    { key: 'num', label: '#', width: 70 },
+    { key: 'cliente', label: 'Cliente', sortable: true },
+    { key: 'produto', label: 'Produto', sortable: true },
+    {
+      key: 'status', label: 'Status', align: 'center',
+      render: (v) => {
+        const map: Record<string, string> = {
+          'Entregue': 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400',
+          'Em trânsito': 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-400',
+          'Pendente': 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400',
+          'Cancelado': 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400',
+        }
+        return <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${map[v as string] ?? ''}`}>{v as string}</span>
+      },
+    },
+    { key: 'valor', label: 'Valor', align: 'right', sortable: true },
+    { key: 'data', label: 'Data', sortable: true },
+    { key: 'cidade', label: 'Cidade' },
+  ]
+  const orderData: OrderRow[] = [
+    { id: 1,  num: '#001', cliente: 'Ana Lima',         produto: 'Notebook Pro 15"',    status: 'Entregue',   valor: 'R$ 4.299,00', data: '01/03/2026', cidade: 'São Paulo' },
+    { id: 2,  num: '#002', cliente: 'Bruno Souza',      produto: 'Monitor UltraWide',   status: 'Em trânsito',valor: 'R$ 1.850,00', data: '02/03/2026', cidade: 'Campinas' },
+    { id: 3,  num: '#003', cliente: 'Carla Mendes',     produto: 'Teclado Mecânico',    status: 'Pendente',   valor: 'R$   349,00', data: '02/03/2026', cidade: 'Rio de Janeiro' },
+    { id: 4,  num: '#004', cliente: 'Diego Rocha',      produto: 'Cadeira Gamer',       status: 'Entregue',   valor: 'R$ 2.100,00', data: '03/03/2026', cidade: 'Belo Horizonte' },
+    { id: 5,  num: '#005', cliente: 'Elisa Ferreira',   produto: 'Mouse Sem Fio',       status: 'Cancelado',  valor: 'R$   189,00', data: '03/03/2026', cidade: 'Curitiba' },
+    { id: 6,  num: '#006', cliente: 'Felipe Costa',     produto: 'Headset 7.1',         status: 'Entregue',   valor: 'R$   520,00', data: '04/03/2026', cidade: 'Porto Alegre' },
+    { id: 7,  num: '#007', cliente: 'Gabriela Nunes',   produto: 'Webcam 4K',           status: 'Em trânsito',valor: 'R$   760,00', data: '04/03/2026', cidade: 'Florianópolis' },
+    { id: 8,  num: '#008', cliente: 'Henrique Alves',   produto: 'SSD NVMe 2TB',        status: 'Entregue',   valor: 'R$   890,00', data: '05/03/2026', cidade: 'Recife' },
+    { id: 9,  num: '#009', cliente: 'Isabela Teixeira', produto: 'Smartphone X12',      status: 'Pendente',   valor: 'R$ 3.499,00', data: '05/03/2026', cidade: 'Salvador' },
+    { id: 10, num: '#010', cliente: 'João Moreira',     produto: 'Tablet Pro 11"',      status: 'Em trânsito',valor: 'R$ 2.650,00', data: '06/03/2026', cidade: 'Fortaleza' },
+    { id: 11, num: '#011', cliente: 'Karen Oliveira',   produto: 'Impressora Laser',    status: 'Entregue',   valor: 'R$ 1.200,00', data: '06/03/2026', cidade: 'Manaus' },
+    { id: 12, num: '#012', cliente: 'Lucas Pereira',    produto: 'Roteador Wi-Fi 6',    status: 'Entregue',   valor: 'R$   430,00', data: '07/03/2026', cidade: 'Belém' },
+    { id: 13, num: '#013', cliente: 'Marina Santos',    produto: 'Switch 8 Portas',     status: 'Cancelado',  valor: 'R$   310,00', data: '07/03/2026', cidade: 'Goiânia' },
+    { id: 14, num: '#014', cliente: 'Nicolas Barbosa',  produto: 'No-break 1500VA',     status: 'Em trânsito',valor: 'R$   980,00', data: '08/03/2026', cidade: 'Brasília' },
+    { id: 15, num: '#015', cliente: 'Olivia Castro',    produto: 'Mesa Standing Desk',  status: 'Pendente',   valor: 'R$ 3.150,00', data: '08/03/2026', cidade: 'São Paulo' },
+    { id: 16, num: '#016', cliente: 'Paulo Dias',       produto: 'Microfone Condensador',status:'Entregue',   valor: 'R$   670,00', data: '09/03/2026', cidade: 'Curitiba' },
+    { id: 17, num: '#017', cliente: 'Quintina Farias',  produto: 'Stream Deck',         status: 'Entregue',   valor: 'R$   590,00', data: '09/03/2026', cidade: 'São Paulo' },
+    { id: 18, num: '#018', cliente: 'Rafael Gomes',     produto: 'Placa de Vídeo RTX',  status: 'Em trânsito',valor: 'R$ 5.800,00', data: '10/03/2026', cidade: 'Rio de Janeiro' },
+    { id: 19, num: '#019', cliente: 'Sabrina Holm',     produto: 'Memória RAM 32GB',    status: 'Entregue',   valor: 'R$   720,00', data: '10/03/2026', cidade: 'Porto Alegre' },
+    { id: 20, num: '#020', cliente: 'Thiago Viana',     produto: 'Processador i9',      status: 'Pendente',   valor: 'R$ 4.100,00', data: '11/03/2026', cidade: 'Campinas' },
+    { id: 21, num: '#021', cliente: 'Ursula Monteiro',  produto: 'HD Externo 5TB',      status: 'Entregue',   valor: 'R$   560,00', data: '11/03/2026', cidade: 'Belo Horizonte' },
+    { id: 22, num: '#022', cliente: 'Vitor Leal',       produto: 'Fonte 850W Modular',  status: 'Cancelado',  valor: 'R$   680,00', data: '12/03/2026', cidade: 'Recife' },
+    { id: 23, num: '#023', cliente: 'Wanda Correia',    produto: 'Case Gamer ATX',      status: 'Entregue',   valor: 'R$   470,00', data: '12/03/2026', cidade: 'Salvador' },
+    { id: 24, num: '#024', cliente: 'Xavier Pinto',     produto: 'Placa-mãe Z790',      status: 'Em trânsito',valor: 'R$ 2.300,00', data: '13/03/2026', cidade: 'Fortaleza' },
+    { id: 25, num: '#025', cliente: 'Yasmin Rezende',   produto: 'Cooler 360mm AIO',    status: 'Entregue',   valor: 'R$   840,00', data: '13/03/2026', cidade: 'Florianópolis' },
+  ]
+
   return (
     <main className="bg-stone-50 dark:bg-stone-950 min-h-screen">
       {/* Hero */}
@@ -335,7 +400,7 @@ function HomePage({ onStart }: { onStart: () => void }) {
           </p>
           <div className="flex gap-3 justify-center mb-8 flex-wrap">
             <Button size="lg" onClick={onStart}>Começar agora</Button>
-            <Button size="lg" variant="secondary">Ver no GitHub</Button>
+            <Button size="lg" variant="secondary" onClick={() => window.open('https://github.com/DuuhNog/single-ui', '_blank')}>Ver no GitHub</Button>
           </div>
           <div className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-sm font-mono text-stone-700 dark:text-stone-300">
             <span className="text-stone-400 dark:text-stone-600 select-none">$</span>
@@ -373,108 +438,271 @@ function HomePage({ onStart }: { onStart: () => void }) {
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2 text-center">
             Demonstrações
           </h2>
-          <p className="text-center text-stone-500 dark:text-stone-400 mb-12 text-base">
+          <p className="text-center text-stone-500 dark:text-stone-400 mb-10 text-base">
             Componentes interativos prontos para uso
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            <Card title="Button" subtitle="Variantes, tamanhos e estados">
-              <div className="flex flex-col gap-3">
-                <div className="flex gap-2 flex-wrap">
-                  <Button variant="primary" size="sm">Primary</Button>
-                  <Button variant="secondary" size="sm">Secondary</Button>
-                  <Button variant="success" size="sm">Success</Button>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  <Button variant="warning" size="sm">Warning</Button>
-                  <Button variant="error" size="sm">Error</Button>
-                  <Button variant="info" size="sm">Info</Button>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  <Button loading size="sm">Carregando</Button>
-                  <Button disabled size="sm">Desabilitado</Button>
-                </div>
-              </div>
-            </Card>
+          <Tabs
+            defaultTab="componentes"
+            variant="pills"
+            items={[
+              {
+                id: 'componentes',
+                label: 'Componentes',
+                content: (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-6">
+                    <Card title="Button" subtitle="Variantes, tamanhos e estados">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex gap-2 flex-wrap">
+                          <Button variant="primary" size="sm">Primary</Button>
+                          <Button variant="secondary" size="sm">Secondary</Button>
+                          <Button variant="success" size="sm">Success</Button>
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                          <Button variant="warning" size="sm">Warning</Button>
+                          <Button variant="error" size="sm">Error</Button>
+                          <Button variant="info" size="sm">Info</Button>
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                          <Button loading size="sm">Carregando</Button>
+                          <Button disabled size="sm">Desabilitado</Button>
+                        </div>
+                      </div>
+                    </Card>
 
-            <Card title="Input" subtitle="Campos com máscara">
-              <div className="flex flex-col gap-3">
-                <Input label="CPF" mask="cpf" placeholder="000.000.000-00" />
-                <Input label="Telefone" mask="phone" placeholder="(00) 00000-0000" />
-                <Input label="Valor BRL" mask="currency-brl" placeholder="R$ 0,00" />
-              </div>
-            </Card>
+                    <Card title="Input" subtitle="Campos com máscara">
+                      <div className="flex flex-col gap-3">
+                        <Input label="CPF" mask="cpf" placeholder="000.000.000-00" />
+                        <Input label="Telefone" mask="phone" placeholder="(00) 00000-0000" />
+                        <Input label="Valor BRL" mask="currency-brl" placeholder="R$ 0,00" />
+                      </div>
+                    </Card>
 
-            <Card title="Select" subtitle="Seleção com busca integrada">
-              <div className="flex flex-col gap-3">
-                <Select
-                  label="Framework"
-                  placeholder="Selecione um framework"
-                  searchable
-                  clearable
-                  value={selectValue}
-                  onChange={v => setSelectValue(v as string | number | null)}
-                  options={[
-                    { value: 'react', label: 'React' },
-                    { value: 'vue', label: 'Vue' },
-                    { value: 'angular', label: 'Angular' },
-                    { value: 'svelte', label: 'Svelte' },
-                    { value: 'solid', label: 'SolidJS' },
-                  ]}
-                />
-                {selectValue && (
-                  <p className="m-0 text-sm text-stone-500 dark:text-stone-400">
-                    Selecionado: <strong className="text-stone-700 dark:text-stone-300">{selectValue}</strong>
-                  </p>
-                )}
-              </div>
-            </Card>
+                    <Card title="Select" subtitle="Seleção com busca integrada">
+                      <div className="flex flex-col gap-3">
+                        <Select
+                          label="Framework"
+                          placeholder="Selecione um framework"
+                          searchable
+                          clearable
+                          value={selectValue}
+                          onChange={v => setSelectValue(v as string | number | null)}
+                          options={[
+                            { value: 'react', label: 'React' },
+                            { value: 'vue', label: 'Vue' },
+                            { value: 'angular', label: 'Angular' },
+                            { value: 'svelte', label: 'Svelte' },
+                            { value: 'solid', label: 'SolidJS' },
+                          ]}
+                        />
+                        {selectValue && (
+                          <p className="m-0 text-sm text-stone-500 dark:text-stone-400">
+                            Selecionado: <strong className="text-stone-700 dark:text-stone-300">{selectValue}</strong>
+                          </p>
+                        )}
+                      </div>
+                    </Card>
 
-            <Card title="Card" subtitle="Containers com hover e footer">
-              <Card
-                title="Card hoverable"
-                subtitle="Passe o mouse"
-                hoverable
-                footer={
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="secondary">Cancelar</Button>
-                    <Button size="sm">Confirmar</Button>
+                    <Card title="Card" subtitle="Containers com hover e footer">
+                      <Card
+                        title="Card hoverable"
+                        subtitle="Passe o mouse"
+                        hoverable
+                        footer={
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="secondary">Cancelar</Button>
+                            <Button size="sm">Confirmar</Button>
+                          </div>
+                        }
+                      >
+                        <p className="m-0 text-stone-500 dark:text-stone-400 text-sm">
+                          Conteúdo com efeito hover e footer personalizado.
+                        </p>
+                      </Card>
+                    </Card>
+
+                    <Card title="Modal" subtitle="Diálogos com portal e animação">
+                      <div className="flex flex-col gap-3">
+                        <p className="m-0 text-stone-500 dark:text-stone-400 text-sm">
+                          Feche com ESC, botão X ou clicando fora. Renderiza via React Portal.
+                        </p>
+                        <Button onClick={() => setModalOpen(true)}>Abrir Modal</Button>
+                        <Modal
+                          open={modalOpen}
+                          onClose={() => setModalOpen(false)}
+                          title="Exemplo de Modal"
+                          footer={
+                            <div className="flex gap-2 justify-end">
+                              <Button variant="secondary" onClick={() => setModalOpen(false)}>Fechar</Button>
+                              <Button onClick={() => setModalOpen(false)}>Confirmar</Button>
+                            </div>
+                          }
+                        >
+                          <p className="text-stone-500 dark:text-stone-400 m-0">
+                            Modal com portal, scroll lock, ESC e animação de entrada.
+                          </p>
+                        </Modal>
+                      </div>
+                    </Card>
+
+                    <Card title="Table" subtitle="Ordenação e render customizado">
+                      <Table columns={tableColumns} data={tableData} rowKey="id" />
+                    </Card>
+
+                    <Card title="Chips & Badges" subtitle="Tags e indicadores visuais">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex gap-2 flex-wrap">
+                          <Chip label="Default" />
+                          <Chip label="Primary" variant="primary" />
+                          <Chip label="Success" variant="success" />
+                          <Chip label="Warning" variant="warning" />
+                          <Chip label="Error" variant="error" onRemove={() => {}} />
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                          <Badge variant="primary">Primary</Badge>
+                          <Badge variant="success">Success</Badge>
+                          <Badge variant="warning">Warning</Badge>
+                          <Badge variant="error">Error</Badge>
+                          <Badge dot variant="info">Online</Badge>
+                        </div>
+                      </div>
+                    </Card>
                   </div>
-                }
-              >
-                <p className="m-0 text-stone-500 dark:text-stone-400 text-sm">
-                  Conteúdo com efeito hover e footer personalizado.
-                </p>
-              </Card>
-            </Card>
-
-            <Card title="Modal" subtitle="Diálogos com portal e animação">
-              <div className="flex flex-col gap-3">
-                <p className="m-0 text-stone-500 dark:text-stone-400 text-sm">
-                  Feche com ESC, botão X ou clicando fora. Renderiza via React Portal.
-                </p>
-                <Button onClick={() => setModalOpen(true)}>Abrir Modal</Button>
-                <Modal
-                  open={modalOpen}
-                  onClose={() => setModalOpen(false)}
-                  title="Exemplo de Modal"
-                  footer={
-                    <div className="flex gap-2 justify-end">
-                      <Button variant="secondary" onClick={() => setModalOpen(false)}>Fechar</Button>
-                      <Button onClick={() => setModalOpen(false)}>Confirmar</Button>
+                ),
+              },
+              {
+                id: 'form',
+                label: 'Form',
+                content: (
+                  <div className="mt-6 max-w-2xl mx-auto">
+                    {formSubmitted ? (
+                      <Card>
+                        <div className="flex flex-col items-center gap-4 py-8 text-center">
+                          <span className="text-5xl">✅</span>
+                          <h3 className="text-xl font-bold text-stone-900 dark:text-stone-50 m-0">Cadastro enviado!</h3>
+                          <p className="text-stone-500 dark:text-stone-400 m-0">Os dados foram registrados com sucesso.</p>
+                          <Button variant="secondary" onClick={() => { setFormSubmitted(false); setFormName(''); setFormEmail(''); setFormPhone(''); setFormDept(null); setFormRole(null); setFormBio(''); setFormTerms(false); setFormNotif(true) }}>
+                            Novo cadastro
+                          </Button>
+                        </div>
+                      </Card>
+                    ) : (
+                      <Card title="Cadastro de Colaborador" subtitle="Preencha os dados para cadastrar um novo colaborador">
+                        <div className="flex flex-col gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Input
+                              label="Nome completo"
+                              placeholder="João da Silva"
+                              value={formName}
+                              onChange={v => setFormName(v)}
+                              required
+                            />
+                            <Input
+                              label="E-mail corporativo"
+                              placeholder="joao@empresa.com"
+                              type="email"
+                              value={formEmail}
+                              onChange={v => setFormEmail(v)}
+                              required
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Input
+                              label="Telefone"
+                              mask="phone"
+                              placeholder="(00) 00000-0000"
+                              value={formPhone}
+                              onChange={v => setFormPhone(v)}
+                            />
+                            <Select
+                              label="Departamento"
+                              placeholder="Selecione..."
+                              value={formDept}
+                              onChange={v => setFormDept(v as string | null)}
+                              options={[
+                                { value: 'eng', label: 'Engenharia' },
+                                { value: 'design', label: 'Design' },
+                                { value: 'produto', label: 'Produto' },
+                                { value: 'vendas', label: 'Vendas' },
+                                { value: 'rh', label: 'Recursos Humanos' },
+                                { value: 'financeiro', label: 'Financeiro' },
+                              ]}
+                            />
+                          </div>
+                          <Select
+                            label="Cargo"
+                            placeholder="Selecione um cargo..."
+                            value={formRole}
+                            onChange={v => setFormRole(v as string | null)}
+                            searchable
+                            options={[
+                              { value: 'jr', label: 'Júnior' },
+                              { value: 'pl', label: 'Pleno' },
+                              { value: 'sr', label: 'Sênior' },
+                              { value: 'lead', label: 'Tech Lead' },
+                              { value: 'manager', label: 'Gerente' },
+                              { value: 'director', label: 'Diretor' },
+                            ]}
+                          />
+                          <Textarea
+                            label="Biografia"
+                            placeholder="Conte um pouco sobre o colaborador..."
+                            value={formBio}
+                            onChange={e => setFormBio(e.target.value)}
+                            rows={4}
+                            helperText="Máximo 500 caracteres"
+                          />
+                          <div className="flex flex-col gap-3 pt-1">
+                            <Switch
+                              label="Receber notificações por e-mail"
+                              checked={formNotif}
+                              onChange={e => setFormNotif(e.target.checked)}
+                            />
+                            <Checkbox
+                              label="Li e aceito os termos de uso e política de privacidade"
+                              checked={formTerms}
+                              onChange={e => setFormTerms(e.target.checked)}
+                            />
+                          </div>
+                          <div className="flex gap-3 justify-end pt-2">
+                            <Button variant="secondary" onClick={() => { setFormName(''); setFormEmail(''); setFormPhone(''); setFormDept(null); setFormRole(null); setFormBio(''); setFormTerms(false); setFormNotif(true) }}>
+                              Limpar
+                            </Button>
+                            <Button
+                              disabled={!formName || !formEmail || !formDept || !formTerms}
+                              onClick={() => setFormSubmitted(true)}
+                            >
+                              Cadastrar
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    )}
+                  </div>
+                ),
+              },
+              {
+                id: 'tabela',
+                label: 'Tabela',
+                content: (
+                  <div className="mt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-50 m-0">Pedidos</h3>
+                        <p className="text-sm text-stone-500 dark:text-stone-400 m-0 mt-0.5">{orderData.length} registros encontrados</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Chip label="Entregue" variant="success" />
+                        <Chip label="Em trânsito" variant="info" />
+                        <Chip label="Pendente" variant="warning" />
+                        <Chip label="Cancelado" variant="error" />
+                      </div>
                     </div>
-                  }
-                >
-                  <p className="text-stone-500 dark:text-stone-400 m-0">
-                    Modal com portal, scroll lock, ESC e animação de entrada.
-                  </p>
-                </Modal>
-              </div>
-            </Card>
-
-            <Card title="Table" subtitle="Ordenação e render customizado">
-              <Table columns={tableColumns} data={tableData} rowKey="id" />
-            </Card>
-          </div>
+                    <Table columns={orderColumns} data={orderData} rowKey="id" />
+                  </div>
+                ),
+              },
+            ]}
+          />
         </div>
       </section>
     </main>
@@ -672,6 +900,14 @@ function InputSection() {
         </div>
       </DemoBox>
 
+      <StepTitle>Password</StepTitle>
+      <DemoBox>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input label="Senha" type="password" placeholder="Digite sua senha" />
+          <Input label="Confirmar senha" type="password" placeholder="Repita a senha" helperText="Mínimo de 8 caracteres" />
+        </div>
+      </DemoBox>
+
       <StepTitle>Estado de erro</StepTitle>
       <DemoBox>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -850,6 +1086,189 @@ const [open, setOpen] = useState(false)
         { name: 'footer', type: 'ReactNode', description: 'Rodapé do modal' },
         { name: 'children', type: 'ReactNode', required: true, description: 'Conteúdo do modal' },
       ]} />
+    </section>
+  )
+}
+
+// ─── ModalManager Section ─────────────────────────────────────────────────────
+function ModalManagerDemo() {
+  const { openModal, closeModal } = useModal()
+
+  const openConfirm = () => {
+    let id: string
+    id = openModal({
+      title: 'Confirmar exclusão',
+      size: 'sm',
+      body: (
+        <p style={{ margin: 0, color: 'var(--single-text-secondary)' }}>
+          Tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.
+        </p>
+      ),
+      footer: (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="secondary" size="sm" onClick={() => closeModal(id)}>Cancelar</Button>
+          <Button variant="error" size="sm" onClick={() => { alert('Excluído!'); closeModal(id) }}>Excluir</Button>
+        </div>
+      ),
+      minimizable: false,
+      closeOnOverlayClick: false,
+    })
+  }
+
+  const openForm = () => {
+    let id: string
+    id = openModal({
+      title: 'Novo usuário',
+      size: 'md',
+      body: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Input label="Nome completo" placeholder="Ex: João Silva" fullWidth />
+          <Input label="E-mail" placeholder="email@empresa.com" fullWidth />
+        </div>
+      ),
+      footer: (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="secondary" size="sm" onClick={() => closeModal(id)}>Cancelar</Button>
+          <Button size="sm" onClick={() => { alert('Salvo!'); closeModal(id) }}>Salvar</Button>
+        </div>
+      ),
+    })
+  }
+
+  const openMinimizable = () => {
+    let id: string
+    id = openModal({
+      title: 'Tarefa em andamento',
+      size: 'md',
+      minimizable: true,
+      body: (
+        <p style={{ margin: 0, color: 'var(--single-text-secondary)' }}>
+          Minimize este modal com o botão <strong>–</strong> no header. Ele aparecerá na tray na parte inferior da tela. Você pode restaurá-lo clicando no nome.
+        </p>
+      ),
+      footer: (
+        <Button size="sm" onClick={() => closeModal(id)}>Fechar</Button>
+      ),
+    })
+  }
+
+  const openMultiple = () => {
+    let idA: string
+    idA = openModal({
+      id: 'demo-a',
+      title: 'Modal A',
+      size: 'sm',
+      body: <p style={{ margin: 0, color: 'var(--single-text-secondary)' }}>Minimize-me para abrir o Modal B ao mesmo tempo.</p>,
+      footer: <Button size="sm" onClick={() => closeModal(idA)}>Fechar</Button>,
+    })
+    let idB: string
+    idB = openModal({
+      id: 'demo-b',
+      title: 'Modal B',
+      size: 'sm',
+      body: <p style={{ margin: 0, color: 'var(--single-text-secondary)' }}>Dois modais abertos simultaneamente. Minimize um para interagir com o outro.</p>,
+      footer: <Button size="sm" onClick={() => closeModal(idB)}>Fechar</Button>,
+    })
+  }
+
+  return (
+    <div className="flex gap-3 flex-wrap">
+      <Button size="sm" variant="error" onClick={openConfirm}>Confirmação</Button>
+      <Button size="sm" variant="secondary" onClick={openForm}>Formulário</Button>
+      <Button size="sm" variant="secondary" onClick={openMinimizable}>Minimizável</Button>
+      <Button size="sm" variant="secondary" onClick={openMultiple}>Dois modais</Button>
+    </div>
+  )
+}
+
+function ModalManagerSection() {
+  return (
+    <section id="modalmanager" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="Modal Manager"
+        description="Abra e feche modais de qualquer componente via hook, sem gerenciar useState local. Suporta múltiplos modais simultâneos e minimização."
+      />
+
+      <StepTitle>1. Configure o Provider</StepTitle>
+      <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
+        Adicione <IC>ModalManagerProvider</IC> uma vez na raiz do app (ex: <IC>main.tsx</IC>). Ele gerencia o estado de todos os modais.
+      </p>
+      <CodeBlock code={`// main.tsx
+import { ModalManagerProvider } from '@single-ui/react'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <ModalManagerProvider>
+    <App />
+  </ModalManagerProvider>
+)`} />
+
+      <StepTitle>2. Abra modais com useModal</StepTitle>
+      <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
+        Em qualquer componente dentro do Provider, use o hook <IC>useModal()</IC> para abrir e fechar modais.
+        <br />O <IC>id</IC> retornado por <IC>openModal</IC> é usado para fechar o modal pelo footer.
+      </p>
+      <CodeBlock code={`import { useModal, Button } from '@single-ui/react'
+
+function MeuComponente() {
+  const { openModal, closeModal } = useModal()
+
+  const handleAbrir = () => {
+    let id: string
+    id = openModal({
+      title: 'Confirmar',
+      body: <p>Deseja continuar?</p>,
+      footer: (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="secondary" onClick={() => closeModal(id)}>Cancelar</Button>
+          <Button onClick={() => { salvar(); closeModal(id) }}>Confirmar</Button>
+        </div>
+      ),
+      size: 'sm',
+      minimizable: false,
+      closeOnOverlayClick: false,
+    })
+  }
+
+  return <Button onClick={handleAbrir}>Abrir Modal</Button>
+}`} />
+
+      <StepTitle>Demo interativo</StepTitle>
+      <DemoBox>
+        <ModalManagerDemo />
+      </DemoBox>
+
+      <StepTitle>3. Minimização</StepTitle>
+      <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
+        Com <IC>minimizable: true</IC> (padrão), o modal exibe um botão <strong>–</strong> no header. O modal minimizado aparece na tray no rodapé da tela — clique no nome para restaurar.
+      </p>
+      <CodeBlock code={`const { openModal, minimizeModal, restoreModal } = useModal()
+
+// Minimize programaticamente
+const id = openModal({ title: 'Relatório', body: <div>...</div> })
+minimizeModal(id)  // vai para a tray
+restoreModal(id)   // restaura para tela cheia`} />
+
+      <StepTitle>Opções — openModal</StepTitle>
+      <PropsTable props={[
+        { name: 'title', type: 'string', description: 'Título exibido no header do modal' },
+        { name: 'body', type: 'ReactNode', required: true, description: 'Conteúdo principal' },
+        { name: 'footer', type: 'ReactNode', description: 'Rodapé — normalmente botões de ação' },
+        { name: 'size', type: "'sm'|'md'|'lg'|'xl'|number", default: '600', description: "Largura máxima: preset ou px direto (ex: size: 800)" },
+        { name: 'minimizable', type: 'boolean', default: 'true', description: 'Exibe botão – para minimizar para a tray' },
+        { name: 'color', type: 'string', description: 'Cor da aba na tray (CSS color). Padrão: --single-primary' },
+        { name: 'id', type: 'string', description: 'ID customizado; gerado automaticamente se omitido' },
+        { name: 'closeOnOverlayClick', type: 'boolean', default: 'true', description: 'Fecha ao clicar no overlay escuro' },
+        { name: 'closeOnEscape', type: 'boolean', default: 'true', description: 'Fecha ao pressionar ESC' },
+      ]} />
+
+      <StepTitle>Retorno de useModal</StepTitle>
+      <PropsTable props={[
+        { name: 'openModal(options)', type: '(options) => string', description: 'Abre o modal e retorna o id gerado' },
+        { name: 'closeModal(id)', type: '(id: string) => void', description: 'Fecha e remove o modal pelo id' },
+        { name: 'minimizeModal(id)', type: '(id: string) => void', description: 'Minimiza para a tray inferior' },
+        { name: 'restoreModal(id)', type: '(id: string) => void', description: 'Restaura modal minimizado' },
+      ]} />
+      <SectionNav current="modalmanager" />
     </section>
   )
 }
@@ -2601,6 +3020,214 @@ useEffect(() => {
   )
 }
 
+// ─── Spinner Section ──────────────────────────────────────────────────────────
+function SpinnerSection() {
+  return (
+    <section id="spinner" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Spinner" description="Indicadores de carregamento em três estilos: engrenagem giratória, circular (dash-offset) e pulso médico (ECG)." />
+
+      <h3 id="variantes" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Variantes</h3>
+      <DemoBox className="flex gap-10 items-center justify-center flex-wrap">
+        <div className="flex flex-col items-center gap-2">
+          <Spinner variant="gear" size="lg" />
+          <span className="text-xs text-stone-500 dark:text-stone-400">gear</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <Spinner variant="circular" size="lg" />
+          <span className="text-xs text-stone-500 dark:text-stone-400">circular</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <Spinner variant="lifeline" size="lg" />
+          <span className="text-xs text-stone-500 dark:text-stone-400">lifeline</span>
+        </div>
+      </DemoBox>
+
+      <h3 id="tamanhos" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Tamanhos</h3>
+      <DemoBox className="flex gap-8 items-center justify-center flex-wrap">
+        {(['sm', 'md', 'lg'] as const).map(size => (
+          <div key={size} className="flex flex-col items-center gap-2">
+            <Spinner variant="circular" size={size} />
+            <span className="text-xs text-stone-500 dark:text-stone-400">{size}</span>
+          </div>
+        ))}
+      </DemoBox>
+
+      <h3 id="size-number" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Tamanho customizado (sizeNumber)</h3>
+      <DemoBox className="flex gap-8 items-center justify-center flex-wrap">
+        {[12, 20, 32, 48, 64].map(n => (
+          <div key={n} className="flex flex-col items-center gap-2">
+            <Spinner variant="circular" sizeNumber={n} />
+            <span className="text-xs text-stone-500 dark:text-stone-400">{n}px</span>
+          </div>
+        ))}
+      </DemoBox>
+
+      <h3 id="uso-basico" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Uso básico</h3>
+      <CodeBlock code={`import { Spinner } from '@single-ui/react'
+
+<Spinner variant="gear" size="md" />
+<Spinner variant="circular" size="md" />
+<Spinner variant="lifeline" size="md" />
+
+// Custom color
+<Spinner variant="circular" color="#10b981" />
+
+// Custom size in pixels (overrides size prop)
+<Spinner variant="circular" sizeNumber={48} />`} />
+
+      <h3 id="props" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Props</h3>
+      <PropsTable props={[
+        { name: 'variant', type: "'gear' | 'circular' | 'lifeline'", default: "'circular'", description: 'Estilo do spinner' },
+        { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Tamanho predefinido (16 / 24 / 40 px)' },
+        { name: 'sizeNumber', type: 'number', description: 'Tamanho em px — sobrepõe size quando informado' },
+        { name: 'color', type: 'string', description: 'Cor CSS; padrão usa --single-primary' },
+        { name: 'className', type: 'string', description: 'Classe extra no wrapper' },
+      ]} />
+      <SectionNav current="spinner" />
+    </section>
+  )
+}
+
+// ─── FloatButton Section ───────────────────────────────────────────────────────
+function FloatButtonSection() {
+  return (
+    <section id="floatbutton" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="FloatButton" description='Botão fixo no canto inferior. Aparece após 300 px de rolagem e clica para voltar ao topo.' />
+
+      <h3 id="demo" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Demo</h3>
+      <DemoBox>
+        <p className="text-sm text-stone-500 dark:text-stone-400 text-center">
+          Role a página para baixo — o botão aparecerá no canto inferior direito após 300 px.
+        </p>
+        <FloatButton />
+      </DemoBox>
+
+      <h3 id="uso-basico" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Uso básico</h3>
+      <CodeBlock code={`import { FloatButton } from '@single-ui/react'
+
+// Adicione uma vez na raiz do layout
+<FloatButton />
+
+// Posição e threshold personalizados
+<FloatButton threshold={500} position="bottom-left" />
+
+// Ação customizada
+<FloatButton onClick={() => console.log('clicked')} icon={<MyIcon />} />`} />
+
+      <h3 id="props" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Props</h3>
+      <PropsTable props={[
+        { name: 'threshold', type: 'number', default: '300', description: 'Rolagem (px) para exibir o botão' },
+        { name: 'position', type: "'bottom-right' | 'bottom-left'", default: "'bottom-right'", description: 'Canto de fixação' },
+        { name: 'onClick', type: '() => void', description: 'Substitui o scroll-to-top padrão' },
+        { name: 'icon', type: 'ReactNode', description: 'Ícone customizado (padrão: chevron ↑)' },
+        { name: 'className', type: 'string', description: 'Classe extra no botão' },
+      ]} />
+      <SectionNav current="floatbutton" />
+    </section>
+  )
+}
+
+// ─── Divider Section ───────────────────────────────────────────────────────────
+function DividerSection() {
+  return (
+    <section id="divider" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Divider" description="Linha separadora horizontal ou vertical, com suporte a label posicionada." />
+
+      <h3 id="horizontal" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Horizontal</h3>
+      <DemoBox className="flex flex-col gap-4">
+        <p className="text-sm text-stone-600 dark:text-stone-400">Conteúdo acima</p>
+        <Divider />
+        <p className="text-sm text-stone-600 dark:text-stone-400">Conteúdo abaixo</p>
+      </DemoBox>
+
+      <h3 id="vertical" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Vertical</h3>
+      <DemoBox>
+        <div className="flex items-center gap-4 h-8">
+          <span className="text-sm text-stone-600 dark:text-stone-400">Esquerda</span>
+          <Divider orientation="vertical" />
+          <span className="text-sm text-stone-600 dark:text-stone-400">Direita</span>
+        </div>
+      </DemoBox>
+
+      <h3 id="com-label" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Com label</h3>
+      <DemoBox className="flex flex-col gap-4">
+        <Divider label="ou continue com" />
+        <Divider label="Início" labelPosition="start" />
+        <Divider label="Fim" labelPosition="end" />
+      </DemoBox>
+
+      <h3 id="uso-basico" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Uso básico</h3>
+      <CodeBlock code={`import { Divider } from '@single-ui/react'
+
+// Horizontal simples
+<Divider />
+
+// Vertical (em flex container)
+<div style={{ display: 'flex', alignItems: 'center' }}>
+  <span>Esquerda</span>
+  <Divider orientation="vertical" />
+  <span>Direita</span>
+</div>
+
+// Com label
+<Divider label="ou" />
+<Divider label="Seção" labelPosition="start" />`} />
+
+      <h3 id="props" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Props</h3>
+      <PropsTable props={[
+        { name: 'orientation', type: "'horizontal' | 'vertical'", default: "'horizontal'", description: 'Direção do divisor' },
+        { name: 'label', type: 'string', description: 'Texto centralizado na linha' },
+        { name: 'labelPosition', type: "'start' | 'center' | 'end'", default: "'center'", description: 'Posição do label (quando label presente)' },
+        { name: 'className', type: 'string', description: 'Classe extra' },
+      ]} />
+      <SectionNav current="divider" />
+    </section>
+  )
+}
+
+// ─── Anchor Section ────────────────────────────────────────────────────────────
+function AnchorSection() {
+  return (
+    <section id="anchor" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Anchor" description="Link de navegação que faz scroll suave até um elemento pelo ID, sem recarregar a página." />
+
+      <h3 id="demo" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Demo</h3>
+      <DemoBox className="flex flex-col gap-3">
+        <p className="text-sm text-stone-600 dark:text-stone-400">
+          Clique no link para navegar até a seção de{' '}
+          <Anchor href="#spinner">Spinner</Anchor> ou{' '}
+          <Anchor href="#divider">Divider</Anchor>.
+        </p>
+        <p className="text-sm text-stone-600 dark:text-stone-400">
+          Com offset de 80 px (para headers fixos):{' '}
+          <Anchor href="floatbutton" offset={80}>FloatButton</Anchor>
+        </p>
+      </DemoBox>
+
+      <h3 id="uso-basico" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Uso básico</h3>
+      <CodeBlock code={`import { Anchor } from '@single-ui/react'
+
+// Com # explícito
+<Anchor href="#sobre">Sobre</Anchor>
+
+// Sem # (adicionado automaticamente)
+<Anchor href="contato">Contato</Anchor>
+
+// Offset para compensar header fixo
+<Anchor href="pricing" offset={64}>Preços</Anchor>`} />
+
+      <h3 id="props" className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-6 mb-2 [scroll-margin-top:76px]">Props</h3>
+      <PropsTable props={[
+        { name: 'href', type: 'string', required: true, description: 'ID alvo (com ou sem #)' },
+        { name: 'children', type: 'ReactNode', required: true, description: 'Conteúdo do link' },
+        { name: 'offset', type: 'number', default: '0', description: 'Offset subtraído do scroll (útil para headers fixos)' },
+        { name: 'className', type: 'string', description: 'Classe extra no elemento <a>' },
+      ]} />
+      <SectionNav current="anchor" />
+    </section>
+  )
+}
+
 // ─── MenuIcon ─────────────────────────────────────────────────────────────────
 function MenuIcon() {
   return (
@@ -2784,14 +3411,38 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
     { id: 'uso-basico', label: 'Uso básico' },
     { id: 'props', label: 'Props' },
   ],
+  spinner: [
+    { id: 'variantes', label: 'Variantes' },
+    { id: 'tamanhos', label: 'Tamanhos' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  floatbutton: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  divider: [
+    { id: 'horizontal', label: 'Horizontal' },
+    { id: 'vertical', label: 'Vertical' },
+    { id: 'com-label', label: 'Com label' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  anchor: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
 }
 
-const GUIDE_ITEMS: Section[] = ['install', 'themes', 'form']
+const GUIDE_ITEMS: Section[] = ['install', 'themes', 'form', 'modalmanager']
 const COMPONENT_ITEMS: Section[] = [
   'button', 'input', 'textarea', 'card', 'modal', 'drawer', 'navbar',
   'table', 'select', 'switch', 'checkbox', 'chip', 'badge', 'slider', 'tabs', 'accordion',
   'avatar', 'skeleton', 'tooltip', 'popover', 'toast', 'pagination', 'inputotp',
   'datepicker', 'daterangepicker', 'datepickerinput', 'daterangepickerinput',
+  'spinner', 'floatbutton', 'divider', 'anchor',
 ]
 
 // ─── Components Page ──────────────────────────────────────────────────────────
@@ -2847,6 +3498,7 @@ function ComponentsPage({ initialSection }: { initialSection: Section }) {
     textarea: TextareaSection,
     card: CardSection,
     modal: ModalSection,
+    modalmanager: ModalManagerSection,
     drawer: DrawerSection,
     navbar: NavbarSection,
     table: TableSection,
@@ -2869,6 +3521,10 @@ function ComponentsPage({ initialSection }: { initialSection: Section }) {
     daterangepicker: DateRangePickerSection,
     datepickerinput: DatePickerInputSection,
     daterangepickerinput: DateRangePickerInputSection,
+    spinner: SpinnerSection,
+    floatbutton: FloatButtonSection,
+    divider: DividerSection,
+    anchor: AnchorSection,
   }
   const ActiveSection = sections[activeSection]
   const toc = SECTION_TOC[activeSection] ?? []
@@ -3432,6 +4088,7 @@ export default function App() {
   }
 
   return (
+    <ModalManagerProvider>
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <Navbar
         theme={theme}
@@ -3453,5 +4110,6 @@ export default function App() {
         )}
       </div>
     </div>
+    </ModalManagerProvider>
   )
 }

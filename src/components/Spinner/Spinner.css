@@ -1,0 +1,55 @@
+.single-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--single-primary);
+  flex-shrink: 0;
+}
+
+/* ─── Sizes ──────────────────────────────────────────────────────────────── */
+.single-spinner--sm { width: 16px; height: 16px; }
+.single-spinner--md { width: 24px; height: 24px; }
+.single-spinner--lg { width: 40px; height: 40px; }
+
+/* ─── Gear ───────────────────────────────────────────────────────────────── */
+.single-spinner__gear {
+  animation: single-spinner-rotate 1.2s linear infinite;
+}
+
+@keyframes single-spinner-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Circular ───────────────────────────────────────────────────────────── */
+.single-spinner__circular {
+  animation: single-spinner-spin 0.8s linear infinite;
+}
+
+@keyframes single-spinner-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Lifeline (ECG pulse) ───────────────────────────────────────────────── */
+.single-spinner--md.single-spinner .single-spinner__lifeline,
+.single-spinner--sm.single-spinner .single-spinner__lifeline,
+.single-spinner--lg.single-spinner .single-spinner__lifeline {
+  overflow: visible;
+}
+
+.single-spinner__lifeline {
+  overflow: visible;
+}
+
+.single-spinner__lifeline polyline {
+  stroke-dasharray: 0.6 0.4;
+  stroke-dashoffset: 0.6;
+  animation: single-spinner-lifeline 1.4s ease-in-out infinite;
+}
+
+@keyframes single-spinner-lifeline {
+  0%   { stroke-dashoffset: 0.6; opacity: 1; }
+  80%  { opacity: 1; }
+  100% { stroke-dashoffset: -0.4; opacity: 0.2; }
+}

@@ -18,8 +18,8 @@
   line-height: 1.4;
   white-space: normal;
   word-break: break-word;
-  background: var(--single-text-primary);
-  color: var(--single-background);
+  background: #000000;
+  color: #ffffff;
   border-radius: var(--single-radius-md);
   box-shadow: var(--single-shadow-md);
   pointer-events: none;
@@ -90,7 +90,7 @@
   transform: translateX(-50%);
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 5px solid var(--single-text-primary);
+  border-top: 5px solid #000000;
 }
 
 /* Bottom arrow — points up toward trigger */
@@ -100,7 +100,7 @@
   transform: translateX(-50%);
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-bottom: 5px solid var(--single-text-primary);
+  border-bottom: 5px solid #000000;
 }
 
 /* Left arrow — points right toward trigger */
@@ -110,7 +110,7 @@
   transform: translateY(-50%);
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
-  border-left: 5px solid var(--single-text-primary);
+  border-left: 5px solid #000000;
 }
 
 /* Right arrow — points left toward trigger */
@@ -120,5 +120,5 @@
   transform: translateY(-50%);
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
-  border-right: 5px solid var(--single-text-primary);
+  border-right: 5px solid #000000;
 }

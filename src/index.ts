@@ -91,5 +91,20 @@ export type { SliderProps } from './components/Slider/Slider';
 export { useMask } from './hooks/useMask';
 export type { MaskType } from './hooks/useMask';
 
+export { Spinner } from './components/Spinner/Spinner';
+export type { SpinnerProps, SpinnerVariant, SpinnerSize } from './components/Spinner/Spinner';
+
+export { FloatButton } from './components/FloatButton/FloatButton';
+export type { FloatButtonProps } from './components/FloatButton/FloatButton';
+
+export { Divider } from './components/Divider/Divider';
+export type { DividerProps } from './components/Divider/Divider';
+
+export { Anchor } from './components/Anchor/Anchor';
+export type { AnchorProps } from './components/Anchor/Anchor';
+
+export { ModalManagerProvider, useModal } from './components/ModalManager/ModalManager';
+export type { OpenModalOptions } from './components/ModalManager/ModalManager';
+
 // Version
 export const VERSION = '1.0.0';
