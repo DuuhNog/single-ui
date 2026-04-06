@@ -19,7 +19,9 @@
   },
   "typesVersions": {
     "*": {
-      "styles": ["./dist/style.d.ts"]
+      "styles": [
+        "./dist/style.d.ts"
+      ]
     }
   },
   "files": [
@@ -82,6 +84,8 @@
     "vitest": "^4.0.0"
   },
   "dependencies": {
-    "clsx": "^2.0.0"
+    "clsx": "^2.0.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1"
   }
 }
