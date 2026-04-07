@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
 import { clsx } from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
-import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar, Spinner, FloatButton, Divider, Anchor, ModalManagerProvider, useModal, RichEditor } from './index'
-import type { RichEditorConfig, RichEditorValue, RichEditorSnippetGroup } from './index'
+import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar, Spinner, FloatButton, Divider, Anchor, ModalManagerProvider, useModal } from './index'
 import type { TableColumn, DateRange } from './index'
 import './styles/tokens.css'
 
 type Page = 'home' | 'components' | 'examples' | 'tasks'
-type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'modalmanager' | 'drawer' | 'navbar' | 'table' | 'select' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp' | 'spinner' | 'floatbutton' | 'divider' | 'anchor' | 'richeditor'
+type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'modalmanager' | 'drawer' | 'navbar' | 'table' | 'select' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp' | 'spinner' | 'floatbutton' | 'divider' | 'anchor'
 type Accent = 'orange' | 'blue' | 'red' | 'purple'
 
 const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
@@ -46,7 +45,6 @@ const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'floatbutton', label: 'FloatButton' },
   { id: 'divider', label: 'Divider' },
   { id: 'anchor', label: 'Anchor' },
-  { id: 'richeditor', label: 'RichEditor' },
 ]
 
 const ACCENTS: { id: Accent; label: string; color: string; darkColor: string }[] = [
@@ -3436,14 +3434,6 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
     { id: 'uso-basico', label: 'Uso básico' },
     { id: 'props', label: 'Props' },
   ],
-  richeditor: [
-    { id: 're-demo', label: 'Demo ao vivo' },
-    { id: 're-config', label: 'Configuração (config)' },
-    { id: 're-value', label: 'Value (cabeçalho / corpo / rodapé)' },
-    { id: 're-snippets', label: 'Snippets' },
-    { id: 're-print', label: 'Imprimir / PDF' },
-    { id: 're-props', label: 'Props' },
-  ],
 }
 
 const GUIDE_ITEMS: Section[] = ['install', 'themes', 'form', 'modalmanager']
@@ -3452,218 +3442,8 @@ const COMPONENT_ITEMS: Section[] = [
   'table', 'select', 'switch', 'checkbox', 'chip', 'badge', 'slider', 'tabs', 'accordion',
   'avatar', 'skeleton', 'tooltip', 'popover', 'toast', 'pagination', 'inputotp',
   'datepicker', 'daterangepicker', 'datepickerinput', 'daterangepickerinput',
-  'spinner', 'floatbutton', 'divider', 'anchor', 'richeditor',
+  'spinner', 'floatbutton', 'divider', 'anchor',
 ]
-
-// ─── RichEditor Section ───────────────────────────────────────────────────────
-function RichEditorSection() {
-  const [editorValue, setEditorValue] = useState<RichEditorValue>({
-    header: '<span style="font-size:9pt;color:#555;">Minha Empresa — Documento confidencial</span>',
-    footer: '<span style="font-size:8pt;color:#999;">Página 1 de 1 &nbsp;·&nbsp; Gerado em 2026-04-04</span>',
-    body: '<p>Digite seu conteúdo aqui. O editor suporta <strong>negrito</strong>, <em>itálico</em>, <u>sublinhado</u> e muito mais.</p><p>Quando o texto ultrapassar o tamanho de uma página, o indicador de quebra de página aparecerá automaticamente.</p>',
-  })
-
-  const editorConfig: RichEditorConfig = {
-    modelpage: 'A4',
-    margin: { marginTop: 25, marginBottom: 25, marginLeft: 30, marginRight: 25 },
-  }
-
-  const snippetOptions: RichEditorSnippetGroup[] = [
-    {
-      group: 'Profissional',
-      items: [
-        { value: '{{prof_nome}}',      label: 'Nome' },
-        { value: '{{prof_sobrenome}}', label: 'Sobrenome' },
-        { value: '{{prof_crm}}',       label: 'CRM' },
-        { value: '{{prof_especialidade}}', label: 'Especialidade' },
-      ],
-    },
-    {
-      group: 'Paciente',
-      items: [
-        { value: '{{pac_nome}}',        label: 'Nome' },
-        { value: '{{pac_nascimento}}',  label: 'Dt. Nascimento' },
-        { value: '{{pac_cpf}}',         label: 'CPF' },
-        { value: '{{pac_convenio}}',    label: 'Convênio' },
-      ],
-    },
-    {
-      group: 'Unidade',
-      items: [
-        { value: '{{unidade_nome}}',    label: 'Nome' },
-        { value: '{{unidade_end}}',     label: 'Endereço' },
-        { value: '{{unidade_tel}}',     label: 'Telefone' },
-        { value: '{{unidade_cnpj}}',    label: 'CNPJ' },
-      ],
-    },
-    {
-      group: 'Documento',
-      items: [
-        { value: '{{doc_numero}}',      label: 'Número' },
-        { value: '{{doc_data}}',        label: 'Data' },
-        { value: '{{doc_pagina}}',      label: 'Página' },
-        { value: '{{doc_total_pag}}',   label: 'Total páginas' },
-      ],
-    },
-  ]
-
-  return (
-    <section id="richeditor" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
-      <SectionHeader
-        title="RichEditor"
-        description="Editor de texto rico com layout de página, cabeçalho/rodapé, paginação automática, snippets e exportação para PDF."
-      />
-
-      {/* Demo */}
-      <h3 id="re-demo" className="text-base font-semibold text-stone-800 dark:text-stone-200 mt-8 mb-3 [scroll-margin-top:76px]">
-        Demo ao vivo
-      </h3>
-      <div className="border border-stone-200 dark:border-stone-800 rounded-xl overflow-hidden">
-        <RichEditor
-          config={editorConfig}
-          value={editorValue}
-          onChange={setEditorValue}
-          snippets={snippetOptions}
-          snippetLabel="Inserir variável:"
-        />
-      </div>
-
-      {/* Config */}
-      <h3 id="re-config" className="text-base font-semibold text-stone-800 dark:text-stone-200 mt-10 mb-3 [scroll-margin-top:76px]">
-        Configuração (config)
-      </h3>
-      <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
-        Passe um objeto <IC>config</IC> para definir o tamanho da folha e as margens em mm.
-      </p>
-      <CodeBlock code={`import { RichEditor } from '@single-ui/react';
-import type { RichEditorConfig } from '@single-ui/react';
-
-const config: RichEditorConfig = {
-  modelpage: 'A4',          // 'A4' | 'A3' | 'A5' | 'Letter' | 'Legal'
-  margin: {
-    marginTop:    25,        // mm
-    marginBottom: 25,        // mm
-    marginLeft:   30,        // mm
-    marginRight:  25,        // mm
-  },
-};`} />
-
-      {/* Value */}
-      <h3 id="re-value" className="text-base font-semibold text-stone-800 dark:text-stone-200 mt-10 mb-3 [scroll-margin-top:76px]">
-        Value — cabeçalho, corpo e rodapé
-      </h3>
-      <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
-        O editor é totalmente controlado via <IC>value</IC> / <IC>onChange</IC>. Cada seção é uma string HTML.
-        O cabeçalho e o rodapé aparecem fixos em todas as páginas.
-        Clique sobre eles para editá-los — uma borda colorida e um rótulo indicam a área ativa.
-      </p>
-      <CodeBlock code={`import { useState } from 'react';
-import { RichEditor } from '@single-ui/react';
-import type { RichEditorValue } from '@single-ui/react';
-
-function MyDoc() {
-  const [value, setValue] = useState<RichEditorValue>({
-    header: '<b>Minha Empresa</b>',
-    footer: '<small>Página 1 de 1</small>',
-    body:   '<p>Conteúdo do documento...</p>',
-  });
-
-  return (
-    <RichEditor
-      config={config}
-      value={value}
-      onChange={setValue}
-    />
-  );
-}`} />
-
-      {/* Snippets */}
-      <h3 id="re-snippets" className="text-base font-semibold text-stone-800 dark:text-stone-200 mt-10 mb-3 [scroll-margin-top:76px]">
-        Snippets
-      </h3>
-      <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
-        Passe um array de <IC>snippets</IC> para habilitar a aba <strong>Snippets</strong>.
-        Ao selecionar um item, o valor é inserido na posição atual do cursor no corpo do documento.
-      </p>
-      <CodeBlock code={`import type { RichEditorSnippet } from '@single-ui/react';
-
-const snippets: RichEditorSnippet[] = [
-  { value: '{{nome_cliente}}',    label: 'Nome do cliente' },
-  { value: '{{data_emissao}}',    label: 'Data de emissão' },
-  { value: '{{numero_contrato}}', label: 'Número do contrato' },
-];
-
-<RichEditor
-  config={config}
-  value={value}
-  onChange={setValue}
-  snippets={snippets}
-  snippetLabel="Inserir variável:"
-/>`} />
-
-      {/* Print */}
-      <h3 id="re-print" className="text-base font-semibold text-stone-800 dark:text-stone-200 mt-10 mb-3 [scroll-margin-top:76px]">
-        Imprimir / Exportar PDF
-      </h3>
-      <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
-        O botão <strong>Imprimir</strong> (ícone de impressora) na barra de ferramentas aciona <IC>window.print()</IC>.
-        Use "Salvar como PDF" no diálogo de impressão do navegador para exportar em PDF.
-        Também é possível acionar via ref:
-      </p>
-      <CodeBlock code={`import { useRef } from 'react';
-import { RichEditor } from '@single-ui/react';
-import type { RichEditorRef } from '@single-ui/react';
-
-function MyDoc() {
-  const editorRef = useRef<RichEditorRef>(null);
-
-  return (
-    <>
-      <button onClick={() => editorRef.current?.print()}>Exportar PDF</button>
-      <RichEditor ref={editorRef} config={config} value={value} onChange={setValue} />
-    </>
-  );
-}`} />
-
-      {/* Props */}
-      <h3 id="re-props" className="text-base font-semibold text-stone-800 dark:text-stone-200 mt-10 mb-3 [scroll-margin-top:76px]">
-        Props
-      </h3>
-      <PropsTable props={[
-        { name: 'config',        type: 'RichEditorConfig',   required: true,  description: 'Tamanho da página (modelpage) e margens em mm.' },
-        { name: 'value',         type: 'RichEditorValue',    required: true,  description: 'HTML das três seções: header, footer e body.' },
-        { name: 'onChange',      type: '(v: RichEditorValue) => void', required: true, description: 'Chamado sempre que qualquer seção é editada.' },
-        { name: 'snippets',      type: 'RichEditorSnippet[]', default: '[]',  description: 'Lista de campos disponíveis na aba Snippets.' },
-        { name: 'snippetLabel',  type: 'string',             default: '"Inserir campo:"', description: 'Rótulo acima do select de snippets.' },
-        { name: 'placeholder',   type: 'string',             default: '"Digite o conteúdo aqui..."', description: 'Placeholder do corpo.' },
-        { name: 'readOnly',      type: 'boolean',            default: 'false', description: 'Desativa todas as edições.' },
-        { name: 'className',     type: 'string',             default: '—',   description: 'Classe CSS adicional no elemento raiz.' },
-      ]} />
-
-      <h4 className="text-sm font-semibold text-stone-700 dark:text-stone-300 mt-6 mb-2">RichEditorConfig</h4>
-      <PropsTable props={[
-        { name: 'modelpage', type: "'A4' | 'A3' | 'A5' | 'Letter' | 'Legal'", required: true, description: 'Formato da folha.' },
-        { name: 'margin',    type: 'RichEditorMargin',                          required: true, description: 'Margens em mm: marginTop, marginBottom, marginLeft, marginRight.' },
-      ]} />
-
-      <h4 className="text-sm font-semibold text-stone-700 dark:text-stone-300 mt-6 mb-2">RichEditorValue</h4>
-      <PropsTable props={[
-        { name: 'header', type: 'string', required: true, description: 'HTML do cabeçalho (fixo em todas as páginas).' },
-        { name: 'footer', type: 'string', required: true, description: 'HTML do rodapé (fixo em todas as páginas).' },
-        { name: 'body',   type: 'string', required: true, description: 'HTML do conteúdo principal.' },
-      ]} />
-
-      <h4 className="text-sm font-semibold text-stone-700 dark:text-stone-300 mt-6 mb-2">RichEditorRef</h4>
-      <PropsTable props={[
-        { name: 'print()',   type: '() => void',           description: 'Abre o diálogo de impressão do navegador.' },
-        { name: 'getHTML()', type: '() => RichEditorValue', description: 'Retorna o HTML atual das três seções.' },
-        { name: 'focus()',   type: '() => void',           description: 'Foca o corpo do editor.' },
-      ]} />
-
-      <SectionNav current="richeditor" />
-    </section>
-  )
-}
 
 // ─── Components Page ──────────────────────────────────────────────────────────
 function ComponentsPage({ initialSection }: { initialSection: Section }) {
@@ -3745,7 +3525,6 @@ function ComponentsPage({ initialSection }: { initialSection: Section }) {
     floatbutton: FloatButtonSection,
     divider: DividerSection,
     anchor: AnchorSection,
-    richeditor: RichEditorSection,
   }
   const ActiveSection = sections[activeSection]
   const toc = SECTION_TOC[activeSection] ?? []

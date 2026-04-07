@@ -106,17 +106,6 @@ export type { AnchorProps } from './components/Anchor/Anchor';
 export { ModalManagerProvider, useModal } from './components/ModalManager/ModalManager';
 export type { OpenModalOptions } from './components/ModalManager/ModalManager';
 
-export { RichEditor } from './components/RichEditor/RichEditor';
-export type {
-  RichEditorProps,
-  RichEditorRef,
-  RichEditorConfig,
-  RichEditorValue,
-  RichEditorMargin,
-  RichEditorSnippet,
-  RichEditorSnippetGroup,
-  PageModel,
-} from './components/RichEditor/RichEditor';
 
 // Version
 export const VERSION = '1.0.0';
