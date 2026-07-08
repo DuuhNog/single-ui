@@ -145,3 +145,72 @@
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+/* ─── Addon field (leftAddon / rightAddon) ───────────────────────────────── */
+.single-input-addon-field {
+  display: flex;
+  align-items: stretch;
+  background-color: var(--single-background);
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-md);
+  transition: all var(--single-transition);
+  /* No overflow:hidden here — an addon (e.g. CountryCodeSelect) may render an
+     absolutely-positioned popover that needs to escape this box. */
+}
+
+.single-input-addon-field:hover:not(.single-input-addon-field--disabled) {
+  border-color: var(--single-border-hover);
+}
+
+.single-input-addon-field:focus-within:not(.single-input-addon-field--disabled) {
+  border-color: var(--single-primary);
+  box-shadow: 0 0 0 3px var(--single-primary-light);
+}
+
+.single-input-addon-field--error {
+  border-color: var(--single-error);
+}
+
+.single-input-addon-field--error:focus-within {
+  border-color: var(--single-error) !important;
+  box-shadow: 0 0 0 3px var(--single-error-light) !important;
+}
+
+.single-input-addon-field--disabled {
+  background-color: var(--single-surface);
+  opacity: 0.6;
+}
+
+.single-input-addon-field .single-input {
+  border: none;
+  box-shadow: none !important;
+  flex: 1;
+  min-width: 0;
+}
+
+.single-input-addon-field .single-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+.single-input-addon-field .single-input-password-field {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  box-shadow: none !important;
+}
+
+.single-input-addon {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.single-input-addon--left {
+  border-right: 1px solid var(--single-border);
+}
+
+.single-input-addon--right {
+  border-left: 1px solid var(--single-border);
+}

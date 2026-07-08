@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+import { Routes, Route, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { clsx } from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
-import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar, Spinner, FloatButton, Divider, Anchor, ModalManagerProvider, useModal } from './index'
+import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar, Spinner, FloatButton, Divider, Anchor, ModalManagerProvider, useModal, CountryCodeSelect } from './index'
 import type { TableColumn, DateRange } from './index'
 import './styles/tokens.css'
 
 type Page = 'home' | 'components' | 'examples' | 'tasks'
-type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'modalmanager' | 'drawer' | 'navbar' | 'table' | 'select' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp' | 'spinner' | 'floatbutton' | 'divider' | 'anchor'
+type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'modalmanager' | 'drawer' | 'navbar' | 'table' | 'select' | 'countrycodeselect' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp' | 'spinner' | 'floatbutton' | 'divider' | 'anchor'
 type Accent = 'orange' | 'blue' | 'red' | 'purple'
 
 const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
@@ -23,6 +24,7 @@ const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'navbar', label: 'Navbar' },
   { id: 'table', label: 'Table' },
   { id: 'select', label: 'Select' },
+  { id: 'countrycodeselect', label: 'CountryCodeSelect' },
   { id: 'switch', label: 'Switch' },
   { id: 'checkbox', label: 'Checkbox' },
   { id: 'chip', label: 'Chip' },
@@ -311,6 +313,7 @@ function HomePage({ onStart }: { onStart: () => void }) {
     { id: 2, component: 'Input', descricao: 'Campos com máscara e validação', status: 'Estável' },
     { id: 3, component: 'Textarea', descricao: 'Área de texto com auto-resize', status: 'Estável' },
     { id: 4, component: 'Select', descricao: 'Seleção com busca e múltipla seleção', status: 'Estável' },
+    { id: 26, component: 'CountryCodeSelect', descricao: 'Seletor de DDI com bandeiras, feito para addon do Input', status: 'Estável' },
     { id: 5, component: 'Checkbox', descricao: 'Caixa de seleção acessível', status: 'Estável' },
     { id: 6, component: 'Switch', descricao: 'Toggle com animação suave', status: 'Estável' },
     { id: 7, component: 'Chip', descricao: 'Tags e etiquetas removíveis', status: 'Estável' },
@@ -873,6 +876,7 @@ function ButtonSection() {
 // ─── Input Section ────────────────────────────────────────────────────────────
 function InputSection() {
   const [erroVal, setErroVal] = useState('')
+  const [phone, setPhone] = useState('')
   return (
     <section id="input" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
       <SectionHeader title="Input" description="Campo de texto com máscaras, validação, estados de erro e controle de valor." />
@@ -923,6 +927,21 @@ function InputSection() {
         </div>
       </DemoBox>
 
+      <StepTitle>Addons (leftAddon / rightAddon)</StepTitle>
+      <DemoBox>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Telefone Residencial"
+            placeholder="Telefone Residencial"
+            mask="phone"
+            value={phone}
+            onChange={(v) => setPhone(v)}
+            leftAddon={<CountryCodeSelect defaultValue="BR" />}
+          />
+          <Input label="Com sufixo" placeholder="0,00" rightAddon={<span className="px-3 text-sm text-stone-500 dark:text-stone-400">kg</span>} />
+        </div>
+      </DemoBox>
+
       <StepTitle>Uso básico</StepTitle>
       <CodeBlock code={`import { Input } from '@single-ui/react'
 
@@ -951,6 +970,8 @@ const [value, setValue] = useState('')
         { name: 'required', type: 'boolean', default: 'false', description: 'Indica campo obrigatório (*)' },
         { name: 'disabled', type: 'boolean', default: 'false', description: 'Desabilita o campo' },
         { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Ocupa 100% da largura' },
+        { name: 'leftAddon', type: 'React.ReactNode', description: 'Conteúdo fixado antes do campo, dentro da borda (ex: CountryCodeSelect)' },
+        { name: 'rightAddon', type: 'React.ReactNode', description: 'Conteúdo fixado depois do campo, dentro da borda' },
       ]} />
       <SectionNav current="input" />
     </section>
@@ -1433,6 +1454,78 @@ const [value, setValue] = useState<string | number>('')
         { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
         { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Ocupa 100% da largura' },
       ]} />
+    </section>
+  )
+}
+
+// ─── CountryCodeSelect Section ─────────────────────────────────────────────────
+function CountryCodeSelectSection() {
+  const [phone, setPhone] = useState('')
+
+  return (
+    <section id="countrycodeselect" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="CountryCodeSelect" description="Seletor de código de país (DDI) com bandeiras e busca, feito para ser usado como leftAddon do Input." />
+
+      <StepTitle>Demo</StepTitle>
+      <DemoBox>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-stone-700 dark:text-stone-300">Isolado</span>
+            <CountryCodeSelect />
+          </div>
+        </div>
+      </DemoBox>
+
+      <StepTitle>Como addon do Input</StepTitle>
+      <DemoBox>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Telefone Residencial"
+            placeholder="Telefone Residencial"
+            mask="phone"
+            value={phone}
+            onChange={(v) => setPhone(v)}
+            leftAddon={<CountryCodeSelect defaultValue="BR" />}
+          />
+        </div>
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Input, CountryCodeSelect } from '@single-ui/react'
+import type { CountryCodeOption } from '@single-ui/react'
+
+const [phone, setPhone] = useState('')
+
+<Input
+  label="Telefone"
+  mask="phone"
+  value={phone}
+  onChange={(value) => setPhone(value)}
+  leftAddon={
+    <CountryCodeSelect
+      defaultValue="BR"
+      onChange={(country: CountryCodeOption) => console.log(country)}
+    />
+  }
+/>
+
+// Ou de forma isolada
+<CountryCodeSelect
+  countries={[{ iso: 'BR', name: 'Brasil', dial: '55' }]}
+  value="BR"
+  onChange={(country) => console.log(country.dial)}
+/>`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'countries', type: 'CountryCodeOption[]', default: 'DEFAULT_COUNTRY_CODES', description: 'Lista de países disponíveis ({ iso, name, dial })' },
+        { name: 'value', type: 'string', description: 'ISO do país selecionado (controlado)' },
+        { name: 'defaultValue', type: 'string', description: 'ISO inicial (não controlado)' },
+        { name: 'onChange', type: '(country: CountryCodeOption) => void', description: 'Callback ao selecionar um país' },
+        { name: 'searchable', type: 'boolean', default: 'true', description: 'Exibe campo de busca no dropdown' },
+        { name: 'disabled', type: 'boolean', default: 'false', description: 'Desabilita o seletor' },
+      ]} />
+      <SectionNav current="countrycodeselect" />
     </section>
   )
 }
@@ -3272,6 +3365,7 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
     { id: 'basico', label: 'Básico' },
     { id: 'mascaras', label: 'Máscaras' },
     { id: 'estado-de-erro', label: 'Estado de erro' },
+    { id: 'addons-leftaddon-rightaddon', label: 'Addons' },
     { id: 'uso-basico', label: 'Uso básico' },
     { id: 'props', label: 'Props' },
   ],
@@ -3299,6 +3393,12 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
   ],
   select: [
     { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  countrycodeselect: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'como-addon-do-input', label: 'Como addon do Input' },
     { id: 'uso-basico', label: 'Uso básico' },
     { id: 'props', label: 'Props' },
   ],
@@ -3439,26 +3539,40 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
 const GUIDE_ITEMS: Section[] = ['install', 'themes', 'form', 'modalmanager']
 const COMPONENT_ITEMS: Section[] = [
   'button', 'input', 'textarea', 'card', 'modal', 'drawer', 'navbar',
-  'table', 'select', 'switch', 'checkbox', 'chip', 'badge', 'slider', 'tabs', 'accordion',
+  'table', 'select', 'countrycodeselect', 'switch', 'checkbox', 'chip', 'badge', 'slider', 'tabs', 'accordion',
   'avatar', 'skeleton', 'tooltip', 'popover', 'toast', 'pagination', 'inputotp',
   'datepicker', 'daterangepicker', 'datepickerinput', 'daterangepickerinput',
   'spinner', 'floatbutton', 'divider', 'anchor',
 ]
 
 // ─── Components Page ──────────────────────────────────────────────────────────
-function ComponentsPage({ initialSection }: { initialSection: Section }) {
-  const [activeSection, setActiveSection] = useState<Section>(initialSection)
-  const [activeTocId, setActiveTocId] = useState<string>(SECTION_TOC[initialSection]?.[0]?.id ?? '')
+function ComponentsPage() {
+  const { section: sectionParam } = useParams<{ section: string }>()
+  const routerNavigate = useNavigate()
+  const isValidSection = (s: string | undefined): s is Section =>
+    !!s && SIDEBAR_ITEMS.some(i => i.id === s)
+  const activeSection: Section = isValidSection(sectionParam) ? sectionParam : 'install'
+  const [activeTocId, setActiveTocId] = useState<string>(SECTION_TOC[activeSection]?.[0]?.id ?? '')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const mainRef = useRef<HTMLDivElement>(null)
 
   const sectionLabel = (id: Section) => SIDEBAR_ITEMS.find(i => i.id === id)?.label ?? id
 
-  const navigate = (id: Section) => {
-    setActiveSection(id)
-    setSidebarOpen(false)
+  useEffect(() => {
+    if (!isValidSection(sectionParam)) {
+      routerNavigate('/components/install', { replace: true })
+    }
+  }, [sectionParam, routerNavigate])
+
+  // Reset scroll + active TOC heading whenever the section changes (via sidebar, prev/next, or direct URL nav)
+  useEffect(() => {
     if (mainRef.current) mainRef.current.scrollTop = 0
-    setActiveTocId(SECTION_TOC[id]?.[0]?.id ?? '')
+    setActiveTocId(SECTION_TOC[activeSection]?.[0]?.id ?? '')
+  }, [activeSection])
+
+  const navigate = (id: Section) => {
+    routerNavigate(`/components/${id}`)
+    setSidebarOpen(false)
   }
 
   // Track active TOC heading as user scrolls within main
@@ -3503,6 +3617,7 @@ function ComponentsPage({ initialSection }: { initialSection: Section }) {
     navbar: NavbarSection,
     table: TableSection,
     select: SelectSection,
+    countrycodeselect: CountryCodeSelectSection,
     switch: SwitchSection,
     checkbox: CheckboxSection,
     chip: ChipSection,
@@ -4066,8 +4181,8 @@ function ExamplesPage() {
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [accent, setAccent] = useState<Accent>('orange')
-  const [page, setPage] = useState<Page>('home')
-  const [initialSection, setInitialSection] = useState<Section>('install')
+  const location = useLocation()
+  const routerNavigate = useNavigate()
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -4081,9 +4196,21 @@ export default function App() {
     }
   }, [accent])
 
+  const page: Page = location.pathname.startsWith('/components')
+    ? 'components'
+    : location.pathname.startsWith('/examples')
+    ? 'examples'
+    : location.pathname.startsWith('/tasks')
+    ? 'tasks'
+    : 'home'
+
   const navigate = (p: Page, section?: Section) => {
-    setPage(p)
-    if (section) setInitialSection(section)
+    if (p === 'components') {
+      if (section) routerNavigate(`/components/${section}`)
+      else if (page !== 'components') routerNavigate('/components/install')
+    } else {
+      routerNavigate(p === 'home' ? '/' : `/${p}`)
+    }
     window.scrollTo({ top: 0 })
   }
 
@@ -4099,15 +4226,14 @@ export default function App() {
         navigate={navigate}
       />
       <div className="pt-[60px]">
-        {page === 'home' ? (
-          <HomePage onStart={() => navigate('components', 'install')} />
-        ) : page === 'examples' ? (
-          <ExamplesPage />
-        ) : page === 'tasks' ? (
-          <TasksPage />
-        ) : (
-          <ComponentsPage key={initialSection} initialSection={initialSection} />
-        )}
+        <Routes>
+          <Route path="/" element={<HomePage onStart={() => navigate('components', 'install')} />} />
+          <Route path="/examples" element={<ExamplesPage />} />
+          <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/components" element={<Navigate to="/components/install" replace />} />
+          <Route path="/components/:section" element={<ComponentsPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     </div>
     </ModalManagerProvider>

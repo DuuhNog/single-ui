@@ -10,6 +10,10 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   mask?: MaskType;
   fullWidth?: boolean;
   onChange?: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
+  /** Content rendered inside the input's border, before the field (e.g. a DDI/country code selector) */
+  leftAddon?: React.ReactNode;
+  /** Content rendered inside the input's border, after the field */
+  rightAddon?: React.ReactNode;
 }
 
 function EyeIcon() {
@@ -42,6 +46,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       required,
       disabled,
       onChange,
+      leftAddon,
+      rightAddon,
       value: controlledValue,
       defaultValue,
       type,
@@ -162,6 +168,26 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       />
     );
 
+    const fieldInner = isPassword ? (
+      <div className={clsx('single-input-password-field', { 'single-input-password-field--error': !!error, 'single-input-password-field--disabled': disabled })}>
+        {inputEl}
+        <button
+          type="button"
+          className="single-input-password-toggle"
+          onClick={() => setPasswordVisible((v) => !v)}
+          disabled={disabled}
+          tabIndex={-1}
+          aria-label={passwordVisible ? 'Ocultar senha' : 'Mostrar senha'}
+        >
+          {passwordVisible ? <EyeOffIcon /> : <EyeIcon />}
+        </button>
+      </div>
+    ) : (
+      inputEl
+    );
+
+    const hasAddon = !!leftAddon || !!rightAddon;
+
     return (
       <div className={wrapperClasses}>
         {label && (
@@ -171,22 +197,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
 
-        {isPassword ? (
-          <div className={clsx('single-input-password-field', { 'single-input-password-field--error': !!error, 'single-input-password-field--disabled': disabled })}>
-            {inputEl}
-            <button
-              type="button"
-              className="single-input-password-toggle"
-              onClick={() => setPasswordVisible((v) => !v)}
-              disabled={disabled}
-              tabIndex={-1}
-              aria-label={passwordVisible ? 'Ocultar senha' : 'Mostrar senha'}
-            >
-              {passwordVisible ? <EyeOffIcon /> : <EyeIcon />}
-            </button>
+        {hasAddon ? (
+          <div className={clsx('single-input-addon-field', { 'single-input-addon-field--error': !!error, 'single-input-addon-field--disabled': disabled })}>
+            {leftAddon && <div className="single-input-addon single-input-addon--left">{leftAddon}</div>}
+            {fieldInner}
+            {rightAddon && <div className="single-input-addon single-input-addon--right">{rightAddon}</div>}
           </div>
         ) : (
-          inputEl
+          fieldInner
         )}
 
         {error && <div className="single-input-error">{error}</div>}

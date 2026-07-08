@@ -87,6 +87,9 @@ export type { NavbarProps, NavbarMenuItem, NavbarSubItem, NavbarSubGroup, Navbar
 export { Slider } from './components/Slider/Slider';
 export type { SliderProps } from './components/Slider/Slider';
 
+export { CountryCodeSelect, DEFAULT_COUNTRY_CODES } from './components/CountryCodeSelect/CountryCodeSelect';
+export type { CountryCodeSelectProps, CountryCodeOption } from './components/CountryCodeSelect/CountryCodeSelect';
+
 // Hooks
 export { useMask } from './hooks/useMask';
 export type { MaskType } from './hooks/useMask';
@@ -108,4 +111,4 @@ export type { OpenModalOptions } from './components/ModalManager/ModalManager';
 
 
 // Version
-export const VERSION = '1.0.0';
+export const VERSION = '1.2.0';
