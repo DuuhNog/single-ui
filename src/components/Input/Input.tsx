@@ -8,12 +8,73 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   error?: string;
   helperText?: string;
   mask?: MaskType;
+  saveMask?: boolean;
+  isEdit?: boolean;
   fullWidth?: boolean;
   onChange?: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
   /** Content rendered inside the input's border, before the field (e.g. a DDI/country code selector) */
   leftAddon?: React.ReactNode;
   /** Content rendered inside the input's border, after the field */
   rightAddon?: React.ReactNode;
+}
+
+const MASK_DIGIT_LIMITS: Partial<Record<MaskType, number>> = {
+  cpf: 11,
+  cnpj: 14,
+  phone: 11,
+  cep: 8,
+  date: 8,
+};
+
+// Accepts either raw digits or an already-masked string (e.g. a masked value fed back
+// through a controlled `value` prop) and always returns the underlying digits only.
+function extractMaskDigits(mask: MaskType, value: string): string {
+  const digits = value.replace(/\D/g, '');
+  const limit = MASK_DIGIT_LIMITS[mask];
+  return limit ? digits.substring(0, limit) : digits;
+}
+
+function formatMaskedValue(mask: MaskType, rawValue: string): string {
+  const stringValue = extractMaskDigits(mask, rawValue);
+
+  switch (mask) {
+    case 'currency-brl': {
+      const num = (parseFloat(stringValue) || 0) / 100;
+      return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+    case 'currency-usd': {
+      const num = (parseFloat(stringValue) || 0) / 100;
+      return num.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    }
+    case 'cpf':
+      return stringValue
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    case 'cnpj':
+      return stringValue
+        .replace(/(\d{2})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1/$2')
+        .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+    case 'phone':
+      if (stringValue.length <= 10) {
+        return stringValue
+          .replace(/(\d{2})(\d)/, '($1) $2')
+          .replace(/(\d{4})(\d)/, '$1-$2');
+      }
+      return stringValue
+        .replace(/(\d{2})(\d)/, '($1) $2')
+        .replace(/(\d{5})(\d)/, '$1-$2');
+    case 'cep':
+      return stringValue.replace(/(\d{5})(\d)/, '$1-$2');
+    case 'date':
+      return stringValue
+        .replace(/(\d{2})(\d)/, '$1/$2')
+        .replace(/(\d{2})(\d)/, '$1/$2');
+    default:
+      return stringValue;
+  }
 }
 
 function EyeIcon() {
@@ -41,6 +102,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       error,
       helperText,
       mask,
+      saveMask = true,
+      isEdit = true,
       fullWidth = false,
       className,
       required,
@@ -65,79 +128,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       let newValue = e.target.value;
 
       if (mask) {
-        switch (mask) {
-          case 'currency-brl':
-          case 'currency-usd':
-            newValue = e.target.value.replace(/\D/g, '');
-            break;
-          case 'cpf':
-            newValue = e.target.value.replace(/\D/g, '').substring(0, 11);
-            break;
-          case 'cnpj':
-            newValue = e.target.value.replace(/\D/g, '').substring(0, 14);
-            break;
-          case 'phone':
-            newValue = e.target.value.replace(/\D/g, '').substring(0, 11);
-            break;
-          case 'cep':
-            newValue = e.target.value.replace(/\D/g, '').substring(0, 8);
-            break;
-          case 'date':
-            newValue = e.target.value.replace(/\D/g, '').substring(0, 8);
-            break;
-        }
+        newValue = extractMaskDigits(mask, e.target.value);
       }
 
       if (!isControlled) {
         setInternalValue(newValue);
       }
 
-      onChange?.(newValue, e);
+      const outputValue = mask && saveMask ? formatMaskedValue(mask, newValue) : newValue;
+      onChange?.(outputValue, e);
     };
 
     const displayValue = React.useMemo(() => {
       if (!mask) return value;
-
-      const stringValue = value?.toString() || '';
-
-      switch (mask) {
-        case 'currency-brl': {
-          const num = (parseFloat(stringValue) || 0) / 100;
-          return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-        case 'currency-usd': {
-          const num = (parseFloat(stringValue) || 0) / 100;
-          return num.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-        }
-        case 'cpf':
-          return stringValue
-            .replace(/(\d{3})(\d)/, '$1.$2')
-            .replace(/(\d{3})(\d)/, '$1.$2')
-            .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        case 'cnpj':
-          return stringValue
-            .replace(/(\d{2})(\d)/, '$1.$2')
-            .replace(/(\d{3})(\d)/, '$1.$2')
-            .replace(/(\d{3})(\d)/, '$1/$2')
-            .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-        case 'phone':
-          if (stringValue.length <= 10) {
-            return stringValue
-              .replace(/(\d{2})(\d)/, '($1) $2')
-              .replace(/(\d{4})(\d)/, '$1-$2');
-          }
-          return stringValue
-            .replace(/(\d{2})(\d)/, '($1) $2')
-            .replace(/(\d{5})(\d)/, '$1-$2');
-        case 'cep':
-          return stringValue.replace(/(\d{5})(\d)/, '$1-$2');
-        case 'date':
-          return stringValue
-            .replace(/(\d{2})(\d)/, '$1/$2')
-            .replace(/(\d{2})(\d)/, '$1/$2');
-        default:
-          return stringValue;
-      }
+      return formatMaskedValue(mask, value?.toString() || '');
     }, [value, mask]);
 
     const wrapperClasses = clsx(
@@ -149,6 +153,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       },
       className
     );
+
+    if (!isEdit) {
+      return (
+        <div className={wrapperClasses}>
+          {label && (
+            <label className="single-input-label">
+              {label}
+              {required && <span className="single-input-label__required"> *</span>}
+            </label>
+          )}
+          <div className="single-input-view-value">{displayValue || '-'}</div>
+          {error && <div className="single-input-error">{error}</div>}
+          {!error && helperText && <div className="single-input-helper">{helperText}</div>}
+        </div>
+      );
+    }
 
     const inputClasses = clsx('single-input', {
       'single-input--error': error,

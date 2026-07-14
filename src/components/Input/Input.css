@@ -19,6 +19,16 @@
   color: var(--single-error);
 }
 
+.single-input-view-value {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  padding: var(--single-spacing-sm) var(--single-spacing-md);
+  font-size: var(--single-font-size-base);
+  color: var(--single-text-primary);
+  border: 1px solid transparent;
+}
+
 .single-input {
   width: 100%;
   padding: var(--single-spacing-sm) var(--single-spacing-md);

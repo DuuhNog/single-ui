@@ -877,6 +877,8 @@ function ButtonSection() {
 function InputSection() {
   const [erroVal, setErroVal] = useState('')
   const [phone, setPhone] = useState('')
+  const [cnpjMasked, setCnpjMasked] = useState('')
+  const [cnpjRaw, setCnpjRaw] = useState('')
   return (
     <section id="input" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
       <SectionHeader title="Input" description="Campo de texto com máscaras, validação, estados de erro e controle de valor." />
@@ -942,6 +944,37 @@ function InputSection() {
         </div>
       </DemoBox>
 
+      <StepTitle>saveMask (retorno mascarado no onChange)</StepTitle>
+      <DemoBox>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="CNPJ (saveMask padrão true)"
+            mask="cnpj"
+            placeholder="00.000.000/0000-00"
+            value={cnpjMasked}
+            onChange={(v) => setCnpjMasked(v)}
+            helperText={`onChange recebido: "${cnpjMasked}"`}
+          />
+          <Input
+            label="CNPJ (saveMask=false)"
+            mask="cnpj"
+            saveMask={false}
+            placeholder="00.000.000/0000-00"
+            value={cnpjRaw}
+            onChange={(v) => setCnpjRaw(v)}
+            helperText={`onChange recebido: "${cnpjRaw}"`}
+          />
+        </div>
+      </DemoBox>
+
+      <StepTitle>isEdit (modo somente leitura)</StepTitle>
+      <DemoBox>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input label="CNPJ" mask="cnpj" defaultValue="12345678000190" isEdit={false} />
+          <Input label="Nome" defaultValue="Maria Silva" isEdit={false} />
+        </div>
+      </DemoBox>
+
       <StepTitle>Uso básico</StepTitle>
       <CodeBlock code={`import { Input } from '@single-ui/react'
 
@@ -956,12 +989,20 @@ const [value, setValue] = useState('')
   required
 />
 
-// Máscaras: 'cpf' | 'cnpj' | 'phone' | 'cep' | 'date' | 'currency-brl' | 'currency-usd'`} />
+// Máscaras: 'cpf' | 'cnpj' | 'phone' | 'cep' | 'date' | 'currency-brl' | 'currency-usd'
+
+// saveMask (padrão true): onChange recebe o valor já mascarado, ex: "12.345.678/0001-90"
+<Input mask="cnpj" saveMask={false} onChange={(value) => {}} /> // onChange recebe só dígitos: "12345678000190"
+
+// isEdit (padrão true): quando false, exibe o valor como label somente leitura
+<Input label="CNPJ" mask="cnpj" defaultValue="12345678000190" isEdit={false} />`} />
 
       <StepTitle>Props</StepTitle>
       <PropsTable props={[
         { name: 'label', type: 'string', description: 'Rótulo acima do campo' },
         { name: 'mask', type: "'cpf'|'cnpj'|'phone'|'cep'|'date'|'currency-brl'|'currency-usd'", description: 'Máscara aplicada ao valor' },
+        { name: 'saveMask', type: 'boolean', default: 'true', description: 'Quando há máscara, retorna o valor mascarado no onChange (false retorna apenas os dígitos)' },
+        { name: 'isEdit', type: 'boolean', default: 'true', description: 'Quando false, exibe o valor digitado como label somente leitura' },
         { name: 'value', type: 'string|number', description: 'Valor controlado' },
         { name: 'defaultValue', type: 'string|number', description: 'Valor inicial (não controlado)' },
         { name: 'onChange', type: '(value: string, event) => void', description: 'Callback de mudança' },
@@ -1417,6 +1458,31 @@ function SelectSection() {
         </div>
       </DemoBox>
 
+      <StepTitle>isEdit (modo somente leitura)</StepTitle>
+      <DemoBox>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Select
+            label="Estado"
+            isEdit={false}
+            defaultValue="rj"
+            options={[
+              { value: 'sp', label: 'São Paulo' }, { value: 'rj', label: 'Rio de Janeiro' },
+              { value: 'mg', label: 'Minas Gerais' }, { value: 'rs', label: 'Rio Grande do Sul' },
+            ]}
+          />
+          <Select
+            label="Estados (múltiplo)"
+            isEdit={false}
+            multiple
+            defaultValue={['sp', 'mg']}
+            options={[
+              { value: 'sp', label: 'São Paulo' }, { value: 'rj', label: 'Rio de Janeiro' },
+              { value: 'mg', label: 'Minas Gerais' }, { value: 'rs', label: 'Rio Grande do Sul' },
+            ]}
+          />
+        </div>
+      </DemoBox>
+
       <StepTitle>Uso básico</StepTitle>
       <CodeBlock code={`import { Select } from '@single-ui/react'
 import type { SelectOption } from '@single-ui/react'
@@ -1437,7 +1503,10 @@ const [value, setValue] = useState<string | number>('')
   onChange={setValue}
   searchable
   clearable
-/>`} />
+/>
+
+// isEdit (padrão true): quando false, exibe o label da opção selecionada como texto somente leitura
+<Select label="Estado" options={options} defaultValue="rj" isEdit={false} />`} />
 
       <StepTitle>Props</StepTitle>
       <PropsTable props={[
@@ -1450,6 +1519,7 @@ const [value, setValue] = useState<string | number>('')
         { name: 'searchable', type: 'boolean', default: 'false', description: 'Campo de busca no dropdown' },
         { name: 'clearable', type: 'boolean', default: 'false', description: 'Botão para limpar seleção' },
         { name: 'disabled', type: 'boolean', default: 'false', description: 'Desabilita o select' },
+        { name: 'isEdit', type: 'boolean', default: 'true', description: 'Quando false, exibe o label da opção selecionada como texto somente leitura' },
         { name: 'error', type: 'string', description: 'Mensagem de erro' },
         { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
         { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Ocupa 100% da largura' },

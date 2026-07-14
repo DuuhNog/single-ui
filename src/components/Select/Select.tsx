@@ -22,6 +22,8 @@ export interface SelectProps {
   clearable?: boolean;
   multiple?: boolean;
   fullWidth?: boolean;
+  /** When false, renders the selected option's label as a read-only label instead of an editable field */
+  isEdit?: boolean;
   onChange?: (value: string | number | null | (string | number)[]) => void;
   className?: string;
 }
@@ -93,6 +95,7 @@ export const Select: React.FC<SelectProps> = ({
   clearable = false,
   multiple = false,
   fullWidth = false,
+  isEdit = true,
   onChange,
   className,
 }) => {
@@ -161,6 +164,25 @@ export const Select: React.FC<SelectProps> = ({
   const hasValue = multiple ? selectedValues.length > 0 : (value != null && value !== '');
 
   const showPlaceholder = !hasValue;
+
+  if (!isEdit) {
+    const displayText = selectedOptions.length > 0
+      ? selectedOptions.map(o => o.label).join(', ')
+      : '-';
+
+    return (
+      <div
+        className={clsx('single-select-wrapper', {
+          'single-select-wrapper--full-width': fullWidth,
+        }, className)}
+      >
+        {label && <label className="single-select-label">{label}</label>}
+        <div className="single-select-view-value">{displayText}</div>
+        {error && <div className="single-select-error">{error}</div>}
+        {!error && helperText && <div className="single-select-helper">{helperText}</div>}
+      </div>
+    );
+  }
 
   return (
     <div

@@ -133,12 +133,18 @@ import { Input } from '@single-ui/react';
 | `error` | `string` | — |
 | `helperText` | `string` | — |
 | `mask` | `MaskType` | — |
+| `saveMask` | `boolean` | `true` |
+| `isEdit` | `boolean` | `true` |
 | `fullWidth` | `boolean` | `false` |
 | `onChange` | `(value: string, event) => void` | — |
 | `leftAddon` | `React.ReactNode` | — |
 | `rightAddon` | `React.ReactNode` | — |
 
 Extends `InputHTMLAttributes<HTMLInputElement>` (omits `onChange` and `size`). `leftAddon`/`rightAddon` render inside the input's border (e.g. a DDI/country code selector via `CountryCodeSelect`) without breaking the focus/error styling.
+
+When `mask` is set, `saveMask` (default `true`) controls what `onChange` receives: the masked/formatted value (e.g. `"12.345.678/0001-90"` for `cnpj`) by default, or the raw unmasked digits when set to `false`.
+
+When `isEdit` is `false`, the field renders as a read-only label showing the current (masked, if applicable) value instead of an editable input.
 
 **Mask values:** `'currency-brl' | 'currency-usd' | 'cpf' | 'cnpj' | 'phone' | 'cep' | 'date'`
 
@@ -227,7 +233,10 @@ import type { SelectOption } from '@single-ui/react';
 | `clearable` | `boolean` | `false` |
 | `multiple` | `boolean` | `false` |
 | `fullWidth` | `boolean` | `false` |
+| `isEdit` | `boolean` | `true` |
 | `onChange` | `(value) => void` | — |
+
+When `isEdit` is `false`, renders the selected option's label (or comma-joined labels when `multiple`) as a read-only label instead of the interactive trigger/dropdown.
 
 ---
 

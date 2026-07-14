@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -292,18 +293,18 @@ describe('Input — password type', () => {
 // ─── Input component — onChange callback ─────────────────────────────────────
 
 describe('Input — onChange callback', () => {
-  it('calls onChange with raw (unmasked) numeric value for CPF mask', async () => {
+  it('calls onChange with raw (unmasked) numeric value for CPF mask when saveMask is false', async () => {
     const onChange = vi.fn();
-    render(<Input mask="cpf" onChange={onChange} />);
+    render(<Input mask="cpf" saveMask={false} onChange={onChange} />);
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: '12345678901' } });
     // The cleaned value passed to onChange should be numeric digits only
     expect(onChange).toHaveBeenCalledWith('12345678901', expect.any(Object));
   });
 
-  it('calls onChange with numeric digits for phone mask', async () => {
+  it('calls onChange with numeric digits for phone mask when saveMask is false', async () => {
     const onChange = vi.fn();
-    render(<Input mask="phone" onChange={onChange} />);
+    render(<Input mask="phone" saveMask={false} onChange={onChange} />);
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: '11987654321' } });
     expect(onChange).toHaveBeenCalledWith('11987654321', expect.any(Object));
@@ -354,21 +355,21 @@ describe('Input — mask display value', () => {
 describe('Input — mask filters non-numeric input', () => {
   it('CPF mask strips letters from onChange value', () => {
     const onChange = vi.fn();
-    render(<Input mask="cpf" onChange={onChange} />);
+    render(<Input mask="cpf" saveMask={false} onChange={onChange} />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'abc123' } });
     expect(onChange).toHaveBeenCalledWith('123', expect.any(Object));
   });
 
   it('CEP mask strips special chars from onChange value', () => {
     const onChange = vi.fn();
-    render(<Input mask="cep" onChange={onChange} />);
+    render(<Input mask="cep" saveMask={false} onChange={onChange} />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '!@#01310' } });
     expect(onChange).toHaveBeenCalledWith('01310', expect.any(Object));
   });
 
   it('CPF mask limits to 11 digits', () => {
     const onChange = vi.fn();
-    render(<Input mask="cpf" onChange={onChange} />);
+    render(<Input mask="cpf" saveMask={false} onChange={onChange} />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '123456789012' } });
     const called = onChange.mock.calls[0][0] as string;
     expect(called.length).toBeLessThanOrEqual(11);
@@ -376,7 +377,7 @@ describe('Input — mask filters non-numeric input', () => {
 
   it('CNPJ mask limits to 14 digits', () => {
     const onChange = vi.fn();
-    render(<Input mask="cnpj" onChange={onChange} />);
+    render(<Input mask="cnpj" saveMask={false} onChange={onChange} />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '123456789012345' } });
     const called = onChange.mock.calls[0][0] as string;
     expect(called.length).toBeLessThanOrEqual(14);
@@ -384,7 +385,7 @@ describe('Input — mask filters non-numeric input', () => {
 
   it('Phone mask limits to 11 digits', () => {
     const onChange = vi.fn();
-    render(<Input mask="phone" onChange={onChange} />);
+    render(<Input mask="phone" saveMask={false} onChange={onChange} />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '119876543210' } });
     const called = onChange.mock.calls[0][0] as string;
     expect(called.length).toBeLessThanOrEqual(11);
@@ -392,7 +393,7 @@ describe('Input — mask filters non-numeric input', () => {
 
   it('CEP mask limits to 8 digits', () => {
     const onChange = vi.fn();
-    render(<Input mask="cep" onChange={onChange} />);
+    render(<Input mask="cep" saveMask={false} onChange={onChange} />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '123456789' } });
     const called = onChange.mock.calls[0][0] as string;
     expect(called.length).toBeLessThanOrEqual(8);
@@ -400,10 +401,51 @@ describe('Input — mask filters non-numeric input', () => {
 
   it('Date mask limits to 8 digits', () => {
     const onChange = vi.fn();
-    render(<Input mask="date" onChange={onChange} />);
+    render(<Input mask="date" saveMask={false} onChange={onChange} />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '251220241' } });
     const called = onChange.mock.calls[0][0] as string;
     expect(called.length).toBeLessThanOrEqual(8);
+  });
+});
+
+describe('Input — saveMask default returns masked value', () => {
+  it('CNPJ onChange receives the formatted value by default', () => {
+    const onChange = vi.fn();
+    render(<Input mask="cnpj" onChange={onChange} />);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '12345678000190' } });
+    expect(onChange).toHaveBeenCalledWith('12.345.678/0001-90', expect.any(Object));
+  });
+
+  it('CPF onChange receives the formatted value by default', () => {
+    const onChange = vi.fn();
+    render(<Input mask="cpf" onChange={onChange} />);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '12345678901' } });
+    expect(onChange).toHaveBeenCalledWith('123.456.789-01', expect.any(Object));
+  });
+
+  it('saveMask=false keeps returning the raw unmasked value', () => {
+    const onChange = vi.fn();
+    render(<Input mask="cnpj" saveMask={false} onChange={onChange} />);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '12345678000190' } });
+    expect(onChange).toHaveBeenCalledWith('12345678000190', expect.any(Object));
+  });
+
+  it('does not double-mask when a controlled parent feeds the masked onChange value back as value', () => {
+    // Regression test: with saveMask's default of true, a controlled Input whose
+    // parent stores the masked onChange output directly in state (the natural
+    // pattern) must not re-mask the already-punctuated string on re-render.
+    function ControlledCNPJ() {
+      const [value, setValue] = React.useState('');
+      return <Input mask="cnpj" value={value} onChange={(v) => setValue(v)} />;
+    }
+    render(<ControlledCNPJ />);
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: '12345678000190' } });
+    expect(input.value).toBe('12.345.678/0001-90');
+
+    // Typing further while the stored value is already masked must stay well-formed.
+    fireEvent.change(input, { target: { value: '12.345.678/0001-901' } });
+    expect(input.value).toBe('12.345.678/0001-90');
   });
 });
 
