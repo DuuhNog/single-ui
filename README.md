@@ -1,58 +1,52 @@
-# 🌟 Single-UI React
+# Single-UI React
 
-> Biblioteca moderna de componentes React construída com Vite + TypeScript
+> A modern React component library built with Vite and TypeScript.
 
 [![NPM Version](https://img.shields.io/npm/v/@single-ui/react.svg)](https://www.npmjs.com/package/@single-ui/react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub](https://img.shields.io/badge/GitHub-DuuhNog%2Fsingle--ui-181717?logo=github)](https://github.com/DuuhNog/single-ui)
 
-## 👀 Veja os componentes ao vivo
+## Live Documentation
 
-**[www.single-ui.com](https://www.single-ui.com)**
-
-Acesse o site para explorar todos os componentes interativos com exemplos de código, dark mode, temas e props.
+Explore all components interactively, with code examples, dark mode, theming, and props: **[www.single-ui.com](https://www.single-ui.com)**
 
 ---
 
-## ✨ Características
+## Features
 
-- ⚛️ **React 19** - Componentes modernos com hooks
-- 📝 **TypeScript** - Tipagem completa
-- ⚡ **Vite** - Build rápido e HMR
-- 🎨 **CSS Puro** - Sem dependências de frameworks
-- 🌓 **Dark Mode** - Suporte nativo
-- 🎭 **Máscaras** - 7 tipos integrados (BRL, USD, CPF, CNPJ, etc)
-- 📅 **DatePicker / DateRangePicker** - Seleção de datas com navegação completa
-- 🎯 **Tree-shakeable** - Importe apenas o que usa
-- ♿ **Acessível** - Seguindo padrões WCAG
+- **React 19** — built with modern hooks and patterns
+- **TypeScript** — fully typed API
+- **Vite** — fast builds and HMR during development
+- **Pure CSS** — no framework dependency in the published output
+- **Dark mode** — built-in support via a single data attribute
+- **Input masks** — 7 built-in types (BRL, USD, CPF, CNPJ, and more)
+- **DatePicker / DateRangePicker** — full date selection with navigation
+- **Tree-shakeable** — import only what you use
+- **Accessible** — built to WCAG standards
 
-## 📦 Instalação
+## Installation
 
 ```bash
 npm install @single-ui/react
 ```
 
-ou
-
 ```bash
 yarn add @single-ui/react
 ```
-
-ou
 
 ```bash
 pnpm add @single-ui/react
 ```
 
-## 🚀 Uso Rápido
+## Getting Started
 
-### 1. Importe os estilos
+### 1. Import the stylesheet
 
 ```tsx
 import '@single-ui/react/styles';
 ```
 
-### 2. Use os componentes
+### 2. Use the components
 
 ```tsx
 import { Button, Input, Card } from '@single-ui/react';
@@ -60,8 +54,8 @@ import { Button, Input, Card } from '@single-ui/react';
 function App() {
   return (
     <div>
-      <Button variant="primary" onClick={() => alert('Clicou!')}>
-        Clique aqui
+      <Button variant="primary" onClick={() => alert('Clicked!')}>
+        Click here
       </Button>
 
       <Input
@@ -71,37 +65,37 @@ function App() {
         onChange={(value) => console.log(value)}
       />
 
-      <Card title="Meu Card" bordered>
-        Conteúdo do card
+      <Card title="My Card" bordered>
+        Card content
       </Card>
     </div>
   );
 }
 ```
 
-## 📚 Componentes
+## Components
 
-Para documentação completa com demos interativos, acesse **[www.single-ui.com](https://www.single-ui.com)**.
+For full documentation with interactive demos, visit **[www.single-ui.com](https://www.single-ui.com)**.
 
-## 🛠️ Desenvolvimento
+## Development
 
 ```bash
 git clone https://github.com/DuuhNog/single-ui.git
 cd single-ui
 npm install
-npm run dev       # showcase em http://localhost:5173
-npm run build     # gera dist/
-npm test          # roda os testes
+npm run dev       # component showcase at http://localhost:5173
+npm run build     # build to dist/
+npm test          # run the test suite
 ```
 
 ---
 
-## 🤝 Contribuindo
+## Contributing
 
-Achou um bug ou tem uma ideia? Abre uma [issue ou PR](https://github.com/DuuhNog/single-ui/issues) que a gente olha na sequência. Feito de dev para dev.
+Found a bug or have a suggestion? Open an [issue or pull request](https://github.com/DuuhNog/single-ui/issues) — contributions are welcome.
 
 ---
 
-## 📄 Licença
+## License
 
-MIT © Eduardo Nogueira - EN Technology Ltda
+MIT © Eduardo Nogueira — EN Technology Ltda

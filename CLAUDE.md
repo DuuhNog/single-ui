@@ -135,8 +135,10 @@ import { Input } from '@single-ui/react';
 | `mask` | `MaskType` | — |
 | `fullWidth` | `boolean` | `false` |
 | `onChange` | `(value: string, event) => void` | — |
+| `leftAddon` | `React.ReactNode` | — |
+| `rightAddon` | `React.ReactNode` | — |
 
-Extends `InputHTMLAttributes<HTMLInputElement>` (omits `onChange` and `size`).
+Extends `InputHTMLAttributes<HTMLInputElement>` (omits `onChange` and `size`). `leftAddon`/`rightAddon` render inside the input's border (e.g. a DDI/country code selector via `CountryCodeSelect`) without breaking the focus/error styling.
 
 **Mask values:** `'currency-brl' | 'currency-usd' | 'cpf' | 'cnpj' | 'phone' | 'cep' | 'date'`
 
@@ -678,6 +680,148 @@ import { Slider } from '@single-ui/react';
 
 ---
 
+### CountryCodeSelect
+
+```tsx
+import { CountryCodeSelect, DEFAULT_COUNTRY_CODES } from '@single-ui/react';
+import type { CountryCodeOption } from '@single-ui/react';
+```
+
+`CountryCodeOption`: `{ iso: string; name: string; dial: string }`
+
+| Prop | Type | Default |
+|------|------|---------|
+| `countries` | `CountryCodeOption[]` | `DEFAULT_COUNTRY_CODES` |
+| `value` | `string` | — |
+| `defaultValue` | `string` | — |
+| `onChange` | `(country: CountryCodeOption) => void` | — |
+| `disabled` | `boolean` | `false` |
+| `searchable` | `boolean` | `true` |
+| `className` | `string` | — |
+| `aria-label` | `string` | `'Código do país'` |
+
+Renders a flag + dial code trigger with a searchable dropdown. Pairs with `Input`'s `leftAddon` to build a phone field with a DDI/country selector.
+
+---
+
+### Divider
+
+```tsx
+import { Divider } from '@single-ui/react';
+```
+
+| Prop | Type | Default |
+|------|------|---------|
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` |
+| `label` | `string` | — |
+| `labelPosition` | `'start' \| 'center' \| 'end'` | `'center'` |
+| `className` | `string` | — |
+| `style` | `React.CSSProperties` | — |
+
+Renders `<hr>` for a plain horizontal divider, or a labeled `<div>` when `label` is set. Vertical orientation renders a `<span>`.
+
+---
+
+### FloatButton
+
+```tsx
+import { FloatButton } from '@single-ui/react';
+```
+
+| Prop | Type | Default |
+|------|------|---------|
+| `threshold` | `number` | `300` |
+| `onClick` | `() => void` | scrolls to top |
+| `icon` | `React.ReactNode` | chevron-up icon |
+| `position` | `'bottom-right' \| 'bottom-left'` | `'bottom-right'` |
+| `className` | `string` | — |
+
+Appears once the page is scrolled past `threshold` px. Defaults to a "back to top" action.
+
+---
+
+### Spinner
+
+```tsx
+import { Spinner } from '@single-ui/react';
+```
+
+| Prop | Type | Default |
+|------|------|---------|
+| `variant` | `'gear' \| 'circular' \| 'lifeline'` | `'circular'` |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` |
+| `sizeNumber` | `number` | — |
+| `color` | `string` | — |
+| `className` | `string` | — |
+
+`sizeNumber` overrides the `size` preset with an exact pixel value. `color` sets the icon's `currentColor`.
+
+---
+
+### Anchor
+
+```tsx
+import { Anchor } from '@single-ui/react';
+```
+
+| Prop | Type | Default |
+|------|------|---------|
+| `href` | `string` | required |
+| `children` | `React.ReactNode` | required |
+| `offset` | `number` | `0` |
+| `className` | `string` | — |
+
+Smooth-scrolls to the element whose `id` matches `href` (with or without a leading `#`). `offset` subtracts extra px from the scroll target — useful to compensate for a fixed header.
+
+---
+
+### ModalManager
+
+```tsx
+import { ModalManagerProvider, useModal } from '@single-ui/react';
+import type { OpenModalOptions } from '@single-ui/react';
+```
+
+**Setup** — wrap app root:
+
+```tsx
+<ModalManagerProvider>
+  <App />
+</ModalManagerProvider>
+```
+
+**Usage:**
+
+```tsx
+const { openModal, closeModal, minimizeModal, restoreModal } = useModal();
+
+const id = openModal({
+  title: 'Título',
+  body: <p>Conteúdo</p>,
+  footer: <Button onClick={() => closeModal(id)}>Fechar</Button>,
+  size: 'md',
+  minimizable: true,
+});
+```
+
+`OpenModalOptions`:
+
+| Field | Type | Default |
+|-------|------|---------|
+| `id` | `string` | auto-generated |
+| `title` | `string` | — |
+| `body` | `React.ReactNode` | required |
+| `footer` | `React.ReactNode` | — |
+| `size` | `number \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `600`px (`'md'`) |
+| `minimizable` | `boolean` | `true` |
+| `closeOnOverlayClick` | `boolean` | `true` |
+| `closeOnEscape` | `boolean` | `true` |
+| `color` | `string` | — (used as the minimized tray item's background) |
+
+Unlike `Modal`, this manages an imperative stack of windows — supports multiple simultaneous modals, each independently minimizable to a tray at the bottom of the viewport. Prefer `Modal` for a single declarative dialog; use `ModalManager` when the app needs to open modals from anywhere (e.g. outside React event handlers) or stack several at once.
+
+---
+
 ## useMask Hook
 
 ```tsx
@@ -699,13 +843,15 @@ The `Input` component accepts a `mask` prop directly — `useMask` is for cases 
 
 ## Special Patterns
 
-### Toast (context-based)
+### Toast / ModalManager (context-based)
 
 `ToastProvider` must wrap the app root. `useToast()` returns `{ toast }`. `ToastContainer` is rendered inside the provider automatically.
 
-### Drawer / Modal (portal-based)
+`ModalManagerProvider` must wrap the app root. `useModal()` returns `{ openModal, closeModal, minimizeModal, restoreModal }` for imperative, stackable modals.
 
-Both use `ReactDOM.createPortal` to render into `document.body`. They lock scroll and handle ESC key.
+### Drawer / Modal / ModalManager (portal-based)
+
+All three use `ReactDOM.createPortal` to render into `document.body`. They lock scroll and handle ESC key.
 
 ### Tooltip / Popover (no deps)
 
