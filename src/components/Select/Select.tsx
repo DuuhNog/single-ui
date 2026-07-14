@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { clsx } from 'clsx';
 import { Chip } from '../Chip/Chip';
+import { useAnchoredPosition } from '../../hooks/useAnchoredPosition';
 import './Select.css';
 
 export interface SelectOption {
@@ -105,7 +107,14 @@ export const Select: React.FC<SelectProps> = ({
     defaultValue ?? (multiple ? [] : undefined)
   );
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  const popupStyle = useAnchoredPosition(boxRef, popupRef, isOpen, {
+    placement: 'bottom-start',
+    matchTriggerWidth: true,
+  });
 
   const isControlled = controlledValue !== undefined;
   const value = isControlled ? controlledValue : internalValue;
@@ -125,7 +134,9 @@ export const Select: React.FC<SelectProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const isOutside = !wrapperRef.current?.contains(target) && !popupRef.current?.contains(target);
+      if (isOutside) {
         setIsOpen(false);
         setSearch('');
       }
@@ -195,7 +206,7 @@ export const Select: React.FC<SelectProps> = ({
     >
       {label && <label className="single-select-label">{label}</label>}
 
-      <div className="single-select">
+      <div className="single-select" ref={boxRef}>
         <div
           className={clsx('single-select__trigger', {
             'single-select__trigger--open': isOpen,
@@ -237,8 +248,8 @@ export const Select: React.FC<SelectProps> = ({
           </div>
         </div>
 
-        {isOpen && (
-          <div className="single-select__dropdown" role="listbox">
+        {isOpen && createPortal(
+          <div ref={popupRef} className="single-select__dropdown" role="listbox" style={popupStyle}>
             {showSearch && (
               <div className="single-select__search">
                 <SearchIcon />
@@ -291,7 +302,8 @@ export const Select: React.FC<SelectProps> = ({
                 })
               )}
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
 

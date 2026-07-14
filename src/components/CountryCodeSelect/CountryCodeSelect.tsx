@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { clsx } from 'clsx';
+import { useAnchoredPosition } from '../../hooks/useAnchoredPosition';
 import './CountryCodeSelect.css';
 
 export interface CountryCodeOption {
@@ -72,7 +74,13 @@ export const CountryCodeSelect: React.FC<CountryCodeSelectProps> = ({
   const [search, setSearch] = useState('');
   const [internalValue, setInternalValue] = useState(defaultValue ?? countries[0]?.iso);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  const popupStyle = useAnchoredPosition(triggerRef, popupRef, isOpen, {
+    placement: 'bottom-start',
+  });
 
   const isControlled = controlledValue !== undefined;
   const selectedIso = isControlled ? controlledValue : internalValue;
@@ -86,7 +94,9 @@ export const CountryCodeSelect: React.FC<CountryCodeSelectProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const isOutside = !wrapperRef.current?.contains(target) && !popupRef.current?.contains(target);
+      if (isOutside) {
         setIsOpen(false);
         setSearch('');
       }
@@ -109,6 +119,7 @@ export const CountryCodeSelect: React.FC<CountryCodeSelectProps> = ({
   return (
     <div ref={wrapperRef} className={clsx('single-country-select', className)}>
       <button
+        ref={triggerRef}
         type="button"
         className={clsx('single-country-select__trigger', {
           'single-country-select__trigger--open': isOpen,
@@ -129,8 +140,8 @@ export const CountryCodeSelect: React.FC<CountryCodeSelectProps> = ({
         )}
       </button>
 
-      {isOpen && (
-        <div className="single-country-select__dropdown" role="listbox">
+      {isOpen && createPortal(
+        <div ref={popupRef} className="single-country-select__dropdown" role="listbox" style={popupStyle}>
           {searchable && (
             <div className="single-country-select__search">
               <SearchIcon />
@@ -171,7 +182,8 @@ export const CountryCodeSelect: React.FC<CountryCodeSelectProps> = ({
               ))
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

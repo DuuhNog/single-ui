@@ -67,11 +67,16 @@
   --single-spacing-2xl: 2rem;
 
   /* Bordas */
-  --single-radius-sm: 0.25rem;
-  --single-radius-md: 0.375rem;
-  --single-radius-lg: 0.5rem;
-  --single-radius-xl: 0.75rem;
+  --single-radius-sm: 0.125rem;
+  --single-radius-md: 0.1875rem;
+  --single-radius-lg: 0.25rem;
+  --single-radius-xl: 0.375rem;
   --single-radius-full: 9999px;
+
+  /* Z-index — anchored popups (portaled to document.body) */
+  --single-z-dropdown: 3000;
+  --single-z-popover: 3100;
+  --single-z-tooltip: 3200;
 
   /* Sombras */
   --single-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);

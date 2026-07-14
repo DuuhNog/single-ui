@@ -16,6 +16,8 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   leftAddon?: React.ReactNode;
   /** Content rendered inside the input's border, after the field */
   rightAddon?: React.ReactNode;
+  /** Shows a divider line between an addon and the field. Default: no divider. */
+  addonDivider?: boolean;
 }
 
 const MASK_DIGIT_LIMITS: Partial<Record<MaskType, number>> = {
@@ -111,6 +113,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       onChange,
       leftAddon,
       rightAddon,
+      addonDivider = false,
       value: controlledValue,
       defaultValue,
       type,
@@ -219,9 +222,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {hasAddon ? (
           <div className={clsx('single-input-addon-field', { 'single-input-addon-field--error': !!error, 'single-input-addon-field--disabled': disabled })}>
-            {leftAddon && <div className="single-input-addon single-input-addon--left">{leftAddon}</div>}
+            {leftAddon && <div className={clsx('single-input-addon single-input-addon--left', { 'single-input-addon--divider': addonDivider })}>{leftAddon}</div>}
             {fieldInner}
-            {rightAddon && <div className="single-input-addon single-input-addon--right">{rightAddon}</div>}
+            {rightAddon && <div className={clsx('single-input-addon single-input-addon--right', { 'single-input-addon--divider': addonDivider })}>{rightAddon}</div>}
           </div>
         ) : (
           fieldInner

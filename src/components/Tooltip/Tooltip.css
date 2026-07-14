@@ -7,8 +7,7 @@
 
 /* Panel */
 .single-tooltip__panel {
-  position: absolute;
-  z-index: 9999;
+  z-index: var(--single-z-tooltip);
   min-width: max-content;
   max-width: 240px;
   padding: var(--single-spacing-xs) var(--single-spacing-sm);
@@ -37,42 +36,34 @@
 
 /* Top */
 .single-tooltip__panel--top {
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
+  transform: translateY(4px);
 }
 .single-tooltip__panel--top.single-tooltip__panel--visible {
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 
 /* Bottom */
 .single-tooltip__panel--bottom {
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-4px);
+  transform: translateY(-4px);
 }
 .single-tooltip__panel--bottom.single-tooltip__panel--visible {
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 
 /* Left */
 .single-tooltip__panel--left {
-  right: calc(100% + 8px);
-  top: 50%;
-  transform: translateY(-50%) translateX(4px);
+  transform: translateX(4px);
 }
 .single-tooltip__panel--left.single-tooltip__panel--visible {
-  transform: translateY(-50%) translateX(0);
+  transform: translateX(0);
 }
 
 /* Right */
 .single-tooltip__panel--right {
-  left: calc(100% + 8px);
-  top: 50%;
-  transform: translateY(-50%) translateX(-4px);
+  transform: translateX(-4px);
 }
 .single-tooltip__panel--right.single-tooltip__panel--visible {
-  transform: translateY(-50%) translateX(0);
+  transform: translateX(0);
 }
 
 /* ── Arrow ──────────────────────────────────────────────────────────────────── */

@@ -139,8 +139,9 @@ import { Input } from '@single-ui/react';
 | `onChange` | `(value: string, event) => void` | — |
 | `leftAddon` | `React.ReactNode` | — |
 | `rightAddon` | `React.ReactNode` | — |
+| `addonDivider` | `boolean` | `false` |
 
-Extends `InputHTMLAttributes<HTMLInputElement>` (omits `onChange` and `size`). `leftAddon`/`rightAddon` render inside the input's border (e.g. a DDI/country code selector via `CountryCodeSelect`) without breaking the focus/error styling.
+Extends `InputHTMLAttributes<HTMLInputElement>` (omits `onChange` and `size`). `leftAddon`/`rightAddon` render inside the input's border (e.g. a DDI/country code selector via `CountryCodeSelect`) without breaking the focus/error styling. Addon content is centered on both axes; by default there's no divider line between an addon and the field — set `addonDivider` to render one.
 
 When `mask` is set, `saveMask` (default `true`) controls what `onChange` receives: the masked/formatted value (e.g. `"12.345.678/0001-90"` for `cnpj`) by default, or the raw unmasked digits when set to `false`.
 
@@ -238,6 +239,8 @@ import type { SelectOption } from '@single-ui/react';
 
 When `isEdit` is `false`, renders the selected option's label (or comma-joined labels when `multiple`) as a read-only label instead of the interactive trigger/dropdown.
 
+The dropdown renders through a portal into `document.body`, anchored to the trigger and repositioned dynamically (flips above the trigger when there's no room below) — it always escapes clipping ancestors (`overflow: hidden` containers like `Accordion`) and stacking issues with later-in-DOM siblings (e.g. a `Table`).
+
 ---
 
 ### Table
@@ -269,6 +272,12 @@ import type { TableColumn } from '@single-ui/react';
 | `loading` | `boolean` | `false` |
 | `emptyMessage` | `string` | `'Nenhum registro encontrado'` |
 | `onRowClick` | `(row: T, index: number) => void` | — |
+| `filterContent` | `React.ReactNode` | — |
+| `bordered` | `boolean` | `true` |
+| `headerBordered` | `boolean` | `true` |
+| `rowBordered` | `boolean` | `true` |
+
+`bordered` controls the table's outer border, `headerBordered` the border below the header row, `rowBordered` the border below each body row. Clicking a row highlights it (darker than the hover background) until another row is clicked.
 
 ---
 
@@ -332,6 +341,8 @@ import { DatePickerInput } from '@single-ui/react';
 | `format` | `'DD/MM/YYYY' \| 'MM/DD/YYYY'` | `'DD/MM/YYYY'` |
 | `dateFormat` | `(date: Date) => string` | — |
 
+The calendar popup renders through a portal into `document.body`, anchored to the input and repositioned dynamically — escapes clipping ancestors and always renders above other page content.
+
 ---
 
 ### DateRangePickerInput
@@ -356,6 +367,8 @@ import { DateRangePickerInput } from '@single-ui/react';
 | `maxDate` | `Date` | — |
 | `format` | `'DD/MM/YYYY' \| 'MM/DD/YYYY'` | `'DD/MM/YYYY'` |
 | `dateFormat` | `(date: Date) => string` | — |
+
+The calendar popup renders through a portal into `document.body`, anchored to the input and repositioned dynamically — escapes clipping ancestors and always renders above other page content.
 
 ---
 
@@ -542,7 +555,7 @@ import { Popover } from '@single-ui/react';
 | `onOpenChange` | `(open: boolean) => void` | — |
 | `closeOnOutside` | `boolean` | `true` |
 
-No external positioning library — uses absolute positioning.
+No external positioning library. The panel renders through a portal into `document.body`, anchored to the trigger and repositioned dynamically (flips to the opposite side when there's no room) — escapes clipping ancestors and stacking issues with other page content.
 
 ---
 
@@ -560,7 +573,7 @@ import { Tooltip } from '@single-ui/react';
 | `delay` | `number` | `300` |
 | `disabled` | `boolean` | `false` |
 
-No external positioning library — uses absolute positioning.
+No external positioning library. The panel renders through a portal into `document.body`, anchored to the trigger and repositioned dynamically (flips to the opposite side when there's no room) — escapes clipping ancestors and stacking issues with other page content.
 
 ---
 
@@ -709,7 +722,7 @@ import type { CountryCodeOption } from '@single-ui/react';
 | `className` | `string` | — |
 | `aria-label` | `string` | `'Código do país'` |
 
-Renders a flag + dial code trigger with a searchable dropdown. Pairs with `Input`'s `leftAddon` to build a phone field with a DDI/country selector.
+Renders a flag + dial code trigger with a searchable dropdown. Pairs with `Input`'s `leftAddon` to build a phone field with a DDI/country selector. The dropdown renders through a portal into `document.body`, anchored to the trigger and repositioned dynamically — escapes clipping ancestors (e.g. `Input`'s addon box) and stacking issues.
 
 ---
 
@@ -862,9 +875,9 @@ The `Input` component accepts a `mask` prop directly — `useMask` is for cases 
 
 All three use `ReactDOM.createPortal` to render into `document.body`. They lock scroll and handle ESC key.
 
-### Tooltip / Popover (no deps)
+### Select / CountryCodeSelect / DatePickerInput / DateRangePickerInput / Popover / Tooltip (anchored portals)
 
-Use absolute positioning with placement logic. No external library (no Popper, no Floating UI).
+All six render their dropdown/panel through `ReactDOM.createPortal` into `document.body`, positioned with the internal `useAnchoredPosition` hook (`src/hooks/useAnchoredPosition.ts`) — no external library (no Popper, no Floating UI). The hook reads `getBoundingClientRect()` on the trigger and popup, computes `position: fixed` coordinates, flips to the opposite side when there's no room, and recalculates on scroll/resize. This keeps popups from being clipped by `overflow: hidden` ancestors (e.g. an `Accordion` item) and ensures they stack above later-in-DOM siblings (e.g. a `Table`) via the `--single-z-dropdown` / `--single-z-popover` / `--single-z-tooltip` tokens in `tokens.css`.
 
 ### Table (generic)
 

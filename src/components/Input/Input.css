@@ -159,7 +159,7 @@
 /* ─── Addon field (leftAddon / rightAddon) ───────────────────────────────── */
 .single-input-addon-field {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   background-color: var(--single-background);
   border: 1px solid var(--single-border);
   border-radius: var(--single-radius-md);
@@ -213,14 +213,15 @@
 
 .single-input-addon {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.single-input-addon--left {
+.single-input-addon--left.single-input-addon--divider {
   border-right: 1px solid var(--single-border);
 }
 
-.single-input-addon--right {
+.single-input-addon--right.single-input-addon--divider {
   border-left: 1px solid var(--single-border);
 }

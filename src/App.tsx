@@ -933,11 +933,18 @@ function InputSection() {
       <DemoBox>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
-            label="Telefone Residencial"
+            label="Telefone Residencial (sem divisor, padrão)"
             placeholder="Telefone Residencial"
             mask="phone"
             value={phone}
             onChange={(v) => setPhone(v)}
+            leftAddon={<CountryCodeSelect defaultValue="BR" />}
+          />
+          <Input
+            label="Com divisor (addonDivider)"
+            placeholder="Telefone Residencial"
+            mask="phone"
+            addonDivider
             leftAddon={<CountryCodeSelect defaultValue="BR" />}
           />
           <Input label="Com sufixo" placeholder="0,00" rightAddon={<span className="px-3 text-sm text-stone-500 dark:text-stone-400">kg</span>} />
@@ -1013,6 +1020,7 @@ const [value, setValue] = useState('')
         { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Ocupa 100% da largura' },
         { name: 'leftAddon', type: 'React.ReactNode', description: 'Conteúdo fixado antes do campo, dentro da borda (ex: CountryCodeSelect)' },
         { name: 'rightAddon', type: 'React.ReactNode', description: 'Conteúdo fixado depois do campo, dentro da borda' },
+        { name: 'addonDivider', type: 'boolean', default: 'false', description: 'Exibe uma linha divisória entre o addon e o campo (conteúdo do addon é sempre centralizado)' },
       ]} />
       <SectionNav current="input" />
     </section>
@@ -1381,6 +1389,11 @@ function TableSection() {
           onRowClick={(row) => alert(`Clicou: ${row.name}`)} />
       </DemoBox>
 
+      <StepTitle>Bordas customizáveis (bordered / headerBordered / rowBordered)</StepTitle>
+      <DemoBox>
+        <Table columns={columns} data={data} rowKey="id" bordered={false} headerBordered={false} rowBordered={false} />
+      </DemoBox>
+
       <StepTitle>Uso básico</StepTitle>
       <CodeBlock code={`import { Table } from '@single-ui/react'
 import type { TableColumn } from '@single-ui/react'
@@ -1412,7 +1425,11 @@ const columns: TableColumn<User>[] = [
         { name: 'rowKey', type: 'string', default: "'id'", description: 'Chave única por linha' },
         { name: 'loading', type: 'boolean', default: 'false', description: 'Exibe spinner' },
         { name: 'emptyMessage', type: 'string', default: "'Nenhum registro encontrado'", description: 'Mensagem sem dados' },
-        { name: 'onRowClick', type: '(row: T, index: number) => void', description: 'Callback ao clicar na linha' },
+        { name: 'onRowClick', type: '(row: T, index: number) => void', description: 'Callback ao clicar na linha. A linha clicada fica destacada (mais escura que o hover) até outra linha ser clicada' },
+        { name: 'filterContent', type: 'React.ReactNode', description: 'Conteúdo exibido no popover de filtros' },
+        { name: 'bordered', type: 'boolean', default: 'true', description: 'Borda ao redor de toda a tabela' },
+        { name: 'headerBordered', type: 'boolean', default: 'true', description: 'Borda abaixo do cabeçalho' },
+        { name: 'rowBordered', type: 'boolean', default: 'true', description: 'Borda abaixo de cada linha do corpo' },
       ]} />
 
       <StepTitle>TableColumn</StepTitle>
@@ -1433,7 +1450,7 @@ function SelectSection() {
   const [val, setVal] = useState<string | number | null>(null)
   return (
     <section id="select" className="py-[52px] [scroll-margin-top:76px]">
-      <SectionHeader title="Select" description="Seleção customizada com busca, limpeza, opções desabilitadas e controle de valor." />
+      <SectionHeader title="Select" description="Seleção customizada com busca, limpeza, opções desabilitadas e controle de valor. O dropdown é renderizado via portal em document.body, então nunca é cortado por containers com overflow oculto (ex: Accordion) nem fica atrás de outros elementos." />
 
       <StepTitle>Demo</StepTitle>
       <DemoBox>
@@ -2918,7 +2935,7 @@ function TooltipSection() {
 function PopoverSection() {
   return (
     <section id="popover" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
-      <SectionHeader title="Popover" description="Painel flutuante ativado por clique. Suporte a título, 8 posições e modo controlado." />
+      <SectionHeader title="Popover" description="Painel flutuante ativado por clique. Suporte a título, 8 posições e modo controlado. Renderizado via portal em document.body com posicionamento dinâmico, escapando de containers com overflow oculto." />
       <StepTitle>Demo</StepTitle>
       <DemoBox className="flex flex-wrap gap-4 justify-center py-6">
         <Popover

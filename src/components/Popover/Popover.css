@@ -7,8 +7,7 @@
 
 /* Panel */
 .single-popover__panel {
-  position: absolute;
-  z-index: 9000;
+  z-index: var(--single-z-popover);
   min-width: 220px;
   background: var(--single-background);
   border: 1px solid var(--single-border);
@@ -36,8 +35,6 @@
 
 .single-popover__panel--bottom,
 .single-popover__panel--bottom-start {
-  top: calc(100% + 6px);
-  left: 0;
   transform-origin: top left;
 }
 .single-popover__panel--bottom-start.single-popover__panel--open,
@@ -46,36 +43,23 @@
 }
 
 .single-popover__panel--bottom-end {
-  top: calc(100% + 6px);
-  right: 0;
-  left: auto;
   transform-origin: top right;
 }
 
 .single-popover__panel--top,
 .single-popover__panel--top-start {
-  bottom: calc(100% + 6px);
-  left: 0;
   transform-origin: bottom left;
 }
 
 .single-popover__panel--top-end {
-  bottom: calc(100% + 6px);
-  right: 0;
-  left: auto;
   transform-origin: bottom right;
 }
 
 .single-popover__panel--left {
-  right: calc(100% + 6px);
-  top: 0;
-  left: auto;
   transform-origin: top right;
 }
 
 .single-popover__panel--right {
-  left: calc(100% + 6px);
-  top: 0;
   transform-origin: top left;
 }
 

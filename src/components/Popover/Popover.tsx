@@ -1,5 +1,7 @@
 import React, { forwardRef, useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { clsx } from 'clsx';
+import { useAnchoredPosition } from '../../hooks/useAnchoredPosition';
 import './Popover.css';
 
 export type PopoverPlacement =
@@ -42,6 +44,9 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
     const open = isControlled ? controlledOpen : internalOpen;
 
     const wrapperRef = useRef<HTMLSpanElement>(null);
+    const panelRef = useRef<HTMLSpanElement>(null);
+
+    const popupStyle = useAnchoredPosition(wrapperRef, panelRef, open, { placement });
 
     const setOpen = useCallback(
       (value: boolean) => {
@@ -58,8 +63,9 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
       if (!open || !closeOnOutside) return;
 
       const handleMouseDown = (e: MouseEvent) => {
-        const wrapper = wrapperRef.current;
-        if (wrapper && !wrapper.contains(e.target as Node)) {
+        const target = e.target as Node;
+        const isOutside = !wrapperRef.current?.contains(target) && !panelRef.current?.contains(target);
+        if (isOutside) {
           setOpen(false);
         }
       };
@@ -91,32 +97,35 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
         else if (ref) (ref as React.MutableRefObject<HTMLSpanElement | null>).current = node;
       }} className="single-popover">
         {triggerEl}
-        <span className={panelClasses} role="dialog">
-          {(title) && (
-            <div className="single-popover__header">
-              {title && (
-                <span className="single-popover__title">{title}</span>
-              )}
-              <button
-                type="button"
-                className="single-popover__close"
-                onClick={() => setOpen(false)}
-                aria-label="Close"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M18 6L6 18M6 6L18 18"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
-          )}
-          <div className="single-popover__content">{content}</div>
-        </span>
+        {createPortal(
+          <span ref={panelRef} className={panelClasses} role="dialog" style={popupStyle}>
+            {(title) && (
+              <div className="single-popover__header">
+                {title && (
+                  <span className="single-popover__title">{title}</span>
+                )}
+                <button
+                  type="button"
+                  className="single-popover__close"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M18 6L6 18M6 6L18 18"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            )}
+            <div className="single-popover__content">{content}</div>
+          </span>,
+          document.body
+        )}
       </span>
     );
   }

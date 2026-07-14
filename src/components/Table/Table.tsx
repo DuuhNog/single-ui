@@ -21,6 +21,12 @@ export interface TableProps<T = any> {
   onRowClick?: (row: T, index: number) => void;
   /** Content rendered inside the filter popover */
   filterContent?: React.ReactNode;
+  /** Border around the whole table */
+  bordered?: boolean;
+  /** Border below the header row */
+  headerBordered?: boolean;
+  /** Border below each body row */
+  rowBordered?: boolean;
   className?: string;
 }
 
@@ -106,10 +112,14 @@ export function Table<T = any>({
   emptyMessage = 'Nenhum registro encontrado',
   onRowClick,
   filterContent,
+  bordered = true,
+  headerBordered = true,
+  rowBordered = true,
   className,
 }: TableProps<T>) {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const [activeRowKey, setActiveRowKey] = useState<string | number | null>(null);
 
   const handleSort = (column: TableColumn<T>) => {
     if (!column.sortable) return;
@@ -141,7 +151,7 @@ export function Table<T = any>({
   }, [data, sortColumn, sortDirection]);
 
   return (
-    <div className={clsx('single-table-wrapper', className)}>
+    <div className={clsx('single-table-wrapper', { 'single-table-wrapper--no-border': !bordered }, className)}>
       {filterContent && (
         <div className="single-table__toolbar">
           <FilterPopover content={filterContent} />
@@ -149,7 +159,7 @@ export function Table<T = any>({
       )}
 
       <table className="single-table">
-        <thead className="single-table__header">
+        <thead className={clsx('single-table__header', { 'single-table__header--no-border': !headerBordered })}>
           <tr>
             {columns.map((column) => (
               <th
@@ -196,13 +206,20 @@ export function Table<T = any>({
               </td>
             </tr>
           ) : (
-            sortedData.map((row, index) => (
+            sortedData.map((row, index) => {
+              const key = (row as any)[rowKey] ?? index;
+              return (
               <tr
-                key={(row as any)[rowKey] || index}
+                key={key}
                 className={clsx('single-table__row', {
                   'single-table__row--clickable': !!onRowClick,
+                  'single-table__row--no-border': !rowBordered,
+                  'single-table__row--active': activeRowKey === key,
                 })}
-                onClick={() => onRowClick?.(row, index)}
+                onClick={() => {
+                  setActiveRowKey(key);
+                  onRowClick?.(row, index);
+                }}
               >
                 {columns.map((column) => (
                   <td
@@ -217,7 +234,8 @@ export function Table<T = any>({
                   </td>
                 ))}
               </tr>
-            ))
+              );
+            })
           )}
         </tbody>
       </table>

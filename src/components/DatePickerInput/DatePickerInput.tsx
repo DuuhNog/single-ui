@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { clsx } from 'clsx';
 import { DatePicker } from '../DatePicker/DatePicker';
+import { useAnchoredPosition } from '../../hooks/useAnchoredPosition';
 import './DatePickerInput.css';
 
 export type DateInputFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY';
@@ -106,6 +108,12 @@ export function DatePickerInput({
   );
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const fieldRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  const popupStyle = useAnchoredPosition(fieldRef, popupRef, isOpen, {
+    placement: 'bottom-start',
+  });
 
   // Sync external value → input text (when controlled externally)
   useEffect(() => {
@@ -119,7 +127,9 @@ export function DatePickerInput({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const isOutside = !wrapperRef.current?.contains(target) && !popupRef.current?.contains(target);
+      if (isOutside) {
         setIsOpen(false);
       }
     };
@@ -168,7 +178,7 @@ export function DatePickerInput({
     >
       {label && <label className="single-dpi__label">{label}</label>}
 
-      <div className={clsx('single-dpi__field', {
+      <div ref={fieldRef} className={clsx('single-dpi__field', {
         'single-dpi__field--open': isFocused,
         'single-dpi__field--error': !!error,
         'single-dpi__field--disabled': disabled,
@@ -210,15 +220,16 @@ export function DatePickerInput({
           </button>
         </div>
 
-        {isOpen && (
-          <div className="single-dpi__popup">
+        {isOpen && createPortal(
+          <div ref={popupRef} className="single-dpi__popup" style={popupStyle}>
             <DatePicker
               value={parseDate(inputText, format) ?? value ?? null}
               onChange={handleDaySelect}
               minDate={minDate}
               maxDate={maxDate}
             />
-          </div>
+          </div>,
+          document.body
         )}
       </div>
 

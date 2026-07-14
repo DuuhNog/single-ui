@@ -1,5 +1,7 @@
 import React, { forwardRef, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { clsx } from 'clsx';
+import { useAnchoredPosition } from '../../hooks/useAnchoredPosition';
 import './Tooltip.css';
 
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
@@ -27,6 +29,10 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
   ) => {
     const [visible, setVisible] = useState(false);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const wrapperRef = useRef<HTMLSpanElement>(null);
+    const panelRef = useRef<HTMLSpanElement>(null);
+
+    const popupStyle = useAnchoredPosition(wrapperRef, panelRef, visible, { placement });
 
     const show = useCallback(() => {
       if (disabled) return;
@@ -76,13 +82,22 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
     });
 
     return (
-      <span ref={ref} className="single-tooltip" style={{ position: 'relative', display: 'inline-flex' }}>
+      <span
+        ref={(node) => {
+          (wrapperRef as React.MutableRefObject<HTMLSpanElement | null>).current = node;
+          if (typeof ref === 'function') ref(node);
+          else if (ref) (ref as React.MutableRefObject<HTMLSpanElement | null>).current = node;
+        }}
+        className="single-tooltip"
+        style={{ display: 'inline-flex' }}
+      >
         {child}
-        {!disabled && (
-          <span className={tooltipClasses} role="tooltip">
+        {!disabled && createPortal(
+          <span ref={panelRef} className={tooltipClasses} role="tooltip" style={popupStyle}>
             {content}
             <span className="single-tooltip__arrow" aria-hidden="true" />
-          </span>
+          </span>,
+          document.body
         )}
       </span>
     );

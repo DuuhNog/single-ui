@@ -47,10 +47,7 @@
 
 /* ─── Dropdown ────────────────────────────────────────────────────────────── */
 .single-country-select__dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  z-index: 100;
+  z-index: var(--single-z-dropdown);
   width: max-content;
   min-width: 220px;
   max-width: 280px;

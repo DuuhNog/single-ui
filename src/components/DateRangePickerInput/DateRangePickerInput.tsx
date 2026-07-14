@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { clsx } from 'clsx';
 import { DateRangePicker } from '../DateRangePicker/DateRangePicker';
 import type { DateRange } from '../DateRangePicker/DateRangePicker';
+import { useAnchoredPosition } from '../../hooks/useAnchoredPosition';
 import './DateRangePickerInput.css';
 
 export type DateInputFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY';
@@ -95,13 +97,21 @@ export function DateRangePickerInput({
 }: DateRangePickerInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  const popupStyle = useAnchoredPosition(triggerRef, popupRef, isOpen, {
+    placement: 'right',
+  });
 
   const formatter = dateFormat ?? buildFormatter(format);
   const resolvedPlaceholder = placeholder ?? `${format} → ${format}`;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const isOutside = !wrapperRef.current?.contains(target) && !popupRef.current?.contains(target);
+      if (isOutside) {
         setIsOpen(false);
       }
     };
@@ -137,6 +147,7 @@ export function DateRangePickerInput({
 
       <div className="single-drpi">
         <div
+          ref={triggerRef}
           className={clsx('single-drpi__trigger', {
             'single-drpi__trigger--open': isOpen,
             'single-drpi__trigger--error': error,
@@ -173,8 +184,8 @@ export function DateRangePickerInput({
           </div>
         </div>
 
-        {isOpen && (
-          <div className="single-drpi__popup">
+        {isOpen && createPortal(
+          <div ref={popupRef} className="single-drpi__popup" style={popupStyle}>
             <DateRangePicker
               startDate={startDate}
               endDate={endDate}
@@ -182,7 +193,8 @@ export function DateRangePickerInput({
               minDate={minDate}
               maxDate={maxDate}
             />
-          </div>
+          </div>,
+          document.body
         )}
       </div>
 

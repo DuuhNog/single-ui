@@ -130,10 +130,7 @@
 
 /* ─── Popup ──────────────────────────────────────────────────────────────── */
 .single-drpi__popup {
-  position: absolute;
-  top: 0;
-  left: calc(100% + 6px);
-  z-index: 200;
+  z-index: var(--single-z-dropdown);
   animation: single-drpi-in 140ms ease-out;
 }
 
