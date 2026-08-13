@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, createContext, useContext } from 'r
 import { Routes, Route, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { clsx } from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
-import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar, Spinner, FloatButton, Divider, Anchor, ModalManagerProvider, useModal, CountryCodeSelect } from './index'
-import type { TableColumn, DateRange } from './index'
+import { Button, Input, Card, Modal, Select, Table, DatePicker, DateRangePicker, DatePickerInput, DateRangePickerInput, TimePicker, TimePickerInput, TimeRangePickerInput, Switch, Checkbox, Chip, useToast, Textarea, Tabs, Stepper, Skeleton, Avatar, AvatarGroup, Drawer, Popover, Tooltip, Accordion, Pagination, InputOTP, Badge, Slider, Navbar as SingleNavbar, Spinner, FloatButton, Divider, Anchor, ModalManagerProvider, useModal, CountryCodeSelect } from './index'
+import type { TableColumn, DateRange, TimeRange } from './index'
 import './styles/tokens.css'
 
 type Page = 'home' | 'components' | 'examples' | 'tasks'
-type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'modalmanager' | 'drawer' | 'navbar' | 'table' | 'select' | 'countrycodeselect' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp' | 'spinner' | 'floatbutton' | 'divider' | 'anchor'
+type Section = 'install' | 'themes' | 'form' | 'button' | 'input' | 'textarea' | 'card' | 'modal' | 'modalmanager' | 'drawer' | 'navbar' | 'table' | 'select' | 'countrycodeselect' | 'switch' | 'checkbox' | 'chip' | 'badge' | 'slider' | 'tabs' | 'stepper' | 'accordion' | 'datepicker' | 'daterangepicker' | 'datepickerinput' | 'daterangepickerinput' | 'timepicker' | 'timepickerinput' | 'timerangepickerinput' | 'avatar' | 'skeleton' | 'tooltip' | 'popover' | 'toast' | 'pagination' | 'inputotp' | 'spinner' | 'floatbutton' | 'divider' | 'anchor'
 type Accent = 'orange' | 'blue' | 'red' | 'purple'
 
 const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
@@ -31,6 +31,7 @@ const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'badge', label: 'Badge' },
   { id: 'slider', label: 'Slider' },
   { id: 'tabs', label: 'Tabs' },
+  { id: 'stepper', label: 'Stepper' },
   { id: 'accordion', label: 'Accordion' },
   { id: 'avatar', label: 'Avatar' },
   { id: 'skeleton', label: 'Skeleton' },
@@ -43,6 +44,9 @@ const SIDEBAR_ITEMS: { id: Section; label: string }[] = [
   { id: 'daterangepicker', label: 'DateRangePicker' },
   { id: 'datepickerinput', label: 'DatePickerInput' },
   { id: 'daterangepickerinput', label: 'DateRangePickerInput' },
+  { id: 'timepicker', label: 'TimePicker' },
+  { id: 'timepickerinput', label: 'TimePickerInput' },
+  { id: 'timerangepickerinput', label: 'TimeRangePickerInput' },
   { id: 'spinner', label: 'Spinner' },
   { id: 'floatbutton', label: 'FloatButton' },
   { id: 'divider', label: 'Divider' },
@@ -327,6 +331,7 @@ function HomePage({ onStart }: { onStart: () => void }) {
     { id: 14, component: 'Toast', descricao: 'Notificações temporárias', status: 'Estável' },
     { id: 15, component: 'Table', descricao: 'Tabelas com ordenação', status: 'Estável' },
     { id: 16, component: 'Tabs', descricao: 'Abas com variantes underline e pills', status: 'Estável' },
+    { id: 27, component: 'Stepper', descricao: 'Indicador de progresso para fluxos multi-etapa (wizards)', status: 'Estável' },
     { id: 17, component: 'Accordion', descricao: 'Painéis colapsáveis com animação', status: 'Estável' },
     { id: 18, component: 'Pagination', descricao: 'Paginação com ellipsis', status: 'Estável' },
     { id: 19, component: 'Avatar', descricao: 'Avatares com fallback e grupos', status: 'Estável' },
@@ -335,6 +340,9 @@ function HomePage({ onStart }: { onStart: () => void }) {
     { id: 22, component: 'DateRangePicker', descricao: 'Seleção de intervalo entre duas datas', status: 'Estável' },
     { id: 23, component: 'DatePickerInput', descricao: 'Input com popup de data', status: 'Estável' },
     { id: 24, component: 'DateRangePickerInput', descricao: 'Input com popup de intervalo', status: 'Estável' },
+    { id: 28, component: 'TimePicker', descricao: 'Seleção de horário com colunas de hora e minuto', status: 'Estável' },
+    { id: 29, component: 'TimePickerInput', descricao: 'Input com popup de horário', status: 'Estável' },
+    { id: 30, component: 'TimeRangePickerInput', descricao: 'Input com popup de intervalo de horários', status: 'Estável' },
   ]
 
   interface OrderRow { id: number; num: string; cliente: string; produto: string; status: string; valor: string; data: string; cidade: string }
@@ -1222,6 +1230,19 @@ function ModalManagerDemo() {
     })
   }
 
+  const openMandatory = () => {
+    let id: string
+    id = openModal({
+      title: 'Selecione a unidade',
+      size: 'sm',
+      closeOnOverlayClick: false,
+      closeOnEscape: false,
+      showCloseButton: false,
+      minimizable: false,
+      body: <MandatorySelectDemo onConfirm={() => closeModal(id)} />,
+    })
+  }
+
   const openMultiple = () => {
     let idA: string
     idA = openModal({
@@ -1246,7 +1267,28 @@ function ModalManagerDemo() {
       <Button size="sm" variant="error" onClick={openConfirm}>Confirmação</Button>
       <Button size="sm" variant="secondary" onClick={openForm}>Formulário</Button>
       <Button size="sm" variant="secondary" onClick={openMinimizable}>Minimizável</Button>
+      <Button size="sm" variant="warning" onClick={openMandatory}>Obrigatório</Button>
       <Button size="sm" variant="secondary" onClick={openMultiple}>Dois modais</Button>
+    </div>
+  )
+}
+
+function MandatorySelectDemo({ onConfirm }: { onConfirm: () => void }) {
+  const [value, setValue] = useState<string | number | null>(null)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <p style={{ margin: 0, color: 'var(--single-text-secondary)', fontSize: '0.875rem' }}>
+        Sem X, sem ESC, sem clique no overlay e sem botão de minimizar — só fecha selecionando uma opção e confirmando.
+      </p>
+      <Select
+        label="Unidade"
+        placeholder="Selecione..."
+        options={[{ value: 'matriz', label: 'Matriz' }, { value: 'filial-1', label: 'Filial 1' }, { value: 'filial-2', label: 'Filial 2' }]}
+        value={value}
+        onChange={(v) => setValue(v as string)}
+        fullWidth
+      />
+      <Button size="sm" disabled={!value} onClick={onConfirm}>Confirmar</Button>
     </div>
   )
 }
@@ -1318,6 +1360,19 @@ const id = openModal({ title: 'Relatório', body: <div>...</div> })
 minimizeModal(id)  // vai para a tray
 restoreModal(id)   // restaura para tela cheia`} />
 
+      <StepTitle>Modal obrigatório</StepTitle>
+      <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
+        Pra um modal que o usuário <strong>não pode</strong> fechar sem concluir a ação (ex: selecionar algo obrigatório antes de continuar), zere as quatro saídas possíveis — <IC>minimizable</IC> também precisa ser <IC>false</IC>, senão o usuário minimiza pra tray e navega por trás do modal sem concluir nada.
+      </p>
+      <CodeBlock code={`openModal({
+  title: 'Selecione a unidade',
+  body: <SelecionarUnidadeForm onConfirm={...} />,
+  closeOnOverlayClick: false,
+  closeOnEscape: false,
+  showCloseButton: false,
+  minimizable: false,
+})`} />
+
       <StepTitle>Opções — openModal</StepTitle>
       <PropsTable props={[
         { name: 'title', type: 'string', description: 'Título exibido no header do modal' },
@@ -1329,6 +1384,7 @@ restoreModal(id)   // restaura para tela cheia`} />
         { name: 'id', type: 'string', description: 'ID customizado; gerado automaticamente se omitido' },
         { name: 'closeOnOverlayClick', type: 'boolean', default: 'true', description: 'Fecha ao clicar no overlay escuro' },
         { name: 'closeOnEscape', type: 'boolean', default: 'true', description: 'Fecha ao pressionar ESC' },
+        { name: 'showCloseButton', type: 'boolean', default: 'true', description: 'Exibe o botão "X" no header' },
       ]} />
 
       <StepTitle>Retorno de useModal</StepTitle>
@@ -2005,6 +2061,227 @@ const [range, setRange] = useState<DateRange>({ startDate: null, endDate: null }
         { name: 'maxDate', type: 'Date', description: 'Maior data permitida' },
         { name: 'dateFormat', type: '(date: Date) => string', description: 'Função de formatação customizada das datas exibidas no campo' },
       ]} />
+    </section>
+  )
+}
+
+// ─── TimePicker Section ───────────────────────────────────────────────────────
+function TimePickerSection() {
+  const [time24, setTime24] = useState<string | null>('16:15')
+  const [time12, setTime12] = useState<string | null>('16:15')
+  return (
+    <section id="timepicker" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="TimePicker"
+        description="Seleção de horário em formato roleta (wheel), no estilo iOS — colunas roláveis com scroll-snap, banda de destaque central e fade nas bordas. Suporta formato 24h ou 12h com coluna de AM/PM."
+      />
+
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-4">
+        <div className="flex flex-wrap gap-10 items-start">
+          <div>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
+              24h — <strong className="text-stone-800 dark:text-stone-200">{time24 ?? '—'}</strong>
+            </p>
+            <TimePicker value={time24} onChange={setTime24} format="24h" />
+          </div>
+          <div>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mb-3">
+              12h (AM/PM) — <strong className="text-stone-800 dark:text-stone-200">{time12 ?? '—'}</strong>
+            </p>
+            <TimePicker value={time12} onChange={setTime12} format="12h" />
+          </div>
+        </div>
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { TimePicker } from '@single-ui/react'
+
+const [time, setTime] = useState<string | null>(null)
+
+// Formato 24h (padrão)
+<TimePicker value={time} onChange={setTime} format="24h" />
+
+// Formato 12h com coluna de AM/PM
+<TimePicker value={time} onChange={setTime} format="12h" />`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'value', type: 'string | null', description: 'Horário selecionado, sempre no formato 24h "HH:mm" (controlado) — independe de `format`' },
+        { name: 'onChange', type: '(time: string) => void', description: 'Callback ao selecionar hora, minuto ou período — recebe sempre "HH:mm" em 24h' },
+        { name: 'minTime', type: 'string', description: 'Menor horário permitido, formato "HH:mm" (24h)' },
+        { name: 'maxTime', type: 'string', description: 'Maior horário permitido, formato "HH:mm" (24h)' },
+        { name: 'step', type: 'number', default: '5', description: 'Intervalo em minutos entre as opções da coluna de minutos' },
+        { name: 'format', type: "'24h' | '12h'", default: "'24h'", description: 'Formato de exibição das colunas — "12h" adiciona uma terceira coluna de AM/PM' },
+        { name: 'className', type: 'string', description: 'Classe CSS adicional' },
+      ]} />
+
+      <InfoBox>
+        O valor controlado (<IC>value</IC>/<IC>onChange</IC>) é sempre 24h — <IC>format</IC> só muda a exibição/interação das colunas.
+        Arraste uma coluna ou clique numa célula para selecionar; a célula centralizada (destacada) é a selecionada.
+        Componente inline (sem campo de input) — use <IC>TimePickerInput</IC> para um campo de texto com popup, ou{' '}
+        <IC>TimeRangePickerInput</IC> para selecionar início e fim.
+      </InfoBox>
+    </section>
+  )
+}
+
+// ─── TimePickerInput Section ──────────────────────────────────────────────────
+function TimePickerInputSection() {
+  const [time, setTime] = useState<string | null>(null)
+  const [time12, setTime12] = useState<string | null>(null)
+  return (
+    <section id="timepickerinput" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="TimePickerInput"
+        description={'Campo de input que abre o TimePicker (roleta) ao ser clicado. Aceita digitação direta ou seleção via popup. Com format="12h", exibe um botão AM/PM ao lado do relógio.'}
+      />
+
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-5 items-start">
+        <TimePickerInput
+          label="Horário (24h)"
+          value={time}
+          onChange={setTime}
+          clearable
+          helperText="Digite ou clique para abrir o seletor."
+        />
+        <TimePickerInput
+          label="Horário (12h)"
+          value={time12}
+          onChange={setTime12}
+          format="12h"
+          clearable
+          helperText="Use o botão AM/PM para alternar o período."
+        />
+        <TimePickerInput
+          label="Com erro"
+          value={time}
+          onChange={setTime}
+          error="Horário inválido"
+        />
+        <TimePickerInput
+          label="Desabilitado"
+          value="08:00"
+          disabled
+        />
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { TimePickerInput } from '@single-ui/react'
+
+const [time, setTime] = useState<string | null>(null)
+
+// Formato 24h (padrão)
+<TimePickerInput label="Horário" value={time} onChange={setTime} clearable />
+
+// Formato 12h — adiciona botão AM/PM
+<TimePickerInput label="Horário" value={time} onChange={setTime} format="12h" clearable />`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'value', type: 'string | null', description: 'Horário selecionado, sempre no formato 24h "HH:mm" (controlado) — independe de `format`' },
+        { name: 'onChange', type: '(time: string | null) => void', description: 'Callback ao selecionar, digitar ou limpar o horário — recebe sempre "HH:mm" em 24h' },
+        { name: 'placeholder', type: 'string', default: "'HH:mm' (ou 'hh:mm' em 12h)", description: 'Placeholder do campo' },
+        { name: 'label', type: 'string', description: 'Label do campo' },
+        { name: 'error', type: 'string', description: 'Mensagem de erro' },
+        { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita o campo' },
+        { name: 'clearable', type: 'boolean', description: 'Exibe botão para limpar o horário' },
+        { name: 'fullWidth', type: 'boolean', description: 'Ocupa toda a largura disponível' },
+        { name: 'minTime', type: 'string', description: 'Menor horário permitido, formato "HH:mm" (24h)' },
+        { name: 'maxTime', type: 'string', description: 'Maior horário permitido, formato "HH:mm" (24h)' },
+        { name: 'step', type: 'number', default: '5', description: 'Intervalo em minutos entre as opções da coluna de minutos' },
+        { name: 'format', type: "'24h' | '12h'", default: "'24h'", description: 'Formato de exibição do campo e do popup — "12h" exibe um botão AM/PM clicável' },
+      ]} />
+
+      <InfoBox>
+        O popup renderiza através de um portal em <IC>document.body</IC>, ancorado ao input e reposicionado dinamicamente —
+        escapa de ancestrais com <IC>overflow: hidden</IC> e sempre aparece acima do restante do conteúdo da página.
+      </InfoBox>
+    </section>
+  )
+}
+
+// ─── TimeRangePickerInput Section ─────────────────────────────────────────────
+function TimeRangePickerInputSection() {
+  const [range, setRange] = useState<TimeRange>({ startTime: null, endTime: null })
+  return (
+    <section id="timerangepickerinput" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader
+        title="TimeRangePickerInput"
+        description="Campo de input que abre dois seletores de horário lado a lado (início e fim) ao ser clicado. O horário de fim não pode ser anterior ao de início e vice-versa."
+      />
+
+      <StepTitle>Demo</StepTitle>
+      <DemoBox className="flex flex-col gap-5 items-start">
+        <TimeRangePickerInput
+          label="Horário de atendimento"
+          startTime={range.startTime}
+          endTime={range.endTime}
+          onChange={setRange}
+          clearable
+          helperText="Selecione o horário de início e fim."
+        />
+        <TimeRangePickerInput
+          label="Horário de atendimento (12h)"
+          startTime={range.startTime}
+          endTime={range.endTime}
+          onChange={setRange}
+          format="12h"
+          clearable
+        />
+        <TimeRangePickerInput
+          label="Desabilitado"
+          startTime="08:00"
+          endTime="18:00"
+          disabled
+        />
+      </DemoBox>
+
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { TimeRangePickerInput } from '@single-ui/react'
+import type { TimeRange } from '@single-ui/react'
+
+const [range, setRange] = useState<TimeRange>({ startTime: null, endTime: null })
+
+<TimeRangePickerInput
+  label="Horário de atendimento"
+  startTime={range.startTime}
+  endTime={range.endTime}
+  onChange={setRange}
+  clearable
+/>
+
+// Formato 12h (AM/PM)
+<TimeRangePickerInput
+  label="Horário de atendimento"
+  startTime={range.startTime}
+  endTime={range.endTime}
+  onChange={setRange}
+  format="12h"
+/>`} />
+
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'startTime', type: 'string | null', description: 'Horário de início, sempre no formato 24h "HH:mm" (controlado) — independe de `format`' },
+        { name: 'endTime', type: 'string | null', description: 'Horário de fim, sempre no formato 24h "HH:mm" (controlado) — independe de `format`' },
+        { name: 'onChange', type: '(range: TimeRange) => void', description: 'Callback ao alterar o intervalo. TimeRange = { startTime, endTime }, sempre em 24h' },
+        { name: 'placeholder', type: 'string', default: "'HH:mm → HH:mm'", description: 'Placeholder quando nenhum horário está selecionado' },
+        { name: 'label', type: 'string', description: 'Label do campo' },
+        { name: 'error', type: 'string', description: 'Mensagem de erro' },
+        { name: 'helperText', type: 'string', description: 'Texto auxiliar' },
+        { name: 'disabled', type: 'boolean', description: 'Desabilita o campo' },
+        { name: 'clearable', type: 'boolean', description: 'Exibe botão para limpar os horários' },
+        { name: 'fullWidth', type: 'boolean', description: 'Ocupa toda a largura disponível' },
+        { name: 'step', type: 'number', default: '5', description: 'Intervalo em minutos entre as opções de cada coluna de minutos' },
+        { name: 'format', type: "'24h' | '12h'", default: "'24h'", description: 'Formato de exibição do valor no trigger e das colunas do popup — "12h" mostra sufixo AM/PM' },
+      ]} />
+
+      <InfoBox>
+        O seletor de fim usa o horário de início como <IC>minTime</IC>, e o de início usa o de fim como <IC>maxTime</IC> — evitando
+        selecionar um intervalo inválido.
+      </InfoBox>
     </section>
   )
 }
@@ -2776,6 +3053,104 @@ const items: TabItem[] = [
   )
 }
 
+// ─── Stepper Section ──────────────────────────────────────────────────────────
+function StepperSection() {
+  const steps = [
+    { id: 'paciente', label: 'Paciente', description: 'Buscar ou cadastrar' },
+    { id: 'dados', label: 'Dados do Agendamento', description: 'Convênio, plano e procedimento' },
+    { id: 'conclusao', label: 'Conclusão', description: 'Revisar e confirmar' },
+  ]
+  const stepsWithError = [
+    { id: 'login', label: 'Login', description: 'Concluído' },
+    { id: 'verificacao', label: 'Verificação', description: 'Falhou ao validar documento', status: 'error' as const },
+    { id: 'pagamento', label: 'Pagamento', description: 'Aguardando' },
+  ]
+  const [activeStep, setActiveStep] = useState(1)
+  const [activeStepV, setActiveStepV] = useState(1)
+  return (
+    <section id="stepper" className="py-[52px] border-b border-stone-200 dark:border-stone-800 [scroll-margin-top:76px]">
+      <SectionHeader title="Stepper" description="Indicador de progresso para fluxos multi-etapa (wizards), com direção horizontal/vertical, descrição por passo, estados wait/process/finish/error e variantes default/dot/panel." />
+      <StepTitle>Demo (horizontal)</StepTitle>
+      <DemoBox>
+        <div className="flex flex-col gap-4 w-full">
+          <Stepper steps={steps} activeStep={activeStep} />
+          <div className="flex gap-2">
+            <Button size="sm" variant="secondary" onClick={() => setActiveStep((s) => Math.max(0, s - 1))}>Voltar</Button>
+            <Button size="sm" variant="primary" onClick={() => setActiveStep((s) => Math.min(steps.length - 1, s + 1))}>Próximo</Button>
+          </div>
+        </div>
+      </DemoBox>
+      <StepTitle>Clicável</StepTitle>
+      <DemoBox>
+        <Stepper steps={steps} activeStep={activeStep} onStepClick={setActiveStep} />
+      </DemoBox>
+      <StepTitle>Vertical</StepTitle>
+      <DemoBox>
+        <div className="flex flex-col gap-4 w-full max-w-xs">
+          <Stepper steps={steps} activeStep={activeStepV} direction="vertical" onStepClick={setActiveStepV} />
+          <div className="flex gap-2">
+            <Button size="sm" variant="secondary" onClick={() => setActiveStepV((s) => Math.max(0, s - 1))}>Voltar</Button>
+            <Button size="sm" variant="primary" onClick={() => setActiveStepV((s) => Math.min(steps.length - 1, s + 1))}>Próximo</Button>
+          </div>
+        </div>
+      </DemoBox>
+      <StepTitle>Status de erro</StepTitle>
+      <DemoBox>
+        <Stepper steps={stepsWithError} activeStep={1} />
+      </DemoBox>
+      <StepTitle>Variante dot</StepTitle>
+      <DemoBox>
+        <div className="flex flex-col gap-6 w-full">
+          <Stepper steps={steps} activeStep={activeStep} variant="dot" />
+          <Stepper steps={steps} activeStep={activeStepV} direction="vertical" variant="dot" />
+        </div>
+      </DemoBox>
+      <StepTitle>Variante panel</StepTitle>
+      <DemoBox>
+        <Stepper steps={stepsWithError} activeStep={1} variant="panel" />
+      </DemoBox>
+      <StepTitle>Uso básico</StepTitle>
+      <CodeBlock code={`import { Stepper } from '@single-ui/react'
+import type { StepItem } from '@single-ui/react'
+
+const steps: StepItem[] = [
+  { id: 'paciente', label: 'Paciente', description: 'Buscar ou cadastrar' },
+  { id: 'dados', label: 'Dados do Agendamento', description: 'Convênio, plano e procedimento' },
+  { id: 'conclusao', label: 'Conclusão', description: 'Revisar e confirmar' },
+]
+
+const [activeStep, setActiveStep] = useState(0)
+
+<Stepper steps={steps} activeStep={activeStep} />
+
+// Vertical
+<Stepper steps={steps} activeStep={activeStep} direction="vertical" />
+
+// Variantes dot / panel
+<Stepper steps={steps} activeStep={activeStep} variant="dot" />
+<Stepper steps={steps} activeStep={activeStep} variant="panel" />
+
+// Permite voltar clicando em um step já concluído
+<Stepper steps={steps} activeStep={activeStep} onStepClick={setActiveStep} />
+
+// Sobrescrever o status de um passo específico (ex: erro)
+const stepsWithError: StepItem[] = [
+  { id: 'login', label: 'Login' },
+  { id: 'verificacao', label: 'Verificação', status: 'error' },
+  { id: 'pagamento', label: 'Pagamento' },
+]`} />
+      <StepTitle>Props</StepTitle>
+      <PropsTable props={[
+        { name: 'steps', type: 'StepItem[]', required: true, description: 'Lista de passos ({ id, label, description?, icon?, status? })' },
+        { name: 'activeStep', type: 'number', required: true, description: 'Índice (0-based) do passo ativo — controlado por quem usa o componente' },
+        { name: 'onStepClick', type: '(index: number) => void', description: 'Callback ao clicar em um passo já concluído (torna passos finish clicáveis)' },
+        { name: 'direction', type: "'horizontal' | 'vertical'", default: "'horizontal'", description: 'Orientação do stepper (ignorada na variante panel, sempre horizontal)' },
+        { name: 'variant', type: "'default' | 'dot' | 'panel'", default: "'default'", description: 'Estilo visual do indicador' },
+      ]} />
+    </section>
+  )
+}
+
 // ─── Accordion Section ────────────────────────────────────────────────────────
 function AccordionSection() {
   const items = [
@@ -3510,6 +3885,21 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
     { id: 'uso-basico', label: 'Uso básico' },
     { id: 'props', label: 'Props' },
   ],
+  timepicker: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  timepickerinput: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  timerangepickerinput: [
+    { id: 'demo', label: 'Demo' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
   switch: [
     { id: 'demo', label: 'Demo' },
     { id: 'tamanhos', label: 'Tamanhos' },
@@ -3544,6 +3934,16 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
   tabs: [
     { id: 'underline', label: 'Underline' },
     { id: 'pills', label: 'Pills' },
+    { id: 'uso-basico', label: 'Uso básico' },
+    { id: 'props', label: 'Props' },
+  ],
+  stepper: [
+    { id: 'demo-horizontal', label: 'Demo (horizontal)' },
+    { id: 'clicavel', label: 'Clicável' },
+    { id: 'vertical', label: 'Vertical' },
+    { id: 'status-de-erro', label: 'Status de erro' },
+    { id: 'variante-dot', label: 'Variante dot' },
+    { id: 'variante-panel', label: 'Variante panel' },
     { id: 'uso-basico', label: 'Uso básico' },
     { id: 'props', label: 'Props' },
   ],
@@ -3626,9 +4026,10 @@ const SECTION_TOC: Partial<Record<Section, TocItem[]>> = {
 const GUIDE_ITEMS: Section[] = ['install', 'themes', 'form', 'modalmanager']
 const COMPONENT_ITEMS: Section[] = [
   'button', 'input', 'textarea', 'card', 'modal', 'drawer', 'navbar',
-  'table', 'select', 'countrycodeselect', 'switch', 'checkbox', 'chip', 'badge', 'slider', 'tabs', 'accordion',
+  'table', 'select', 'countrycodeselect', 'switch', 'checkbox', 'chip', 'badge', 'slider', 'tabs', 'stepper', 'accordion',
   'avatar', 'skeleton', 'tooltip', 'popover', 'toast', 'pagination', 'inputotp',
   'datepicker', 'daterangepicker', 'datepickerinput', 'daterangepickerinput',
+  'timepicker', 'timepickerinput', 'timerangepickerinput',
   'spinner', 'floatbutton', 'divider', 'anchor',
 ]
 
@@ -3711,6 +4112,7 @@ function ComponentsPage() {
     badge: BadgeSection,
     slider: SliderSection,
     tabs: TabsSection,
+    stepper: StepperSection,
     accordion: AccordionSection,
     avatar: AvatarSection,
     skeleton: SkeletonSection,
@@ -3723,6 +4125,9 @@ function ComponentsPage() {
     daterangepicker: DateRangePickerSection,
     datepickerinput: DatePickerInputSection,
     daterangepickerinput: DateRangePickerInputSection,
+    timepicker: TimePickerSection,
+    timepickerinput: TimePickerInputSection,
+    timerangepickerinput: TimeRangePickerInputSection,
     spinner: SpinnerSection,
     floatbutton: FloatButtonSection,
     divider: DividerSection,

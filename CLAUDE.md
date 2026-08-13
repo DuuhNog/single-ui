@@ -372,6 +372,84 @@ The calendar popup renders through a portal into `document.body`, anchored to th
 
 ---
 
+### TimePicker
+
+```tsx
+import { TimePicker } from '@single-ui/react';
+import type { TimeFormat, TimePeriod } from '@single-ui/react';
+```
+
+`TimeFormat`: `'24h' | '12h'`. `TimePeriod`: `'AM' | 'PM'`.
+
+| Prop | Type | Default |
+|------|------|---------|
+| `value` | `string \| null` | — |
+| `onChange` | `(time: string) => void` | — |
+| `minTime` | `string` | — |
+| `maxTime` | `string` | — |
+| `step` | `number` | `5` |
+| `format` | `TimeFormat` | `'24h'` |
+| `className` | `string` | — |
+
+iOS-style wheel picker: scrollable columns with `scroll-snap-type: y mandatory`, a centered highlight band, and a top/bottom fade (CSS `mask-image`) — no input field. `value`/`onChange`/`minTime`/`maxTime` are **always** `"HH:mm"` in 24h, regardless of `format` — `format` only changes what the columns display/how the user interacts: `'24h'` shows an hour column (00-23) + minute column; `'12h'` shows an hour column (01-12) + minute column + a third AM/PM column, and the component converts to/from 24h internally. Dragging a column or clicking a cell selects it (commits after a short settle delay so a smooth scroll animation and the API stay in sync). Use `TimePickerInput` for an input with popover, or `TimeRangePickerInput` for a start/end pair.
+
+---
+
+### TimePickerInput
+
+```tsx
+import { TimePickerInput } from '@single-ui/react';
+import type { TimeFormat } from '@single-ui/react';
+```
+
+| Prop | Type | Default |
+|------|------|---------|
+| `value` | `string \| null` | — |
+| `onChange` | `(time: string \| null) => void` | — |
+| `placeholder` | `string` | `'HH:mm'` (or `'hh:mm'` in 12h) |
+| `label` | `string` | — |
+| `error` | `string` | — |
+| `helperText` | `string` | — |
+| `disabled` | `boolean` | `false` |
+| `clearable` | `boolean` | `false` |
+| `fullWidth` | `boolean` | `false` |
+| `minTime` | `string` | — |
+| `maxTime` | `string` | — |
+| `step` | `number` | `5` |
+| `format` | `TimeFormat` | `'24h'` |
+
+`value`/`minTime`/`maxTime` are always `"HH:mm"` in 24h — `format` only changes the field's display/typing and the popup. In `'24h'` mode, typing masks digits as `HH:mm`. In `'12h'` mode, typing masks digits as `hh:mm` (1-12) and a small **AM/PM pill button** appears next to the clock icon — click it to toggle the period, which recomputes the 24h value immediately. Accepts direct typing as well as selection via the `TimePicker` popup. The popup renders through a portal into `document.body`, anchored to the input and repositioned dynamically — escapes clipping ancestors and always renders above other page content.
+
+---
+
+### TimeRangePickerInput
+
+```tsx
+import { TimeRangePickerInput } from '@single-ui/react';
+import type { TimeRange, TimeFormat } from '@single-ui/react';
+```
+
+`TimeRange`: `{ startTime: string | null; endTime: string | null }`
+
+| Prop | Type | Default |
+|------|------|---------|
+| `startTime` | `string \| null` | — |
+| `endTime` | `string \| null` | — |
+| `onChange` | `(range: TimeRange) => void` | — |
+| `placeholder` | `string` | `'HH:mm → HH:mm'` |
+| `label` | `string` | — |
+| `error` | `string` | — |
+| `helperText` | `string` | — |
+| `disabled` | `boolean` | `false` |
+| `clearable` | `boolean` | `false` |
+| `fullWidth` | `boolean` | `false` |
+| `step` | `number` | `5` |
+| `format` | `TimeFormat` | `'24h'` |
+
+`startTime`/`endTime` are always `"HH:mm"` in 24h — `format` only changes the trigger's displayed text (adds an AM/PM suffix in `'12h'`) and the two `TimePicker` panels' columns. The popup shows two `TimePicker` panels side by side (Início / Fim); the end panel's `minTime` is pinned to `startTime` and the start panel's `maxTime` is pinned to `endTime`, so an inverted range can't be selected. Renders through a portal into `document.body`, anchored to the input.
+
+---
+
 ### Switch
 
 ```tsx
@@ -472,6 +550,30 @@ import type { TabItem } from '@single-ui/react';
 | `activeTab` | `string` | — |
 | `onChange` | `(id: string) => void` | — |
 | `variant` | `'underline' \| 'pills'` | `'underline'` |
+
+---
+
+### Stepper
+
+```tsx
+import { Stepper } from '@single-ui/react';
+import type { StepItem } from '@single-ui/react';
+```
+
+`StepItem`: `{ id: string; label: string; description?: string; icon?: React.ReactNode; status?: 'wait' | 'process' | 'finish' | 'error' }`
+
+| Prop | Type | Default |
+|------|------|---------|
+| `steps` | `StepItem[]` | required |
+| `activeStep` | `number` (0-indexed, controlled) | required |
+| `onStepClick` | `(index: number) => void` | — |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` |
+| `variant` | `'default' \| 'dot' \| 'panel'` | `'default'` |
+| `className` | `string` | — |
+
+Indicador de progresso para fluxos multi-etapa (wizards). O status de cada step é derivado de `activeStep` — `wait` (índice > `activeStep`), `process` (índice === `activeStep`) e `finish` (índice < `activeStep`, mostra ícone de check ou o `icon` customizado) — mas pode ser sobrescrito individualmente via `StepItem.status` (ex: marcar o passo atual como `'error'`, com ícone de X e cor vermelha), útil para reportar falha de validação num passo do wizard. `description` exibe um texto auxiliar abaixo do `label`. Sem `onStepClick`, os steps não são clicáveis; com ele, apenas steps `finish` ficam clicáveis, permitindo voltar no fluxo. Não é controlado internamente — quem usa o componente controla `activeStep` via estado próprio (ex: `useState`) e avança/retrocede chamando os handlers do próprio fluxo.
+
+`direction="vertical"` empilha os steps em coluna (indicador à esquerda, texto à direita), útil em sidebars estreitas. `variant="dot"` troca o círculo numerado por um indicador compacto (bolinha). `variant="panel"` renderiza blocos coloridos em formato de seta (chevron) — sempre horizontal, ignora `direction` — indicado para wizards com poucos passos onde cada bloco já comunica o status pela cor de fundo.
 
 ---
 
@@ -838,9 +940,25 @@ const id = openModal({
 | `minimizable` | `boolean` | `true` |
 | `closeOnOverlayClick` | `boolean` | `true` |
 | `closeOnEscape` | `boolean` | `true` |
+| `showCloseButton` | `boolean` | `true` |
 | `color` | `string` | — (used as the minimized tray item's background) |
 
 Unlike `Modal`, this manages an imperative stack of windows — supports multiple simultaneous modals, each independently minimizable to a tray at the bottom of the viewport. Prefer `Modal` for a single declarative dialog; use `ModalManager` when the app needs to open modals from anywhere (e.g. outside React event handlers) or stack several at once.
+
+**Modal obrigatório (sem forma de fechar sem concluir a ação)** — ex: forçar o usuário a selecionar algo antes de continuar. Zere as quatro saídas possíveis:
+
+```tsx
+openModal({
+  title: 'Selecione a unidade',
+  body: <SelecionarUnidadeForm ... />,
+  closeOnOverlayClick: false,
+  closeOnEscape: false,
+  showCloseButton: false,
+  minimizable: false,
+});
+```
+
+`closeOnOverlayClick`/`closeOnEscape`/`showCloseButton` sozinhos **não bastam** — sem `minimizable: false` (que já é `true` por padrão) o usuário ainda consegue minimizar o modal pra tray e continuar navegando por trás dele sem concluir a ação.
 
 ---
 
@@ -875,9 +993,9 @@ The `Input` component accepts a `mask` prop directly — `useMask` is for cases 
 
 All three use `ReactDOM.createPortal` to render into `document.body`. They lock scroll and handle ESC key.
 
-### Select / CountryCodeSelect / DatePickerInput / DateRangePickerInput / Popover / Tooltip (anchored portals)
+### Select / CountryCodeSelect / DatePickerInput / DateRangePickerInput / TimePickerInput / TimeRangePickerInput / Popover / Tooltip (anchored portals)
 
-All six render their dropdown/panel through `ReactDOM.createPortal` into `document.body`, positioned with the internal `useAnchoredPosition` hook (`src/hooks/useAnchoredPosition.ts`) — no external library (no Popper, no Floating UI). The hook reads `getBoundingClientRect()` on the trigger and popup, computes `position: fixed` coordinates, flips to the opposite side when there's no room, and recalculates on scroll/resize. This keeps popups from being clipped by `overflow: hidden` ancestors (e.g. an `Accordion` item) and ensures they stack above later-in-DOM siblings (e.g. a `Table`) via the `--single-z-dropdown` / `--single-z-popover` / `--single-z-tooltip` tokens in `tokens.css`.
+All render their dropdown/panel through `ReactDOM.createPortal` into `document.body`, positioned with the internal `useAnchoredPosition` hook (`src/hooks/useAnchoredPosition.ts`) — no external library (no Popper, no Floating UI). The hook reads `getBoundingClientRect()` on the trigger and popup, computes `position: fixed` coordinates, flips to the opposite side when there's no room, and recalculates on scroll/resize. This keeps popups from being clipped by `overflow: hidden` ancestors (e.g. an `Accordion` item) and ensures they stack above later-in-DOM siblings (e.g. a `Table`) via the `--single-z-dropdown` / `--single-z-popover` / `--single-z-tooltip` tokens in `tokens.css`.
 
 ### Table (generic)
 
@@ -886,5 +1004,5 @@ All six render their dropdown/panel through `ReactDOM.createPortal` into `docume
 ### Controlled vs Uncontrolled
 
 - `Select`, `Tabs`, `Accordion`: support both controlled (`value`/`open` + `onChange`) and uncontrolled (`defaultValue`/`defaultOpen`).
-- `DatePickerInput`, `DateRangePickerInput`: fully controlled via `value`/`onChange`.
+- `DatePickerInput`, `DateRangePickerInput`, `TimePicker`, `TimePickerInput`, `TimeRangePickerInput`: fully controlled via `value`/`onChange` (or `startTime`/`endTime`/`onChange` for the range variant).
 - `Slider`: supports both `value` (controlled) and `defaultValue` (uncontrolled).

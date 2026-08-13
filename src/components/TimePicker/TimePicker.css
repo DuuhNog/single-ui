@@ -1,0 +1,90 @@
+.single-tp {
+  position: relative;
+  display: inline-flex;
+  background: var(--single-background);
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-xl);
+  box-shadow: var(--single-shadow-md);
+  overflow: hidden;
+  user-select: none;
+}
+
+.single-tp-highlight {
+  position: absolute;
+  left: var(--single-spacing-sm);
+  right: var(--single-spacing-sm);
+  background: var(--single-surface);
+  border-radius: var(--single-radius-md);
+  pointer-events: none;
+  /* Must stay behind .single-tp-columns' text. Both are siblings inside the
+     same stacking context (.single-tp); .single-tp-columns creates its own
+     stacking context via mask-image even though it has no explicit z-index
+     (position: relative + a masking property always forces one). Giving
+     this element a positive z-index would paint it in the "positioned,
+     z-index > 0" layer, which comes AFTER auto/z-index:0 stacking contexts
+     regardless of DOM order — covering the selected cell's text. Leaving
+     z-index unset (auto) keeps it in plain DOM order, so it paints before
+     (behind) .single-tp-columns. */
+}
+
+.single-tp-columns {
+  position: relative;
+  display: flex;
+  flex: 1;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 32%, black 68%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 32%, black 68%, transparent 100%);
+}
+
+.single-tp-column {
+  flex: 1;
+  min-width: 64px;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+}
+
+.single-tp-column--dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.single-tp-column::-webkit-scrollbar {
+  display: none;
+}
+
+.single-tp-column + .single-tp-column {
+  border-left: 1px solid var(--single-border);
+}
+
+.single-tp-spacer {
+  flex-shrink: 0;
+}
+
+.single-tp-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-lg);
+  color: var(--single-text-secondary);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color var(--single-transition);
+}
+
+.single-tp-cell--selected {
+  color: var(--single-text-primary);
+  font-weight: var(--single-font-weight-semibold);
+  font-size: var(--single-font-size-xl);
+}
+
+.single-tp-cell--disabled {
+  color: var(--single-text-disabled);
+  cursor: not-allowed;
+}

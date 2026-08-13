@@ -1,0 +1,183 @@
+.single-tpi-wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--single-spacing-xs);
+}
+
+.single-tpi-wrapper--full-width {
+  width: 100%;
+}
+
+.single-tpi__label {
+  display: block;
+  font-size: var(--single-font-size-sm);
+  font-weight: var(--single-font-weight-medium);
+  color: var(--single-text-primary);
+}
+
+/* ─── Field ──────────────────────────────────────────────────────────────── */
+.single-tpi__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  background-color: var(--single-background);
+  border: 1px solid var(--single-border);
+  border-radius: var(--single-radius-md);
+  transition: all var(--single-transition);
+}
+
+.single-tpi__field:hover:not(.single-tpi__field--disabled) {
+  border-color: var(--single-border-hover);
+}
+
+.single-tpi__field--open {
+  border-color: var(--single-primary);
+  box-shadow: 0 0 0 3px var(--single-primary-light);
+}
+
+.single-tpi__field--error {
+  border-color: var(--single-error);
+}
+
+.single-tpi__field--error.single-tpi__field--open {
+  box-shadow: 0 0 0 3px var(--single-error-light);
+}
+
+.single-tpi__field--disabled {
+  background-color: var(--single-surface);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Input ──────────────────────────────────────────────────────────────── */
+.single-tpi__input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--single-spacing-sm) var(--single-spacing-md);
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-base);
+  color: var(--single-text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.single-tpi__input::placeholder {
+  color: var(--single-text-disabled);
+}
+
+.single-tpi__input:disabled {
+  cursor: not-allowed;
+  color: var(--single-text-disabled);
+}
+
+/* ─── Actions ────────────────────────────────────────────────────────────── */
+.single-tpi__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: var(--single-spacing-xs);
+  flex-shrink: 0;
+}
+
+.single-tpi__period {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 22px;
+  padding: 0 var(--single-spacing-xs);
+  font-family: var(--single-font-family);
+  font-size: var(--single-font-size-xs);
+  font-weight: var(--single-font-weight-semibold);
+  color: var(--single-text-secondary);
+  background: var(--single-surface);
+  border: none;
+  border-radius: var(--single-radius-sm);
+  cursor: pointer;
+  transition: all var(--single-transition);
+}
+
+.single-tpi__period:hover:not(:disabled) {
+  background-color: var(--single-surface-hover);
+  color: var(--single-text-primary);
+}
+
+.single-tpi__period:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.single-tpi__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: var(--single-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--single-radius-sm);
+  cursor: pointer;
+  transition: all var(--single-transition);
+}
+
+.single-tpi__clear:hover {
+  background-color: var(--single-surface-hover);
+  color: var(--single-text-primary);
+}
+
+.single-tpi__clock-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--single-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--single-radius-sm);
+  cursor: pointer;
+  transition: all var(--single-transition);
+}
+
+.single-tpi__clock-btn:hover:not(:disabled) {
+  background-color: var(--single-surface-hover);
+  color: var(--single-primary);
+}
+
+.single-tpi__clock-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.single-tpi__clock-icon {
+  flex-shrink: 0;
+}
+
+/* ─── Popup ──────────────────────────────────────────────────────────────── */
+.single-tpi__popup {
+  z-index: var(--single-z-dropdown);
+  animation: single-tpi-in 140ms ease-out;
+}
+
+@keyframes single-tpi-in {
+  from { opacity: 0; transform: translateY(-6px) scaleY(0.97); }
+  to   { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+/* ─── Error & Helper ─────────────────────────────────────────────────────── */
+.single-tpi__error {
+  font-size: var(--single-font-size-sm);
+  color: var(--single-error);
+}
+
+.single-tpi__helper {
+  font-size: var(--single-font-size-sm);
+  color: var(--single-text-secondary);
+}

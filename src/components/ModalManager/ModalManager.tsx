@@ -20,6 +20,8 @@ export interface OpenModalOptions {
   minimizable?: boolean;
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
+  /** Exibe o botão "X" no header. Defina `false` (junto com `closeOnOverlayClick`/`closeOnEscape`/`minimizable` também `false`) para um modal obrigatório, sem nenhuma forma de fechar sem concluir a ação. @default true */
+  showCloseButton?: boolean;
   color?: string;
 }
 
@@ -100,15 +102,17 @@ function ModalWindow({
                 <MinimizeIcon />
               </button>
             )}
-            <button
-              type="button"
-              className="smm-btn-icon"
-              onClick={onClose}
-              aria-label="Fechar"
-              title="Fechar"
-            >
-              <CloseIcon />
-            </button>
+            {entry.showCloseButton && (
+              <button
+                type="button"
+                className="smm-btn-icon"
+                onClick={onClose}
+                aria-label="Fechar"
+                title="Fechar"
+              >
+                <CloseIcon />
+              </button>
+            )}
           </div>
         </div>
         <div className="smm-body">{entry.body}</div>
@@ -194,6 +198,7 @@ export function ModalManagerProvider({ children }: { children: React.ReactNode }
       minimizable: options.minimizable ?? true,
       closeOnOverlayClick: options.closeOnOverlayClick ?? true,
       closeOnEscape: options.closeOnEscape ?? true,
+      showCloseButton: options.showCloseButton ?? true,
       color: options.color ?? '',
       minimized: false,
     };
